@@ -209,7 +209,7 @@ export function DeleteTresureModal({ id, pivotid, onSaveSuccess }) {
                   isDisabled
                   label="الاسم"
                   type="text"
-                  value={workshopEmployee.name}
+                  value={Tresure.name}
                 />
               </ModalBody>
               <ModalFooter>

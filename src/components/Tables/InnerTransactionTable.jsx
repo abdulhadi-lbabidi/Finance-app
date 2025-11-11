@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -13,7 +13,6 @@ import {
   DropdownMenu,
   DropdownItem,
   Chip,
-  User,
   Pagination,
   addToast,
 } from "@heroui/react";
@@ -25,8 +24,10 @@ import {
   DeleteInnerTransactionModal,
   UpdateInnerTransactionModal,
 } from "../Modals/InnerTransactionModals";
+import { useNavigate, useParams } from "react-router-dom";
+import InvoiceIcon from "../SVG/InvoiceIcon";
 
-export const columns = [
+const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "الاسم", uid: "name", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
@@ -44,7 +45,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "desc",
   "actions",
 ];
-export const statusOptions = [
+const statusOptions = [
   { name: "Active", uid: "active" },
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
@@ -63,6 +64,8 @@ function InnerTransactionTable({ tresurefundid }) {
   const [innerTransactions, setInnerTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const { adminId, innerId } = useParams();
 
   const fetchData = () => {
     // Using axios
@@ -98,7 +101,7 @@ function InnerTransactionTable({ tresurefundid }) {
     direction: "ascending",
   });
   const [page, setPage] = useState(1);
-
+  const navigate = useNavigate();
   const pages = Math.ceil(innerTransactions.length / rowsPerPage);
 
   const hasSearchFilter = Boolean(filterValue);
@@ -160,6 +163,17 @@ function InnerTransactionTable({ tresurefundid }) {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="الفواتير"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(`/tresure/admin/${adminId}/invoices/${innerId}`)
+              }
+            >
+              <InvoiceIcon />
+            </Button>
             <UpdateInnerTransactionModal
               onSaveSuccess={fetchData}
               id={innerTransaction.id}

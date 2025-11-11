@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Cairo:wght@200..1000&display=swap');
+@import "tailwindcss";
+@plugin '../hero.ts';
+/* Note: You may need to change the path to fit your project structure */
+@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@custom-variant dark (&:is(.dark *));
+
+body{
+    font-family: "Cairo", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    font-variation-settings: "slnt" 0;
+    direction: rtl;
+}
+
+.rtl-grid{
+    direction: rtl;
+}
+.ltr-grid{
+    direction: ltr;
+}
+.ls-dec{
+    list-style-type: decimal !important;
+}

@@ -64,7 +64,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
   return (
     <>
       <Button color="primary" onPress={onOpen}>
-        إضافة نوع مدير جديد
+        إضافة تحويل جديد
       </Button>
 
       <Modal backdrop={"blur"} isOpen={isOpen} onOpenChange={onOpenChange}>

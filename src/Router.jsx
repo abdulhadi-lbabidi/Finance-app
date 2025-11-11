@@ -37,6 +37,7 @@ import AdminTresure from "./pages/Tresures/AdminTresure";
 import EmployeeForWorkshop from "./pages/Workshop/EmployeeForWorkshop";
 import LogisticForWorkshop from "./pages/Workshop/LogisticForWorkshop";
 import ItemReport from "./pages/Reports/ItemReport";
+import Invoices from "./pages/Invoices";
 
 const router = createBrowserRouter(
   [
@@ -51,12 +52,26 @@ const router = createBrowserRouter(
         // Tresures selectors
         {
           path: "/tresure/admin",
-          element: <SelectAdminTresure />,
+          children: [
+            { index: true, element: <SelectAdminTresure /> },
+            {
+              path: ":id",
+              children: [
+                { index: true, element: <AdminTresure /> },
+                { path: "invoices/:innerId", element: <Invoices /> },
+              ],
+            },
+          ],
         },
-        {
-          path: "/tresure/admin/:id",
-          element: <AdminTresure />,
-        },
+
+        // {
+        //   path: "/tresure/admin",
+        //   element: <SelectAdminTresure />,
+        // },
+        // {
+        //   path: "/tresure/admin/:id",
+        //   element: <AdminTresure />,
+        // },
         {
           path: "/tresure/employee",
           element: <SelectEmployeeTresure />,

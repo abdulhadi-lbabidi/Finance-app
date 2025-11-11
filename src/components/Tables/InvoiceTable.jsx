@@ -1,42 +1,40 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Input,
-  Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  Chip,
-  User,
-  Pagination,
-  addToast,
-} from "@heroui/react";
-import SearchIcon from "../SVG/SearchIcon";
-import ChevronDownIcon from "../SVG/ChevronDownIcon";
-import { getMoneyTransfares } from "../../api";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AddMoneyTransfareModal,
   DeleteMoneyTransfareModal,
   UpdateMoneyTransfareModal,
 } from "../Modals/MoneyTransfareModals";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+  Pagination,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@heroui/react";
+import ChevronDownIcon from "../SVG/ChevronDownIcon";
+import SearchIcon from "../SVG/SearchIcon";
+import { getMoneyTransfares } from "../../api";
+import { InvoiceModals } from "../Modals/InvoiceModals";
 
-const columns = [
+export const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "الاسم", uid: "name", sortable: true },
+  { name: "الشرح", uid: "desc", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
-  { name: "من رقم ملحق", uid: "from_tresure_fund_id", sortable: true },
-  { name: "الى رقم ملحق", uid: "to_tresure_fund_id", sortable: true },
   { name: "عمليات", uid: "actions" },
 ];
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "actions"];
-const statusOptions = [
+
+export const statusOptions = [
   { name: "Active", uid: "active" },
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
@@ -47,14 +45,27 @@ const statusColorMap = {
   vacation: "warning",
 };
 
-function capitalize(s) {
+export function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-function MoneyTransfareTable({ tresurefundid }) {
+const InvoiceTable = ({ tresurefundid }) => {
+  const [filterValue, setFilterValue] = useState("");
+  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [moneyTransfares, setMoneyTransfares] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [visibleColumns, setVisibleColumns] = useState(
+    new Set(INITIAL_VISIBLE_COLUMNS)
+  );
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [sortDescriptor, setSortDescriptor] = useState({
+    column: "age",
+    direction: "ascending",
+  });
+  const [page, setPage] = useState(1);
 
   const fetchData = () => {
     // Using axios
@@ -73,23 +84,9 @@ function MoneyTransfareTable({ tresurefundid }) {
       });
   };
 
-  // Fetch data initially
   useEffect(() => {
     fetchData();
   }, []);
-
-  const [filterValue, setFilterValue] = useState("");
-  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = useState(
-    new Set(INITIAL_VISIBLE_COLUMNS)
-  );
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [sortDescriptor, setSortDescriptor] = useState({
-    column: "age",
-    direction: "ascending",
-  });
-  const [page, setPage] = useState(1);
 
   const pages = Math.ceil(moneyTransfares.length / rowsPerPage);
 
@@ -147,11 +144,11 @@ function MoneyTransfareTable({ tresurefundid }) {
         return (
           <div className="relative flex justify-end items-center gap-2">
             <UpdateMoneyTransfareModal
-              onSaveSuccess={fetchData}
+              // onSaveSuccess={fetchData}
               id={moneyTransfare.id}
             />
             <DeleteMoneyTransfareModal
-              onSaveSuccess={fetchData}
+              // onSaveSuccess={fetchData}
               id={moneyTransfare.id}
             />
           </div>
@@ -219,12 +216,12 @@ function MoneyTransfareTable({ tresurefundid }) {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <AddMoneyTransfareModal onSaveSuccess={fetchData} />
+            <InvoiceModals onSaveSuccess={fetchData} />
           </div>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            عدد التحويلات {moneyTransfares.length}
+            عدد الفواتير {moneyTransfares.length}
           </span>
           <label className="flex items-center text-default-400 text-small">
             عدد الأسطر بالصفحة:
@@ -293,14 +290,11 @@ function MoneyTransfareTable({ tresurefundid }) {
     []
   );
 
-  if (loading) return <div>Loading moneyTransfares...</div>;
-  if (error) return <div className="text-red-500">Error: {error}</div>;
   return (
     <Table
       isCompact
       removeWrapper
       aria-label="Example table with custom cells, pagination and sorting"
-      bottomContent={bottomContent}
       bottomContentPlacement="outside"
       checkboxesProps={{
         classNames: {
@@ -338,6 +332,6 @@ function MoneyTransfareTable({ tresurefundid }) {
       </TableBody>
     </Table>
   );
-}
+};
 
-export default MoneyTransfareTable;
+export default InvoiceTable;

@@ -65,7 +65,7 @@ function InnerTransactionTable({ tresurefundid }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { id, invoiceId } = useParams();
+  const { id } = useParams();
 
   const fetchData = () => {
     // Using axios
@@ -156,9 +156,9 @@ function InnerTransactionTable({ tresurefundid }) {
     switch (columnKey) {
       case "payed":
         if (innerTransaction.payed === 1) {
-          return <Chip color="success">مٌسلتم</Chip>;
+          return <Chip color="success">مستلم</Chip>;
         } else {
-          return <Chip color="danger">غير مٌسلتم</Chip>;
+          return <Chip color="danger">غير مستلم</Chip>;
         }
       case "actions":
         return (
@@ -169,7 +169,7 @@ function InnerTransactionTable({ tresurefundid }) {
               color="primary"
               variant="faded"
               onPress={() =>
-                navigate(`/tresure/admin/${id}/invoices/${invoiceId}`)
+                navigate(`/tresure/admin/${id}/invoices/${innerTransaction.id}`)
               }
             >
               <InvoiceIcon />

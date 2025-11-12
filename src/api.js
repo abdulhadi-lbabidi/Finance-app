@@ -264,7 +264,6 @@ export const deleteWorkshopLogistic = (id) => {
 };
 
 //Data
-
 export const getTresureSelector = (type) =>
   api.get(`/data/tresure?type=${type}`);
 export const getAdminTresure = (id) => api.get(`/data/admin/tresure/${id}`);
@@ -274,3 +273,12 @@ export const getTresureFunds = (id) => api.get(`/data/tresurefund/${id}`);
 
 // Invoices
 export const getInvoices = () => api.get(`/data/invoices`);
+export const addInvoices = (data) => {
+  return api.post("/data/invoices", data);
+};
+export const updateInvoices = (id, data) => {
+  return api.put(`/data/invoices/${id}`, data);
+};
+export const deleteInvoices = (id) => {
+  return api.delete(`/data/invoices/${id}`);
+};

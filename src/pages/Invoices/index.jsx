@@ -1,5 +1,5 @@
 import { Card, CardBody } from "@heroui/react";
-import InvoiceTable from "../../components/Tables/InvoiceTable";
+import InvoicesTable from "../../components/Tables/InvoicesTable";
 
 const Invoices = () => {
   return (
@@ -14,8 +14,8 @@ const Invoices = () => {
         </CardBody>
       </Card>
 
-      {/* Add new invoices */}
-      <InvoiceTable tresurefundid={1} />
+      {/*  invoices Table */}
+      <InvoicesTable />
     </>
   );
 };

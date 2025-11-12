@@ -58,7 +58,7 @@ const router = createBrowserRouter(
               path: ":id",
               children: [
                 { index: true, element: <AdminTresure /> },
-                { path: "invoices/:innerId", element: <Invoices /> },
+                { path: "invoices/:invoiceId", element: <Invoices /> },
               ],
             },
           ],

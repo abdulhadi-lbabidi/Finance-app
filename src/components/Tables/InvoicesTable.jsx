@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  AddMoneyTransfareModal,
-  DeleteMoneyTransfareModal,
-  UpdateMoneyTransfareModal,
-} from "../Modals/MoneyTransfareModals";
-import {
   Button,
   Dropdown,
   DropdownItem,
@@ -21,20 +16,25 @@ import {
 } from "@heroui/react";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
 import SearchIcon from "../SVG/SearchIcon";
-import { getMoneyTransfares } from "../../api";
-import { InvoiceModals } from "../Modals/InvoiceModals";
+import { getInvoices } from "../../api";
+import {
+  AddInvoiceModals,
+  DeleteInvoicesModal,
+  UpdateInvoicesModal,
+} from "../Modals/InvoiceModals";
 
-export const columns = [
+const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "الاسم", uid: "name", sortable: true },
   { name: "الشرح", uid: "desc", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
+  { name: "البند", uid: "finance_item_id", sortable: true },
   { name: "عمليات", uid: "actions" },
 ];
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "actions"];
 
-export const statusOptions = [
+const statusOptions = [
   { name: "Active", uid: "active" },
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
@@ -45,14 +45,14 @@ const statusColorMap = {
   vacation: "warning",
 };
 
-export function capitalize(s) {
+function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-const InvoiceTable = ({ tresurefundid }) => {
+const InvoicesTable = () => {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [moneyTransfares, setMoneyTransfares] = useState([]);
+  const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -69,9 +69,9 @@ const InvoiceTable = ({ tresurefundid }) => {
 
   const fetchData = () => {
     // Using axios
-    getMoneyTransfares(tresurefundid)
+    getInvoices()
       .then((response) => {
-        setMoneyTransfares(response.data.moneytrans); // axios puts data in response.data
+        setInvoices(response.data.invoices); // axios get data in response.data
         setLoading(false);
       })
       .catch((err) => {
@@ -88,7 +88,7 @@ const InvoiceTable = ({ tresurefundid }) => {
     fetchData();
   }, []);
 
-  const pages = Math.ceil(moneyTransfares.length / rowsPerPage);
+  const pages = Math.ceil(invoices.length / rowsPerPage);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -101,24 +101,24 @@ const InvoiceTable = ({ tresurefundid }) => {
   }, [visibleColumns]);
 
   const filteredItems = useMemo(() => {
-    let filteredUsers = [...moneyTransfares];
+    let filteredUsers = [...invoices];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((moneyTransfare) =>
-        moneyTransfare.name.toLowerCase().includes(filterValue.toLowerCase())
+      filteredUsers = filteredUsers.filter((invoices) =>
+        invoices.name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredUsers = filteredUsers.filter((moneyTransfare) =>
-        Array.from(statusFilter).includes(moneyTransfare.status)
+      filteredUsers = filteredUsers.filter((invoices) =>
+        Array.from(statusFilter).includes(invoices.status)
       );
     }
 
     return filteredUsers;
-  }, [moneyTransfares, filterValue, statusFilter]);
+  }, [invoices, filterValue, statusFilter]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -136,20 +136,20 @@ const InvoiceTable = ({ tresurefundid }) => {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = useCallback((moneyTransfare, columnKey) => {
-    const cellValue = moneyTransfare[columnKey];
+  const renderCell = useCallback((invoices, columnKey) => {
+    const cellValue = invoices[columnKey];
 
     switch (columnKey) {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
-            <UpdateMoneyTransfareModal
+            <UpdateInvoicesModal
               // onSaveSuccess={fetchData}
-              id={moneyTransfare.id}
+              id={invoices.id}
             />
-            <DeleteMoneyTransfareModal
+            <DeleteInvoicesModal
               // onSaveSuccess={fetchData}
-              id={moneyTransfare.id}
+              id={invoices.id}
             />
           </div>
         );
@@ -216,12 +216,12 @@ const InvoiceTable = ({ tresurefundid }) => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <InvoiceModals onSaveSuccess={fetchData} />
+            <AddInvoiceModals onSaveSuccess={fetchData} />
           </div>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            عدد الفواتير {moneyTransfares.length}
+            عدد الفواتير {invoices.length}
           </span>
           <label className="flex items-center text-default-400 text-small">
             عدد الأسطر بالصفحة:
@@ -243,7 +243,7 @@ const InvoiceTable = ({ tresurefundid }) => {
     visibleColumns,
     onSearchChange,
     onRowsPerPageChange,
-    moneyTransfares.length,
+    invoices.length,
     hasSearchFilter,
   ]);
 
@@ -321,7 +321,7 @@ const InvoiceTable = ({ tresurefundid }) => {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No moneyTransfares found"} items={sortedItems}>
+      <TableBody emptyContent={"No invoices found"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
@@ -334,4 +334,4 @@ const InvoiceTable = ({ tresurefundid }) => {
   );
 };
 
-export default InvoiceTable;
+export default InvoicesTable;

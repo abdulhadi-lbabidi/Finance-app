@@ -138,7 +138,7 @@ export function AddWorkshopModal({ onSaveSuccess }) {
                 <Autocomplete
                   isRequired
                   defaultItems={customers}
-                  label="اختر مالك المشروع"
+                  label="اختsssر مالك المشروع"
                   onSelectionChange={onSelectionChange}
                 >
                   {(item) => (

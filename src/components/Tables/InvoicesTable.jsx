@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  addToast,
   Button,
   Dropdown,
   DropdownItem,
@@ -22,6 +23,7 @@ import {
   DeleteInvoicesModal,
   UpdateInvoicesModal,
 } from "../Modals/InvoiceModals";
+import { useParams } from "react-router-dom";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -32,18 +34,13 @@ const columns = [
   { name: "عمليات", uid: "actions" },
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["name", "actions", "desc", "amount"];
 
 const statusOptions = [
   { name: "Active", uid: "active" },
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
 ];
-const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
-};
 
 function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
@@ -54,7 +51,6 @@ const InvoicesTable = () => {
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const [visibleColumns, setVisibleColumns] = useState(
     new Set(INITIAL_VISIBLE_COLUMNS)
@@ -66,10 +62,11 @@ const InvoicesTable = () => {
     direction: "ascending",
   });
   const [page, setPage] = useState(1);
+  const { type } = useParams();
 
   const fetchData = () => {
     // Using axios
-    getInvoices()
+    getInvoices(type)
       .then((response) => {
         setInvoices(response.data.invoices); // axios get data in response.data
         setLoading(false);
@@ -104,8 +101,14 @@ const InvoicesTable = () => {
     let filteredUsers = [...invoices];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((invoices) =>
-        invoices.name.toLowerCase().includes(filterValue.toLowerCase())
+      filteredUsers = filteredUsers.filter(
+        (invoices) =>
+          invoices.name.toLowerCase().includes(filterValue.toLowerCase()) ||
+          invoices.desc?.toLowerCase().includes(filterValue.toLowerCase()) ||
+          invoices.financeitem?.name
+            ?.toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
+          invoices.amount?.toString().includes(filterValue)
       );
     }
     if (
@@ -143,16 +146,12 @@ const InvoicesTable = () => {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
-            <UpdateInvoicesModal
-              // onSaveSuccess={fetchData}
-              id={invoices.id}
-            />
-            <DeleteInvoicesModal
-              // onSaveSuccess={fetchData}
-              id={invoices.id}
-            />
+            <UpdateInvoicesModal onSaveSuccess={fetchData} id={invoices.id} />
+            <DeleteInvoicesModal onSaveSuccess={fetchData} id={invoices.id} />
           </div>
         );
+      case "finance_item_id":
+        return invoices.financeitem?.name || "-";
       default:
         return cellValue;
     }
@@ -290,11 +289,16 @@ const InvoicesTable = () => {
     []
   );
 
-  return (
+  return loading ? (
+    <div className="text-center p-5 text-default-400">
+      جاري تحميل الفواتير...
+    </div>
+  ) : (
     <Table
       isCompact
       removeWrapper
       aria-label="Example table with custom cells, pagination and sorting"
+      bottomContent={bottomContent}
       bottomContentPlacement="outside"
       checkboxesProps={{
         classNames: {
@@ -321,7 +325,7 @@ const InvoicesTable = () => {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No invoices found"} items={sortedItems}>
+      <TableBody emptyContent={"لا توجد فواتير"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

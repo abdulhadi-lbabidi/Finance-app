@@ -10,23 +10,44 @@ import {
   Tooltip,
   Autocomplete,
   AutocompleteItem,
+  addToast,
 } from "@heroui/react";
 import { useEffect, useState } from "react";
-import { FaBox, FaPenToSquare, FaTrashCan } from "react-icons/fa6";
-import { getFinanceItems } from "../../api";
+import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
+import {
+  addInvoices,
+  deleteInvoices,
+  getFinanceItems,
+  getInvoiceById,
+  updateInvoices,
+} from "../../api";
+import { useParams } from "react-router-dom";
 
 export function AddInvoiceModals({ onSaveSuccess }) {
+  const { innerId, type } = useParams();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [financeItems, setFinanceItems] = useState([]);
-  const [selectedFinanceItem, setSelectedFinanceItem] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loadingItems, setLoadingItems] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [invoices, setInvoices] = useState({
+    id: null,
+    name: "",
+    desc: "",
+    amount: "",
+    finance_item_id: null,
+    invoiceable_id: innerId,
+    invoiceable_type:
+      type === "InnerTransaction"
+        ? "App\\Models\\InnerTransaction"
+        : "App\\Models\\OuterTransaction",
+  });
 
-  const fetchData = () => {
+  const fetchDataItems = () => {
     // Using axios
     getFinanceItems()
       .then((response) => {
         setFinanceItems(response.data.items); // axios get data in response.data
-        setLoading(false);
+        setLoadingItems(false);
       })
       .catch((err) => {
         addToast({
@@ -34,12 +55,50 @@ export function AddInvoiceModals({ onSaveSuccess }) {
           description: `عملية برمجية رقم : ${err.message}`,
           color: "danger",
         });
-        setLoading(false);
+        setLoadingItems(false);
       });
   };
 
+  const onSubmit = async (e, onClose) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await addInvoices(invoices);
+      addToast({
+        title: "تمت العملية بنجاح",
+        description: `تمت إضافة فاتورة جديدة`,
+        color: "success",
+      });
+      setSubmitting(false); // Axios POST request
+      setInvoices({
+        id: null,
+        name: "",
+        desc: "",
+        amount: "",
+        finance_item_id: null,
+        invoiceable_id: innerId,
+        invoiceable_type:
+          type === "InnerTransaction"
+            ? "App\\Models\\InnerTransaction"
+            : "App\\Models\\OuterTransaction",
+      });
+
+      onSaveSuccess();
+      onClose();
+    } catch (err) {
+      addToast({
+        title: "حدث خطاً",
+        description: `عملية برمجية رقم : ${err.message}`,
+        color: "danger",
+      });
+      setSubmitting(false);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   useEffect(() => {
-    fetchData();
+    fetchDataItems();
   }, []);
 
   return (
@@ -53,20 +112,49 @@ export function AddInvoiceModals({ onSaveSuccess }) {
       <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
-            <form>
+            <form onSubmit={(e) => onSubmit(e, onClose)}>
               <ModalHeader className="flex flex-col gap-1">
                 إضافة فاتورة جديد
               </ModalHeader>
               <ModalBody>
-                <Input isRequired label="الاسم" type="text" />
-                <Input isRequired label="الشرح" type="text" />
-                <Input isRequired label="المبلغ" type="text" />
+                <Input
+                  isRequired
+                  label="الاسم"
+                  type="text"
+                  value={invoices.name}
+                  onChange={(e) =>
+                    setInvoices({ ...invoices, name: e.target.value })
+                  }
+                />
+
+                <Input
+                  isRequired
+                  label="الشرح"
+                  type="text"
+                  value={invoices.desc}
+                  onChange={(e) =>
+                    setInvoices({ ...invoices, desc: e.target.value })
+                  }
+                />
+
+                <Input
+                  isRequired
+                  label="المبلغ"
+                  type="number"
+                  value={invoices.amount}
+                  onChange={(e) =>
+                    setInvoices({ ...invoices, amount: e.target.value })
+                  }
+                />
+
                 <Autocomplete
                   isRequired
                   placeholder={
-                    loading ? "جاري التحميل..." : " اختر بند الفاتورة"
+                    loadingItems ? "جاري التحميل..." : "اختر بند الفاتورة"
                   }
-                  onSelectionChange={(key) => setSelectedFinanceItem(key)}
+                  onSelectionChange={(key) =>
+                    setInvoices({ ...invoices, finance_item_id: key })
+                  }
                 >
                   {financeItems.map((item) => (
                     <AutocompleteItem key={item.id} value={item.id}>
@@ -80,7 +168,7 @@ export function AddInvoiceModals({ onSaveSuccess }) {
                   إغلاق
                 </Button>
                 <Button color="primary" type="submit">
-                  {loading ? "جاري التحميل ..." : "حفظ"}
+                  {submitting ? "جاري التحميل ..." : "حفظ"}
                 </Button>
               </ModalFooter>
             </form>
@@ -93,44 +181,28 @@ export function AddInvoiceModals({ onSaveSuccess }) {
 
 export function UpdateInvoicesModal({ id, onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [isVisible, setIsVisible] = useState(false);
-
-  const [moneyTransfare, setMoneyTransfare] = useState({
+  const [loading, setLoading] = useState(false);
+  const { innerId, type } = useParams();
+  const [financeItems, setFinanceItems] = useState([]);
+  const [loadingItems, setLoadingItems] = useState(true);
+  const [invoices, setInvoices] = useState({
     id: null,
     name: "",
+    desc: "",
+    amount: "",
+    finance_item_id: "",
+    invoiceable_id: innerId,
+    invoiceable_type:
+      type === "InnerTransaction"
+        ? "App\\Models\\InnerTransaction"
+        : "App\\Models\\OuterTransaction",
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await updateMoneyTransfare(moneyTransfare.id, moneyTransfare);
-      addToast({
-        title: "تمت العملية بنجاح",
-        description: `تمت تعديل الفاتورة`,
-        color: "success",
-      });
-      setLoading(false); // Axios POST request
-      onSaveSuccess();
-      onClose();
-    } catch (err) {
-      addToast({
-        title: "حدث خطاً",
-        description: `عملية برمجية رقم : ${err.message}`,
-        color: "danger",
-      });
-      setLoading(false);
-    }
-  };
-  const toggleVisibility = () => setIsVisible(!isVisible);
-  const handleOpen = () => {
+  const fetchDataItems = () => {
     // Using axios
-    getMoneyTransfaredata(id)
+    getFinanceItems()
       .then((response) => {
-        setLoading(false);
-        setMoneyTransfare(response.data.type); // axios puts data in response.data
+        setFinanceItems(response.data.items); // axios get data in response.data
+        setLoadingItems(false);
       })
       .catch((err) => {
         addToast({
@@ -138,18 +210,74 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
           description: `عملية برمجية رقم : ${err.message}`,
           color: "danger",
         });
-        setLoading(false);
+        setLoadingItems(false);
       });
-    onOpen();
   };
+  useEffect(() => {
+    fetchDataItems();
+  }, []);
+
+  const handleOpen = async () => {
+    setLoading(true);
+    try {
+      const response = await getInvoiceById(id);
+      setInvoices(response.data.invoice);
+      onOpen();
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: `عملية برمجية رقم: ${err.message}`,
+        color: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await updateInvoices(invoices.id, {
+        name: invoices.name,
+        desc: invoices.desc,
+        amount: invoices.amount,
+        finance_item_id: invoices.finance_item_id,
+        invoiceable_id: invoices.invoiceable_id,
+        invoiceable_type:
+          type === "InnerTransaction"
+            ? "App\\Models\\InnerTransaction"
+            : "App\\Models\\OuterTransaction",
+      });
+
+      addToast({
+        title: "تمت العملية بنجاح",
+        description: "تم تعديل بيانات الفاتورة بنجاح",
+        color: "success",
+      });
+      onSaveSuccess();
+      onClose();
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: `عملية برمجية رقم: ${err.message}`,
+        color: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Tooltip content="تعديل بيانات الفاتورة" color="success">
-        <Button color="success" isIconOnly onPress={() => handleOpen()}>
+        <Button color="success" isIconOnly onPress={handleOpen}>
           <FaPenToSquare />
         </Button>
       </Tooltip>
-      <Modal backdrop={"blur"} isOpen={isOpen} onOpenChange={onOpenChange}>
+
+      <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <form onSubmit={onSubmit}>
@@ -161,21 +289,50 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
                   isRequired
                   label="الاسم"
                   type="text"
-                  value={moneyTransfare.name}
+                  value={invoices.name}
                   onChange={(ev) =>
-                    setMoneyTransfare({
-                      ...moneyTransfare,
-                      name: ev.target.value,
-                    })
+                    setInvoices({ ...invoices, name: ev.target.value })
                   }
                 />
+                <Input
+                  label="الشرح"
+                  type="text"
+                  value={invoices.desc}
+                  onChange={(ev) =>
+                    setInvoices({ ...invoices, desc: ev.target.value })
+                  }
+                />
+                <Input
+                  label="القيمة"
+                  type="number"
+                  value={invoices.amount}
+                  onChange={(ev) =>
+                    setInvoices({ ...invoices, amount: ev.target.value })
+                  }
+                />
+                <Autocomplete
+                  isRequired
+                  selectedKey={invoices.finance_item_id?.toString()}
+                  placeholder={
+                    loadingItems ? "جاري تحميل البنود..." : "اختر بند الفاتورة"
+                  }
+                  onSelectionChange={(key) =>
+                    setInvoices({ ...invoices, finance_item_id: key })
+                  }
+                >
+                  {financeItems.map((item) => (
+                    <AutocompleteItem key={item.id} value={item.id}>
+                      {item.name}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   إغلاق
                 </Button>
                 <Button color="primary" type="submit" isLoading={loading}>
-                  {loading ? "" : "حفظ"}
+                  حفظ
                 </Button>
               </ModalFooter>
             </form>
@@ -188,64 +345,61 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
 
 export function DeleteInvoicesModal({ id, onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [isVisible, setIsVisible] = useState(false);
-
-  const [moneyTransfare, setMoneyTransfare] = useState({
+  const [loading, setLoading] = useState(false);
+  const [invoice, setInvoice] = useState({
     id: null,
     name: "",
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const handleOpen = async () => {
+    setLoading(true);
+    try {
+      const response = await getInvoiceById(id);
+      setInvoice(response.data.invoice);
+      onOpen();
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: `عملية برمجية رقم: ${err.message}`,
+        color: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await deleteMoneyTransfare(moneyTransfare.id);
+      await deleteInvoices(invoice.id);
       addToast({
         title: "تمت العملية بنجاح",
-        description: `تمت حذف الفاتورة`,
+        description: "تم حذف الفاتورة بنجاح",
         color: "success",
       });
-      setLoading(false); // Axios POST request
       onSaveSuccess();
       onClose();
     } catch (err) {
       addToast({
-        title: "حدث خطاً",
-        description: `عملية برمجية رقم : ${err.message}`,
+        title: "حدث خطأ",
+        description: `عملية برمجية رقم: ${err.message}`,
         color: "danger",
       });
+    } finally {
       setLoading(false);
     }
   };
 
-  const toggleVisibility = () => setIsVisible(!isVisible);
-  const handleOpen = () => {
-    // Using axios
-    getMoneyTransfaredata(id)
-      .then((response) => {
-        setLoading(false);
-        setMoneyTransfare(response.data.type); // axios puts data in response.data
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoading(false);
-      });
-    onOpen();
-  };
   return (
     <>
       <Tooltip content="حذف الفاتورة" color="danger">
-        <Button color="danger" isIconOnly onPress={() => handleOpen()}>
+        <Button color="danger" isIconOnly onPress={handleOpen}>
           <FaTrashCan />
         </Button>
       </Tooltip>
-      <Modal backdrop={"blur"} isOpen={isOpen} onOpenChange={onOpenChange}>
+
+      <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
             <form onSubmit={onSubmit}>
@@ -257,15 +411,19 @@ export function DeleteInvoicesModal({ id, onSaveSuccess }) {
                   isDisabled
                   label="الاسم"
                   type="text"
-                  value={moneyTransfare.name}
+                  value={invoice.name}
                 />
+                <p className="text-danger text-sm">
+                  هل أنت متأكد أنك تريد حذف هذه الفاتورة؟ هذا الإجراء لا يمكن
+                  التراجع عنه.
+                </p>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  إغلاق
+                <Button color="default" variant="light" onPress={onClose}>
+                  إلغاء
                 </Button>
                 <Button color="danger" type="submit" isLoading={loading}>
-                  {loading ? "جاري التحميل ..." : "حذف"}
+                  {loading ? "جارٍ الحذف..." : "حذف"}
                 </Button>
               </ModalFooter>
             </form>

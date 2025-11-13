@@ -272,7 +272,10 @@ export const getWorkshopTresure = (id) =>
 export const getTresureFunds = (id) => api.get(`/data/tresurefund/${id}`);
 
 // Invoices
-export const getInvoices = () => api.get(`/data/invoices`);
+export const getInvoices = (type) => api.get(`/data/invoices?type=${type}`);
+export const getInvoiceById = (id) => {
+  return api.get(`data/invoices/${id}`);
+};
 export const addInvoices = (data) => {
   return api.post("/data/invoices", data);
 };

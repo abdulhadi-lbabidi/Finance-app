@@ -65,7 +65,7 @@ function InnerTransactionTable({ tresurefundid }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { id } = useParams();
+  const { id, type } = useParams();
 
   const fetchData = () => {
     // Using axios
@@ -169,7 +169,9 @@ function InnerTransactionTable({ tresurefundid }) {
               color="primary"
               variant="faded"
               onPress={() =>
-                navigate(`/tresure/admin/${id}/invoices/${innerTransaction.id}`)
+                navigate(
+                  `/tresure/admin/${id}/invoices/${innerTransaction.id}/InnerTransaction`
+                )
               }
             >
               <InvoiceIcon />

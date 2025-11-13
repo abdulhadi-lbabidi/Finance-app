@@ -25,6 +25,8 @@ import {
   DeleteOuterTransactionModal,
   UpdateOuterTransactionModal,
 } from "../Modals/OuterTransactionModals";
+import { useNavigate, useParams } from "react-router-dom";
+import InvoiceIcon from "../SVG/InvoiceIcon";
 
 export const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -60,6 +62,8 @@ export function capitalize(s) {
 }
 
 function OuterTransactionTable({ tresurefundid }) {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [outerTransactions, setOuterTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -153,13 +157,27 @@ function OuterTransactionTable({ tresurefundid }) {
     switch (columnKey) {
       case "payed":
         if (outerTransaction.payed === 1) {
-          return <Chip color="success">مٌسلتم</Chip>;
+          return <Chip color="success">مستلم</Chip>;
         } else {
-          return <Chip color="danger">غير مٌسلتم</Chip>;
+          return <Chip color="danger">غير مستلم</Chip>;
         }
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="الفواتير"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${outerTransaction.id}/OuterTransaction`
+                )
+              }
+            >
+              <InvoiceIcon />
+            </Button>
+
             <UpdateOuterTransactionModal
               onSaveSuccess={fetchData}
               id={outerTransaction.id}

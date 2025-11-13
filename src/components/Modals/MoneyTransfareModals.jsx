@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -8,11 +8,8 @@ import {
   Button,
   useDisclosure,
   Input,
-  Divider,
   addToast,
   Tooltip,
-  user,
-  Spinner,
 } from "@heroui/react";
 
 import {
@@ -39,7 +36,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
       await addMoneyTransfare(moneyTransfare);
       addToast({
         title: "تمت العملية بنجاح",
-        description: `تمت إضافة المدير الجديد`,
+        description: `تمت إضافة التحويل الجديد`,
         color: "success",
       });
       setLoading(false); // Axios POST request
@@ -72,7 +69,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
           {(onClose) => (
             <form onSubmit={onSubmit}>
               <ModalHeader className="flex flex-col gap-1">
-                إضافة نوع مدير جديد
+                إضافة تحويل جديد
               </ModalHeader>
               <ModalBody>
                 <Input

@@ -37,9 +37,7 @@ export function AddInvoiceModals({ onSaveSuccess }) {
     finance_item_id: null,
     invoiceable_id: innerId,
     invoiceable_type:
-      type === "InnerTransaction"
-        ? "App\\Models\\InnerTransaction"
-        : "App\\Models\\OuterTransaction",
+      type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
   });
 
   const fetchDataItems = () => {
@@ -78,9 +76,7 @@ export function AddInvoiceModals({ onSaveSuccess }) {
         finance_item_id: null,
         invoiceable_id: innerId,
         invoiceable_type:
-          type === "InnerTransaction"
-            ? "App\\Models\\InnerTransaction"
-            : "App\\Models\\OuterTransaction",
+          type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
       });
 
       onSaveSuccess();
@@ -193,9 +189,7 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
     finance_item_id: "",
     invoiceable_id: innerId,
     invoiceable_type:
-      type === "InnerTransaction"
-        ? "App\\Models\\InnerTransaction"
-        : "App\\Models\\OuterTransaction",
+      type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
   });
   const fetchDataItems = () => {
     // Using axios
@@ -246,9 +240,7 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
         finance_item_id: invoices.finance_item_id,
         invoiceable_id: invoices.invoiceable_id,
         invoiceable_type:
-          type === "InnerTransaction"
-            ? "App\\Models\\InnerTransaction"
-            : "App\\Models\\OuterTransaction",
+          type === "innerTransaction" ? "InnerTransaction" : "outerTransaction",
       });
 
       addToast({

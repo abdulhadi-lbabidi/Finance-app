@@ -179,7 +179,7 @@ function InnerTransactionTable({ tresurefundid }) {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/invoices/${innerTransaction.id}/InnerTransaction`
+                  `/tresure/admin/${id}/invoices/${innerTransaction.id}/innerTransaction`
                 )
               }
             >

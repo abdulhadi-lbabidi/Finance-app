@@ -180,7 +180,7 @@ function OuterTransactionTable({ tresurefundid }) {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/invoices/${outerTransaction.id}/OuterTransaction`
+                  `/tresure/admin/${id}/invoices/${outerTransaction.id}/outerTransaction`
                 )
               }
             >

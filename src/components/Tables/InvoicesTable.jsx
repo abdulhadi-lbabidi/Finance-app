@@ -121,7 +121,7 @@ const InvoicesTable = () => {
     }
 
     return filteredUsers;
-  }, [invoices, filterValue, statusFilter]);
+  }, [invoices, filterValue, statusFilter, hasSearchFilter]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -173,7 +173,7 @@ const InvoicesTable = () => {
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mt-3">
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -226,6 +226,7 @@ const InvoicesTable = () => {
             عدد الأسطر بالصفحة:
             <select
               className="bg-transparent outline-solid outline-transparent text-default-400 text-small"
+              value={rowsPerPage}
               onChange={onRowsPerPageChange}
             >
               <option value="5">5</option>
@@ -238,12 +239,12 @@ const InvoicesTable = () => {
     );
   }, [
     filterValue,
-    statusFilter,
     visibleColumns,
     onSearchChange,
     onRowsPerPageChange,
+    rowsPerPage,
+    fetchData,
     invoices.length,
-    hasSearchFilter,
   ]);
 
   const bottomContent = useMemo(() => {

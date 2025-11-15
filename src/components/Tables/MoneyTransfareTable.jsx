@@ -240,6 +240,7 @@ function MoneyTransfareTable({ tresurefundid }) {
             عدد الأسطر بالصفحة:
             <select
               className="bg-transparent outline-solid outline-transparent text-default-400 text-small"
+              value={rowsPerPage}
               onChange={onRowsPerPageChange}
             >
               <option value="5">5</option>
@@ -252,12 +253,12 @@ function MoneyTransfareTable({ tresurefundid }) {
     );
   }, [
     filterValue,
-    statusFilter,
     visibleColumns,
     onSearchChange,
+    rowsPerPage,
+    fetchData,
     onRowsPerPageChange,
     moneyTransfares.length,
-    hasSearchFilter,
   ]);
 
   const bottomContent = useMemo(() => {

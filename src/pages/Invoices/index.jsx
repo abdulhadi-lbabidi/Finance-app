@@ -11,7 +11,7 @@ const Invoices = () => {
   };
   return (
     <>
-      <Card className="my-5">
+      <Card className="">
         <CardBody>
           <span className="ml-auto"> {getTypeName()}</span>
           <div

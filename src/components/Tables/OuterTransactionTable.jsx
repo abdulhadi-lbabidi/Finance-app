@@ -96,7 +96,7 @@ function OuterTransactionTable({ tresurefundid }) {
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
   const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(15);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
     direction: "ascending",
@@ -265,6 +265,7 @@ function OuterTransactionTable({ tresurefundid }) {
             عدد الأسطر بالصفحة:
             <select
               className="bg-transparent outline-solid outline-transparent text-default-400 text-small"
+              value={rowsPerPage}
               onChange={onRowsPerPageChange}
             >
               <option value="5">5</option>
@@ -277,6 +278,8 @@ function OuterTransactionTable({ tresurefundid }) {
     );
   }, [
     filterValue,
+    fetchData,
+    rowsPerPage,
     statusFilter,
     visibleColumns,
     onSearchChange,

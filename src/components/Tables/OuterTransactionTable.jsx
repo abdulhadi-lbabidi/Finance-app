@@ -119,8 +119,17 @@ function OuterTransactionTable({ tresurefundid }) {
     let filteredUsers = [...outerTransactions];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((outerTransaction) =>
-        outerTransaction.name.toLowerCase().includes(filterValue.toLowerCase())
+      filteredUsers = filteredUsers.filter(
+        (outerTransaction) =>
+          outerTransaction.name
+            ?.toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
+          outerTransaction.amount?.toString().includes(filterValue) ||
+          outerTransaction.payed?.toString().includes(filterValue) ||
+          outerTransaction.indate?.toString().includes(filterValue) ||
+          outerTransaction.desc
+            ?.toLowerCase()
+            .includes(filterValue.toLowerCase())
       );
     }
     if (
@@ -133,7 +142,7 @@ function OuterTransactionTable({ tresurefundid }) {
     }
 
     return filteredUsers;
-  }, [outerTransactions, filterValue, statusFilter]);
+  }, [outerTransactions, filterValue, statusFilter, hasSearchFilter]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;

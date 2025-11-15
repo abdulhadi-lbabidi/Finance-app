@@ -118,8 +118,17 @@ function InnerTransactionTable({ tresurefundid }) {
     let filteredUsers = [...innerTransactions];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((innerTransaction) =>
-        innerTransaction.name.toLowerCase().includes(filterValue.toLowerCase())
+      filteredUsers = filteredUsers.filter(
+        (innerTransaction) =>
+          innerTransaction.name
+            ?.toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
+          innerTransaction.amount?.toString().includes(filterValue) ||
+          innerTransaction.payed?.toString().includes(filterValue) ||
+          innerTransaction.indate?.toString().includes(filterValue) ||
+          innerTransaction.desc
+            ?.toLowerCase()
+            .includes(filterValue.toLowerCase())
       );
     }
     if (

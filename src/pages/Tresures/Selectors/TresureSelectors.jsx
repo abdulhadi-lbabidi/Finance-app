@@ -1,6 +1,6 @@
 export function AddAdminModal({ onSaveSuccess }) {}
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaMoneyCheckAlt } from "react-icons/fa";
 import { getTresureSelector } from "../../../api";
 import { addToast } from "@heroui/react";

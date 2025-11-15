@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -12,8 +12,6 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
-  Chip,
-  User,
   Pagination,
   addToast,
 } from "@heroui/react";
@@ -35,17 +33,23 @@ const columns = [
   { name: "عمليات", uid: "actions" },
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "actions"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "actions",
+  "amount",
+  "from_tresure_fund_id",
+  "to_tresure_fund_id",
+];
 const statusOptions = [
   { name: "Active", uid: "active" },
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
 ];
-const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
-};
+// const statusColorMap = {
+//   active: "success",
+//   paused: "danger",
+//   vacation: "warning",
+// };
 
 function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
@@ -84,7 +88,7 @@ function MoneyTransfareTable({ tresurefundid }) {
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
   const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(15);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
     direction: "ascending",
@@ -107,8 +111,14 @@ function MoneyTransfareTable({ tresurefundid }) {
     let filteredUsers = [...moneyTransfares];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((moneyTransfare) =>
-        moneyTransfare.name.toLowerCase().includes(filterValue.toLowerCase())
+      filteredUsers = filteredUsers.filter(
+        (moneyTransfare) =>
+          moneyTransfare.name?.toLowerCase().includes(filterValue) ||
+          moneyTransfare.amount?.toString().includes(filterValue) ||
+          moneyTransfare.from_tresure_fund_id
+            ?.toString()
+            .includes(filterValue) ||
+          moneyTransfare.to_tresure_fund_id?.toString().includes(filterValue)
       );
     }
     if (

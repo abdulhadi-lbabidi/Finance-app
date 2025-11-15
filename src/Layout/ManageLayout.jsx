@@ -1,4 +1,3 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { Accordion, AccordionItem } from "@heroui/react";
@@ -6,10 +5,8 @@ import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
-  DropdownSection,
   DropdownItem,
   Button,
-  cn,
 } from "@heroui/react";
 function ManageLayout() {
   const TreasureNav = [
@@ -71,8 +68,8 @@ function ManageLayout() {
     content: "text-small px-2",
   };
   return (
-    <div className="flex flex-row">
-      <div className="h-full min-h-screen w-64 bg-gray-800 text-white flex flex-col">
+    <div className="flex flex-row min-h-screen">
+      <div className="min-h-screen w-64 bg-gray-800 text-white flex flex-col">
         <div className="text-2xl font-bold p-6 border-b border-gray-700">
           <NavLink key={"Home"} to={"/home"}>
             لوحة التحكم

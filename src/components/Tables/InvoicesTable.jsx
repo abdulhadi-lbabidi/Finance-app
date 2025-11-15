@@ -56,7 +56,7 @@ const InvoicesTable = () => {
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
   const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(15);
   const [sortDescriptor, setSortDescriptor] = useState({
     column: "age",
     direction: "ascending",

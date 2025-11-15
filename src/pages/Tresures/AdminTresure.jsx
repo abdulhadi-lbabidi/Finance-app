@@ -75,7 +75,7 @@ function AdminTresure() {
 
   return (
     <div>
-      <Card className="my-5">
+      <Card className="">
         <CardBody>
           <span className="ml-auto">معلومات</span>
           <div
@@ -108,7 +108,7 @@ function AdminTresure() {
       {selectedTresure && (
         <Autocomplete
           allowsCustomValue={true}
-          className="max-w-xs my-5"
+          className="max-w-xs mx-1 my-5"
           defaultItems={tresureFunds}
           label="اختر الملحق"
           variant="bordered"

@@ -24,6 +24,7 @@ import {
   UpdateInvoicesModal,
 } from "../Modals/InvoiceModals";
 import { useParams } from "react-router-dom";
+import EyeFilledIcon from "../SVG/EyeFilledIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -147,6 +148,7 @@ const InvoicesTable = () => {
         return (
           <div className="relative flex justify-end items-center gap-2">
             <UpdateInvoicesModal onSaveSuccess={fetchData} id={invoices.id} />
+            {/* <InvoicesInfoModal onSaveSuccess={fetchData} id={invoices.id} /> */}
             <DeleteInvoicesModal onSaveSuccess={fetchData} id={invoices.id} />
           </div>
         );

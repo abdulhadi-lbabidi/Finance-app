@@ -38,6 +38,7 @@ import EmployeeForWorkshop from "./pages/Workshop/EmployeeForWorkshop";
 import LogisticForWorkshop from "./pages/Workshop/LogisticForWorkshop";
 import ItemReport from "./pages/Reports/ItemReport";
 import Invoices from "./pages/Invoices";
+import InvoiceInfo from "./pages/Invoices/InvoiceInfo";
 
 const router = createBrowserRouter(
   [
@@ -58,7 +59,14 @@ const router = createBrowserRouter(
               path: ":id",
               children: [
                 { index: true, element: <AdminTresure /> },
-                { path: "invoices/:innerId/:type", element: <Invoices /> },
+                {
+                  path: "invoices/:transactionId/:type",
+                  element: <Invoices />,
+                },
+                {
+                  path: "invoices/:transactionId/:type/info",
+                  element: <InvoiceInfo />,
+                },
               ],
             },
           ],

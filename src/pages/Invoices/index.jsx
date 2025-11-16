@@ -5,8 +5,8 @@ import { useParams } from "react-router-dom";
 const Invoices = () => {
   const { type } = useParams();
   const getTypeName = () => {
-    if (type === "InnerTransaction") return "فواتير الإيرادات";
-    if (type === "OuterTransaction") return "فواتير المصروفات";
+    if (type === "innerTransaction") return "فواتير الإيرادات";
+    if (type === "outerTransaction") return "فواتير المصروفات";
     return "فواتير غير محددة";
   };
   return (

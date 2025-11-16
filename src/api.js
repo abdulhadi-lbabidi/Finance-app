@@ -285,3 +285,21 @@ export const updateInvoices = (id, data) => {
 export const deleteInvoices = (id) => {
   return api.delete(`/data/invoices/${id}`);
 };
+
+// technicalTeams
+export const getTechnicalTeams = () => api.get(`/data/technical-teams`);
+
+// tecPays
+export const getTechPays = () => api.get(`/data/tech-pays`);
+export const getTechPaysById = (id) => {
+  return api.get(`data/tech-pays/${id}`);
+};
+export const addTechPays = (data) => {
+  return api.post("/data/tech-pays", data);
+};
+export const updateTechPays = (id, data) => {
+  return api.put(`/data/tech-pays/${id}`, data);
+};
+export const deleteTechPays = (id) => {
+  return api.delete(`/data/tech-pays/${id}`);
+};

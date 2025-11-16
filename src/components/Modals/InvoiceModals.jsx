@@ -21,10 +21,12 @@ import {
   getInvoiceById,
   updateInvoices,
 } from "../../api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import EyeFilledIcon from "../SVG/EyeFilledIcon";
 
 export function AddInvoiceModals({ onSaveSuccess }) {
-  const { innerId, type } = useParams();
+  const { id, transactionId, type } = useParams();
+  const navigate = useNavigate();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [financeItems, setFinanceItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
@@ -35,7 +37,7 @@ export function AddInvoiceModals({ onSaveSuccess }) {
     desc: "",
     amount: "",
     finance_item_id: null,
-    invoiceable_id: innerId,
+    invoiceable_id: transactionId,
     invoiceable_type:
       type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
   });
@@ -61,7 +63,9 @@ export function AddInvoiceModals({ onSaveSuccess }) {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await addInvoices(invoices);
+      // await addInvoices(invoices);
+      const response = await addInvoices(invoices);
+      const invoiceId = response.data.invoice.id;
       addToast({
         title: "تمت العملية بنجاح",
         description: `تمت إضافة فاتورة جديدة`,
@@ -74,13 +78,18 @@ export function AddInvoiceModals({ onSaveSuccess }) {
         desc: "",
         amount: "",
         finance_item_id: null,
-        invoiceable_id: innerId,
+        invoiceable_id: transactionId,
         invoiceable_type:
           type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
       });
 
-      onSaveSuccess();
+      // onSaveSuccess();
       onClose();
+
+      // go to the invoices info
+      navigate(
+        `/tresure/admin/${id}/invoices/${transactionId}/${type}/info?invoice_id=${invoiceId}`
+      );
     } catch (err) {
       addToast({
         title: "حدث خطاً",
@@ -178,7 +187,7 @@ export function AddInvoiceModals({ onSaveSuccess }) {
 export function UpdateInvoicesModal({ id, onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const { innerId, type } = useParams();
+  const { transactionId, type } = useParams();
   const [financeItems, setFinanceItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
   const [invoices, setInvoices] = useState({
@@ -187,35 +196,29 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
     desc: "",
     amount: "",
     finance_item_id: "",
-    invoiceable_id: innerId,
+    invoiceable_id: transactionId,
     invoiceable_type:
       type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
   });
-  const fetchDataItems = () => {
-    // Using axios
-    getFinanceItems()
-      .then((response) => {
-        setFinanceItems(response.data.items); // axios get data in response.data
-        setLoadingItems(false);
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoadingItems(false);
-      });
-  };
-  useEffect(() => {
-    fetchDataItems();
-  }, []);
 
   const handleOpen = async () => {
     setLoading(true);
     try {
       const response = await getInvoiceById(id);
       setInvoices(response.data.invoice);
+      getFinanceItems()
+        .then((response) => {
+          setFinanceItems(response.data.items); // axios get data in response.data
+          setLoadingItems(false);
+        })
+        .catch((err) => {
+          addToast({
+            title: "حدث خطاً",
+            description: `عملية برمجية رقم : ${err.message}`,
+            color: "danger",
+          });
+          setLoadingItems(false);
+        });
       onOpen();
     } catch (err) {
       addToast({

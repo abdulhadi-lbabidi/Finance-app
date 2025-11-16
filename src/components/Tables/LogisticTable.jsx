@@ -270,7 +270,7 @@ function LogisticTable() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            عدد الحرفيين {logistics.length}
+            عدد حسابات الحرفيين {logistics.length}
           </span>
           <label className="flex items-center text-default-400 text-small">
             عدد الأسطر بالصفحة:

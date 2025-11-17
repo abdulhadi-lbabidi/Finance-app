@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -11,7 +11,6 @@ import {
   Divider,
   addToast,
   Tooltip,
-  user,
   Spinner,
 } from "@heroui/react";
 import EyeSlashFilledIcon from "../SVG/EyeSlashFilledIcon";
@@ -22,7 +21,7 @@ import {
   getLogisticdata,
   updateLogistic,
 } from "../../api";
-import { FaBox, FaPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 export function AddLogisticModal() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();

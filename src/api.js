@@ -321,3 +321,18 @@ export const updateLogicPays = (id, data) => {
 export const deleteLogicPays = (id) => {
   return api.delete(`/data/logic-pays/${id}`);
 };
+
+// invoiceItems
+export const getInvoiceItems = () => api.get(`/data/invoice-items`);
+export const getInvoiceItemsById = (id) => {
+  return api.get(`data/invoice-items/${id}`);
+};
+export const addInvoiceItems = (data) => {
+  return api.post("/data/invoice-items", data);
+};
+export const updateInvoiceItems = (id, data) => {
+  return api.put(`/data/invoice-items/${id}`, data);
+};
+export const deleteInvoiceItems = (id) => {
+  return api.delete(`/data/invoice-items/${id}`);
+};

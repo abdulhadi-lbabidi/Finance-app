@@ -195,7 +195,7 @@ function MoneyTransfareTable({ tresurefundid }) {
               base: "w-full sm:max-w-[44%]",
               inputWrapper: "border-1",
             }}
-            placeholder="البحث عن طريق الاسم"
+            placeholder=" بحث..."
             size="sm"
             startContent={<SearchIcon className="text-default-300" />}
             value={filterValue}

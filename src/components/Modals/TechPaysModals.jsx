@@ -152,12 +152,22 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
                   label="الكمية"
                   type="number"
                   value={technicalPays.amount}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const amount = Number(e.target.value);
+                    const price = Number(technicalPays.price);
+                    const finalprice = price * amount || 0;
                     setTechnicalPays({
                       ...technicalPays,
-                      amount: e.target.value,
-                    })
-                  }
+                      amount,
+                      finalprice,
+                    });
+                  }}
+                  // onChange={(e) =>
+                  //   setTechnicalPays({
+                  //     ...technicalPays,
+                  //     amount: e.target.value,
+                  //   })
+                  // }
                 />
 
                 <Input
@@ -168,7 +178,6 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
                     const price = Number(e.target.value);
                     const amount = Number(technicalPays.amount);
                     const finalprice = price * amount || 0;
-
                     setTechnicalPays({
                       ...technicalPays,
                       price,

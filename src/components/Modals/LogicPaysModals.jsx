@@ -153,12 +153,23 @@ export function UpdateLogicPaysModal({ id, onSaveSuccess }) {
                   label="الكمية"
                   type="number"
                   value={logicPays.amount}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const amount = e.target.value;
+                    const price = logicPays.price;
+                    const finalprice = Number(price) * Number(amount) || 0;
+
                     setLogicPays({
                       ...logicPays,
-                      amount: e.target.value,
-                    })
-                  }
+                      amount,
+                      finalprice,
+                    });
+                  }}
+                  // onChange={(e) =>
+                  //   setLogicPays({
+                  //     ...logicPays,
+                  //     amount: e.target.value,
+                  //   })
+                  // }
                 />
 
                 <Input

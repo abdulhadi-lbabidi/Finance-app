@@ -131,12 +131,23 @@ export function UpdateInvoiceItemModal({ id, onSaveSuccess }) {
                   label="الكمية"
                   type="number"
                   value={invoiceItemData.amount}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const amount = e.target.value;
+                    const price = invoiceItemData.price;
+                    const finalprice = Number(price) * Number(amount) || 0;
+
                     setInvoiceItemData({
                       ...invoiceItemData,
-                      amount: e.target.value,
-                    })
-                  }
+                      amount,
+                      finalprice,
+                    });
+                  }}
+                  // onChange={(e) =>
+                  //   setInvoiceItemData({
+                  //     ...invoiceItemData,
+                  //     amount: e.target.value,
+                  //   })
+                  // }
                 />
 
                 <Input

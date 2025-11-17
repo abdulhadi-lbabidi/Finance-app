@@ -209,7 +209,9 @@ function LogicPaysTable() {
         (logicPays) =>
           logicPays.name.toLowerCase().includes(filterValue.toLowerCase()) ||
           logicPays.desc?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          logicPays.price?.toLowerCase().includes(filterValue.toLowerCase()) ||
+          String(logicPays.price)
+            .toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
           logicPays.logisticteam?.name
             ?.toLowerCase()
             .includes(filterValue.toLowerCase()) ||
@@ -292,7 +294,7 @@ function LogicPaysTable() {
               base: "w-full sm:max-w-[44%]",
               inputWrapper: "border-1",
             }}
-            placeholder="البحث عن طريق الاسم"
+            placeholder=" بحث..."
             size="sm"
             startContent={<SearchIcon className="text-default-300" />}
             value={filterValue}
@@ -474,9 +476,20 @@ function LogicPaysTable() {
                 type="number"
                 className="max-w-[100px]"
                 value={logisticPays.amount}
-                onChange={(e) =>
-                  setLogisticPays({ ...logisticPays, amount: e.target.value })
-                }
+                onChange={(e) => {
+                  const amount = e.target.value;
+                  const price = logisticPays.price;
+                  const finalprice = Number(price) * Number(amount) || 0;
+
+                  setLogisticPays({
+                    ...logisticPays,
+                    amount,
+                    finalprice,
+                  });
+                }}
+                // onChange={(e) =>
+                //   setLogisticPays({ ...logisticPays, amount: e.target.value })
+                // }
               />
 
               <Input

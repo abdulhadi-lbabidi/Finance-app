@@ -115,7 +115,7 @@ function TechPaysTable() {
   });
 
   const [page, setPage] = useState(1);
-  const { type } = useParams();
+  const { type, invoiceId } = useParams();
 
   const fetchData = () => {
     // Using axios
@@ -212,7 +212,9 @@ function TechPaysTable() {
         (techPays) =>
           techPays.name.toLowerCase().includes(filterValue.toLowerCase()) ||
           techPays.desc?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          techPays.price?.toLowerCase().includes(filterValue.toLowerCase()) ||
+          String(techPays.price)
+            .toLowerCase()
+            .includes(filterValue.toLowerCase()) ||
           techPays.technicalteam?.name
             ?.toLowerCase()
             .includes(filterValue.toLowerCase()) ||
@@ -295,7 +297,7 @@ function TechPaysTable() {
               base: "w-full sm:max-w-[44%]",
               inputWrapper: "border-1",
             }}
-            placeholder="البحث عن طريق الاسم"
+            placeholder=" بحث..."
             size="sm"
             startContent={<SearchIcon className="text-default-300" />}
             value={filterValue}
@@ -477,9 +479,20 @@ function TechPaysTable() {
                 type="number"
                 className="max-w-[100px]"
                 value={technicalPays.amount}
-                onChange={(e) =>
-                  setTechnicalPays({ ...technicalPays, amount: e.target.value })
-                }
+                onChange={(e) => {
+                  const amount = e.target.value;
+                  const price = technicalPays.price;
+                  const finalprice = Number(price) * Number(amount) || 0;
+
+                  setTechnicalPays({
+                    ...technicalPays,
+                    amount,
+                    finalprice,
+                  });
+                }}
+                // onChange={(e) =>
+                //   setTechnicalPays({ ...technicalPays, amount: e.target.value })
+                // }
               />
 
               <Input

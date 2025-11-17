@@ -289,6 +289,9 @@ export const deleteInvoices = (id) => {
 // technicalTeams
 export const getTechnicalTeams = () => api.get(`/data/technical-teams`);
 
+// technicalTeams
+export const getLogicTeams = () => api.get(`/data/logic-teams`);
+
 // tecPays
 export const getTechPays = () => api.get(`/data/tech-pays`);
 export const getTechPaysById = (id) => {
@@ -302,4 +305,19 @@ export const updateTechPays = (id, data) => {
 };
 export const deleteTechPays = (id) => {
   return api.delete(`/data/tech-pays/${id}`);
+};
+
+// logicPays
+export const getLogicPays = () => api.get(`/data/logic-pays`);
+export const getLogicPaysById = (id) => {
+  return api.get(`data/logic-pays/${id}`);
+};
+export const addLogicPays = (data) => {
+  return api.post("/data/logic-pays", data);
+};
+export const updateLogicPays = (id, data) => {
+  return api.put(`/data/logic-pays/${id}`, data);
+};
+export const deleteLogicPays = (id) => {
+  return api.delete(`/data/logic-pays/${id}`);
 };

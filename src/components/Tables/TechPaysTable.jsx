@@ -4,6 +4,7 @@ import {
   AutocompleteItem,
   Button,
   Checkbox,
+  Chip,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -19,7 +20,7 @@ import {
 } from "@heroui/react";
 import { addTechPays, getTechnicalTeams, getTechPays } from "../../api";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
 
@@ -27,11 +28,16 @@ import {
   DeleteTechPaysModal,
   UpdateTechPaysModal,
 } from "../Modals/TechPaysModals";
+import InvoiceInfo from "../../pages/Invoices/InvoiceInfo";
+import { TbEyeBitcoin } from "react-icons/tb";
+import { BsEyeSlashFill } from "react-icons/bs";
+import VisibilityIcon from "../SVG/VisibilityIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "الاسم", uid: "name", sortable: true },
   { name: "الشرح", uid: "desc", sortable: true },
+  { name: "مدفوعة", uid: "payed", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
   { name: "السعر", uid: "price", sortable: true },
   { name: "الحرفي", uid: "technical_team_id", sortable: true },
@@ -43,16 +49,21 @@ const statusOptions = [
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
 ];
-const INITIAL_VISIBLE_COLUMNS = ["name", "actions", "desc", "amount", "price"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "payed",
+  "actions",
+  "amount",
+  "price",
+  "technical_team_id",
+  "finalprice",
+];
 
 function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
 function TechPaysTable() {
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const invoiceId = searchParams.get("invoice_id");
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [techPays, setTechPays] = useState([]);
@@ -77,7 +88,7 @@ function TechPaysTable() {
     // Using axios
     getTechnicalTeams()
       .then((response) => {
-        setTechnicalTeams(response.data.technicalteam); // axios get data in response.data
+        setTechnicalTeams(response.data.technicalteams); // axios get data in response.data
         setLoadingTechnicalTeams(false);
       })
       .catch((err) => {
@@ -240,11 +251,16 @@ function TechPaysTable() {
     const cellValue = techPays[columnKey];
 
     switch (columnKey) {
+      case "payed":
+        if (techPays.payed === 1) {
+          return <Chip color="success">مستلم</Chip>;
+        } else {
+          return <Chip color="danger">غير مستلم</Chip>;
+        }
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
             <UpdateTechPaysModal onSaveSuccess={fetchData} id={techPays.id} />
-            {/* <InvoicesInfoModal onSaveSuccess={fetchData} id={invoices.id} /> */}
             <DeleteTechPaysModal onSaveSuccess={fetchData} id={techPays.id} />
           </div>
         );

@@ -64,7 +64,7 @@ const router = createBrowserRouter(
                   element: <Invoices />,
                 },
                 {
-                  path: "invoices/:transactionId/:type/info",
+                  path: "invoices/:transactionId/:type/info/:invoiceId",
                   element: <InvoiceInfo />,
                 },
               ],

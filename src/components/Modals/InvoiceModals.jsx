@@ -88,7 +88,7 @@ export function AddInvoiceModals({ onSaveSuccess }) {
 
       // go to the invoices info
       navigate(
-        `/tresure/admin/${id}/invoices/${transactionId}/${type}/info?invoice_id=${invoiceId}`
+        `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoiceId}`
       );
     } catch (err) {
       addToast({

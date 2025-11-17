@@ -16,19 +16,20 @@ import {
 import { useState } from "react";
 import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
 import {
-  deleteTechPays,
-  getTechPaysById,
-  getTechnicalTeams,
+  deleteLogicPays,
+  getLogicPaysById,
+  getLogicTeams,
+  updateLogicPays,
   updateTechPays,
 } from "../../api";
 
-export function UpdateTechPaysModal({ id, onSaveSuccess }) {
+export function UpdateLogicPaysModal({ id, onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const [loadingTechnicalTeams, setLoadingTechnicalTeams] = useState(true);
-  const [technicalTeams, setTechnicalTeams] = useState([]);
+  const [loadingLogicTeams, setLoadingLogicTeams] = useState(true);
+  const [logicTeams, setLogicTeams] = useState([]);
 
-  const [technicalPays, setTechnicalPays] = useState({
+  const [logicPays, setLogicPays] = useState({
     id: null,
     name: "",
     desc: "",
@@ -38,18 +39,18 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
     workshopname: "",
     payed: false,
     invoice_id: "",
-    technical_team_id: null,
+    logistic_team_id: null,
   });
 
   const handleOpen = async () => {
     setLoading(true);
     try {
-      const response = await getTechPaysById(id);
-      setTechnicalPays(response.data.techPay);
-      getTechnicalTeams()
+      const response = await getLogicPaysById(id);
+      setLogicPays(response.data.logicPay);
+      getLogicTeams()
         .then((response) => {
-          setTechnicalTeams(response.data.technicalteams); // axios get data in response.data
-          setLoadingTechnicalTeams(false);
+          setLogicTeams(response.data.logisticteams); // axios get data in response.data
+          setLoadingLogicTeams(false);
         })
         .catch((err) => {
           addToast({
@@ -57,7 +58,7 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
             description: `عملية برمجية رقم : ${err.message}`,
             color: "danger",
           });
-          setLoadingTechnicalTeams(false);
+          setLoadingLogicTeams(false);
         });
       onOpen();
     } catch (err) {
@@ -76,15 +77,15 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
     setLoading(true);
 
     try {
-      await updateTechPays(technicalPays.id, {
-        name: technicalPays.name,
-        desc: technicalPays.desc,
-        amount: Number(technicalPays.amount),
-        price: Number(technicalPays.price),
-        finalprice: Number(technicalPays.finalprice),
-        workshopname: technicalPays.workshopname,
-        payed: technicalPays.payed,
-        technical_team_id: technicalPays.technical_team_id,
+      await updateLogicPays(logicPays.id, {
+        name: logicPays.name,
+        desc: logicPays.desc,
+        amount: Number(logicPays.amount),
+        price: Number(logicPays.price),
+        finalprice: Number(logicPays.finalprice),
+        workshopname: logicPays.workshopname,
+        payed: logicPays.payed,
+        logistic_team_id: logicPays.logistic_team_id,
       });
 
       addToast({
@@ -127,10 +128,10 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
                   label="الاسم"
                   type="text"
                   isRequired
-                  value={technicalPays.name}
+                  value={logicPays.name}
                   onChange={(e) =>
-                    setTechnicalPays({
-                      ...technicalPays,
+                    setLogicPays({
+                      ...logicPays,
                       name: e.target.value,
                     })
                   }
@@ -139,10 +140,10 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
                 <Input
                   label="الشرح"
                   type="text"
-                  value={technicalPays.desc}
+                  value={logicPays.desc}
                   onChange={(e) =>
-                    setTechnicalPays({
-                      ...technicalPays,
+                    setLogicPays({
+                      ...logicPays,
                       desc: e.target.value,
                     })
                   }
@@ -151,10 +152,10 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
                 <Input
                   label="الكمية"
                   type="number"
-                  value={technicalPays.amount}
+                  value={logicPays.amount}
                   onChange={(e) =>
-                    setTechnicalPays({
-                      ...technicalPays,
+                    setLogicPays({
+                      ...logicPays,
                       amount: e.target.value,
                     })
                   }
@@ -163,14 +164,14 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
                 <Input
                   label="السعر"
                   type="number"
-                  value={technicalPays.price}
+                  value={logicPays.price}
                   onChange={(e) => {
                     const price = Number(e.target.value);
-                    const amount = Number(technicalPays.amount);
+                    const amount = Number(logicPays.amount);
                     const finalprice = price * amount || 0;
 
-                    setTechnicalPays({
-                      ...technicalPays,
+                    setLogicPays({
+                      ...logicPays,
                       price,
                       finalprice,
                     });
@@ -180,24 +181,24 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
                 <Input
                   label="السعر النهائي"
                   isReadOnly
-                  value={technicalPays.finalprice}
+                  value={logicPays.finalprice}
                 />
 
                 <Input
                   label="اسم الورشة"
-                  value={technicalPays.workshopname}
+                  value={logicPays.workshopname}
                   onChange={(e) =>
-                    setTechnicalPays({
-                      ...technicalPays,
+                    setLogicPays({
+                      ...logicPays,
                       workshopname: e.target.value,
                     })
                   }
                 />
 
                 <Checkbox
-                  isSelected={technicalPays.payed}
+                  isSelected={logicPays.payed}
                   onValueChange={(value) =>
-                    setTechnicalPays({ ...technicalPays, payed: value })
+                    setLogicPays({ ...logicPays, payed: value })
                   }
                 >
                   مدفوع
@@ -205,24 +206,24 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
 
                 <Autocomplete
                   selectedKey={
-                    technicalPays.technical_team_id
-                      ? technicalPays.technical_team_id.toString()
+                    logicPays.logistic_team_id
+                      ? logicPays.logistic_team_id.toString()
                       : null
                   }
                   isRequired
                   placeholder={
-                    loadingTechnicalTeams
+                    loadingLogicTeams
                       ? "جاري تحميل الحرفي..."
                       : "اختر أحد الحرفيين"
                   }
                   onSelectionChange={(key) =>
-                    setTechnicalPays({
-                      ...technicalPays,
-                      technical_team_id: key,
+                    setLogicPays({
+                      ...logicPays,
+                      logistic_team_id: key,
                     })
                   }
                 >
-                  {technicalTeams.map((item) => (
+                  {logicTeams.map((item) => (
                     <AutocompleteItem key={item.id} value={item.id}>
                       {item.name}
                     </AutocompleteItem>
@@ -246,10 +247,10 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
   );
 }
 
-export function DeleteTechPaysModal({ id, onSaveSuccess }) {
+export function DeleteLogicPaysModal({ id, onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const [techPays, setTechPays] = useState({
+  const [logicPays, setLogicPays] = useState({
     id: null,
     name: "",
   });
@@ -257,8 +258,8 @@ export function DeleteTechPaysModal({ id, onSaveSuccess }) {
   const handleOpen = async () => {
     setLoading(true);
     try {
-      const response = await getTechPaysById(id);
-      setTechPays(response.data.techPay);
+      const response = await getLogicPaysById(id);
+      setLogicPays(response.data.logicPay);
       onOpen();
     } catch (err) {
       addToast({
@@ -275,7 +276,7 @@ export function DeleteTechPaysModal({ id, onSaveSuccess }) {
     e.preventDefault();
     setLoading(true);
     try {
-      await deleteTechPays(techPays.id);
+      await deleteLogicPays(logicPays.id);
       addToast({
         title: "تمت العملية بنجاح",
         description: "تم حذف المبلغ بنجاح",
@@ -314,7 +315,7 @@ export function DeleteTechPaysModal({ id, onSaveSuccess }) {
                   isDisabled
                   label="الاسم"
                   type="text"
-                  value={techPays.name}
+                  value={logicPays.name}
                 />
                 <p className="text-danger text-sm">
                   هل أنت متأكد أنك تريد حذف هذا المبلغ هذا الإجراء لا يمكن

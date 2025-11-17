@@ -23,8 +23,8 @@ import {
   DeleteInvoicesModal,
   UpdateInvoicesModal,
 } from "../Modals/InvoiceModals";
-import { useParams } from "react-router-dom";
-import EyeFilledIcon from "../SVG/EyeFilledIcon";
+import { useNavigate, useParams } from "react-router-dom";
+import VisibilityIcon from "../SVG/VisibilityIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -48,6 +48,8 @@ function capitalize(s) {
 }
 
 const InvoicesTable = () => {
+  const { id, transactionId } = useParams();
+  const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [invoices, setInvoices] = useState([]);
@@ -147,8 +149,20 @@ const InvoicesTable = () => {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="الفواتير"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoices.id}`
+                )
+              }
+            >
+              <VisibilityIcon />
+            </Button>
             <UpdateInvoicesModal onSaveSuccess={fetchData} id={invoices.id} />
-            {/* <InvoicesInfoModal onSaveSuccess={fetchData} id={invoices.id} /> */}
             <DeleteInvoicesModal onSaveSuccess={fetchData} id={invoices.id} />
           </div>
         );

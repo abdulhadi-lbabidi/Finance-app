@@ -55,9 +55,9 @@ function InvoiceInfo() {
             className="grid grid-cols-3 rtl-grid"
             style={{ justifyItems: "right" }}
           >
-            <p>إجمالي الحرفيين: {totals.tech} ل.س</p>
-            <p>إجمالي مراقب الورشة: {totals.logic} ل.س</p>
-            <p>إجمالي مواد الفاتورة: {totals.invoice} ل.س</p>
+            <p>إجمالي الحرفيين: $ {totals.tech}</p>
+            <p>إجمالي مراقب الورشة: $ {totals.logic}</p>
+            <p>إجمالي مواد الفاتورة: $ {totals.invoice}</p>
           </div>
         </CardBody>
       </Card>

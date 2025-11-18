@@ -14,11 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/react";
-import { downloadInvoicesImages, getInvoicesImages } from "../../api";
+import { getInvoicesImages } from "../../api";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
-import { DeleteLogicPaysModal } from "../Modals/LogicPaysModals";
+import PDFIcon from "../SVG/PDFIcon";
 import {
   AddInvoiceImageModals,
   DeleteInvoicesImageModals,
@@ -138,19 +138,29 @@ function ImagePaysTable() {
     const cellValue = invoiceImage[columnKey];
 
     switch (columnKey) {
-      case "image":
+      case "image": {
+        const url = invoiceImage.fullUrl.toLowerCase();
+        const isPdf = url.endsWith(".pdf");
+
         return (
-          <img
-            src={invoiceImage.fullUrl}
-            alt="invoice"
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 8,
-              objectFit: "cover",
-            }}
-          />
+          <>
+            {isPdf ? (
+              <PDFIcon />
+            ) : (
+              <img
+                src={invoiceImage.fullUrl}
+                alt="invoice"
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 8,
+                  objectFit: "cover",
+                }}
+              />
+            )}
+          </>
         );
+      }
 
       case "actions":
         return (
@@ -236,7 +246,7 @@ function ImagePaysTable() {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            عدد الصور {invoiceImage.length}
+            عدد الوثائق {invoiceImage.length}
           </span>
           <label className="flex items-center text-default-400 text-small">
             عدد الأسطر بالصفحة:

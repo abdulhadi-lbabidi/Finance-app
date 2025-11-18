@@ -38,7 +38,7 @@ export function AddInvoiceImageModals({ onSaveSuccess }) {
 
       addToast({
         title: "تمت العملية بنجاح",
-        description: `تمت إضافة صورة فاتورة جديدة`,
+        description: `تمت إضافة  وثيقة جديدة`,
         color: "success",
       });
 
@@ -60,7 +60,7 @@ export function AddInvoiceImageModals({ onSaveSuccess }) {
     <>
       <Tooltip content="إضافة فاتورة صورة جديد" color="primary">
         <Button color="primary" onPress={onOpen}>
-          إضافة فاتورة صورة جديد
+          إضافة وثيقة جديدة
         </Button>
       </Tooltip>
 
@@ -68,7 +68,7 @@ export function AddInvoiceImageModals({ onSaveSuccess }) {
         <ModalContent>
           {(onClose) => (
             <form onSubmit={(e) => onSubmit(e, onClose)}>
-              <ModalHeader>إضافة فاتورة صورة جديد</ModalHeader>
+              <ModalHeader>إضافة وثيقة جديدة</ModalHeader>
 
               <ModalBody>
                 <Input

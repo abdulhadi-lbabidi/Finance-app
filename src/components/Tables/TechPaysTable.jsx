@@ -28,10 +28,6 @@ import {
   DeleteTechPaysModal,
   UpdateTechPaysModal,
 } from "../Modals/TechPaysModals";
-import InvoiceInfo from "../../pages/Invoices/InvoiceInfo";
-import { TbEyeBitcoin } from "react-icons/tb";
-import { BsEyeSlashFill } from "react-icons/bs";
-import VisibilityIcon from "../SVG/VisibilityIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -457,6 +453,7 @@ function TechPaysTable() {
                 size="sm"
                 label="الاسم"
                 className="max-w-[160px]"
+                isRequired
                 value={technicalPays.name}
                 onChange={(e) =>
                   setTechnicalPays({ ...technicalPays, name: e.target.value })
@@ -477,6 +474,7 @@ function TechPaysTable() {
                 size="sm"
                 label="الكمية"
                 type="number"
+                isRequired
                 className="max-w-[100px]"
                 value={technicalPays.amount}
                 onChange={(e) => {
@@ -498,6 +496,7 @@ function TechPaysTable() {
               <Input
                 size="sm"
                 label="السعر"
+                isRequired
                 type="number"
                 className="max-w-[100px]"
                 value={technicalPays.price}
@@ -525,6 +524,7 @@ function TechPaysTable() {
               <Input
                 size="sm"
                 label="اسم الورشة"
+                isRequired
                 className="max-w-[150px]"
                 value={technicalPays.workshopname}
                 onChange={(e) =>

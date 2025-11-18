@@ -453,6 +453,7 @@ function LogicPaysTable() {
               <Input
                 size="sm"
                 label="الاسم"
+                isRequired
                 className="max-w-[160px]"
                 value={logisticPays.name}
                 onChange={(e) =>
@@ -474,6 +475,7 @@ function LogicPaysTable() {
                 size="sm"
                 label="الكمية"
                 type="number"
+                isRequired
                 className="max-w-[100px]"
                 value={logisticPays.amount}
                 onChange={(e) => {
@@ -496,6 +498,7 @@ function LogicPaysTable() {
                 size="sm"
                 label="السعر"
                 type="number"
+                isRequired
                 className="max-w-[100px]"
                 value={logisticPays.price}
                 onChange={(e) => {
@@ -522,6 +525,7 @@ function LogicPaysTable() {
               <Input
                 size="sm"
                 label="اسم الورشة"
+                isRequired
                 className="max-w-[150px]"
                 value={logisticPays.workshopname}
                 onChange={(e) =>

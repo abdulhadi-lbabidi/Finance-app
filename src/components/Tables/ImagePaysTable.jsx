@@ -1,8 +1,6 @@
 import {
   addToast,
   Button,
-  Checkbox,
-  Chip,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -16,24 +14,21 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/react";
-import { addInvoiceItems, getInvoiceItems } from "../../api";
+import { downloadInvoicesImages, getInvoicesImages } from "../../api";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
+import { DeleteLogicPaysModal } from "../Modals/LogicPaysModals";
 import {
-  DeleteInvoiceItemModal,
-  UpdateInvoiceItemModal,
-} from "../Modals/InvoiceItemModals";
+  AddInvoiceImageModals,
+  DeleteInvoicesImageModals,
+} from "../Modals/InvoiceImageModals";
+import DownloadIcon from "../SVG/DownloadIcon";
+import { InvoiceImagePreviewModal } from "../Modals/InvoiceImagePreviewModal";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
-  { name: "الاسم", uid: "name", sortable: true },
-  { name: "الشرح", uid: "desc", sortable: true },
-  { name: "مدفوعة", uid: "payed", sortable: true },
-  { name: "القيمة", uid: "amount", sortable: true },
-  { name: "السعر", uid: "price", sortable: true },
-  { name: "السعر النهائي", uid: "finalprice", sortable: true },
+  { name: "الصورة", uid: "image", sortable: true },
   { name: "عمليات", uid: "actions" },
 ];
 const statusOptions = [
@@ -41,37 +36,17 @@ const statusOptions = [
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
 ];
-const INITIAL_VISIBLE_COLUMNS = [
-  "name",
-  "payed",
-  "actions",
-  "amount",
-  "price",
-  "finalprice",
-];
+const INITIAL_VISIBLE_COLUMNS = ["image", "actions"];
 
 function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-function InvoiceItemTable() {
-  const { invoiceId } = useParams();
+function ImagePaysTable() {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [invoiceItem, setInvoiceItem] = useState([]);
-  const [submitting, setSubmitting] = useState(false);
+  const [invoiceImage, setInvoiceImage] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [invoiceItemData, setInvoiceItemData] = useState({
-    id: null,
-    name: "",
-    desc: "",
-    amount: "",
-    price: "",
-    finalprice: "",
-    payed: false,
-    invoice_id: "",
-  });
-
   const [visibleColumns, setVisibleColumns] = useState(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
@@ -84,14 +59,12 @@ function InvoiceItemTable() {
 
   const [page, setPage] = useState(1);
 
-  const fetchData = () => {
-    // Using axios
-    getInvoiceItems()
+  const fetchData = useCallback(() => {
+    getInvoicesImages("invoice")
       .then((response) => {
-        setInvoiceItem(response.data.invoiceItems); // axios get data in response.data
+        setInvoiceImage(response.data.invoices);
         setLoading(false);
       })
-
       .catch((err) => {
         addToast({
           title: "حدث خطاً",
@@ -100,65 +73,13 @@ function InvoiceItemTable() {
         });
         setLoading(false);
       });
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
-  const onSubmit = async () => {
-    if (!invoiceId) {
-      addToast({
-        title: "خطأ",
-        description: "لم يتم تحديد الفاتورة المرتبطة.",
-        color: "danger",
-      });
-      return;
-    }
-
-    setSubmitting(true);
-
-    try {
-      const payload = {
-        ...invoiceItemData,
-        invoice_id: invoiceId,
-        amount: Number(invoiceItemData.amount),
-        price: Number(invoiceItemData.price),
-        finalprice: Number(invoiceItemData.finalprice),
-      };
-
-      await addInvoiceItems(payload);
-
-      addToast({
-        title: "تمت العملية بنجاح",
-        description: "تمت إضافة مبلغ جديدة",
-        color: "success",
-      });
-
-      setInvoiceItemData({
-        id: null,
-        name: "",
-        desc: "",
-        amount: "",
-        price: "",
-        finalprice: "",
-        payed: false,
-        invoice_id: "",
-      });
-
-      fetchData();
-    } catch (err) {
-      addToast({
-        title: "حدث خطأ",
-        description: `عملية برمجية رقم : ${err.message}`,
-        color: "danger",
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const pages = Math.ceil(invoiceItem.length / rowsPerPage);
+  const pages = Math.ceil(invoiceImage.length / rowsPerPage);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -171,33 +92,24 @@ function InvoiceItemTable() {
   }, [visibleColumns]);
 
   const filteredItems = useMemo(() => {
-    let filteredUsers = [...invoiceItem];
+    let filteredUsers = [...invoiceImage];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter(
-        (invoiceItem) =>
-          invoiceItem.name.toLowerCase().includes(filterValue.toLowerCase()) ||
-          invoiceItem.desc?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          String(invoiceItem.price)
-            .toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
-          invoiceItem.logisticteam?.name
-            ?.toLowerCase()
-            .includes(filterValue.toLowerCase()) ||
-          invoiceItem.amount?.toString().includes(filterValue)
+      filteredUsers = filteredUsers.filter((invoiceImage) =>
+        invoiceImage.image.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredUsers = filteredUsers.filter((invoiceItem) =>
-        Array.from(statusFilter).includes(invoiceItem.status)
+      filteredUsers = filteredUsers.filter((invoices) =>
+        Array.from(statusFilter).includes(invoices.status)
       );
     }
 
     return filteredUsers;
-  }, [invoiceItem, filterValue, statusFilter, hasSearchFilter]);
+  }, [invoiceImage, filterValue, statusFilter, hasSearchFilter]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -215,29 +127,57 @@ function InvoiceItemTable() {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = useCallback((invoiceItem, columnKey) => {
-    const cellValue = invoiceItem[columnKey];
+  const handelDownload = (fileUrl) => {
+    const fileName = fileUrl.split("/").pop();
+    downloadInvoicesImages(fileName)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => {
+        addToast({
+          title: "حدث خطاً",
+          description: `عملية برمجية رقم : ${err.message}`,
+          color: "danger",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  const renderCell = useCallback((invoiceImage, columnKey) => {
+    const cellValue = invoiceImage[columnKey];
 
     switch (columnKey) {
-      case "payed":
-        if (invoiceItem.payed === 1) {
-          return <Chip color="success">مستلم</Chip>;
-        } else {
-          return <Chip color="danger">غير مستلم</Chip>;
-        }
+      case "image":
+        return (
+          <img
+            src={invoiceImage.url}
+            alt="invoice"
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 8,
+              objectFit: "cover",
+            }}
+          />
+        );
+
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
-            <UpdateInvoiceItemModal
+            <Button onPress={() => handelDownload(invoiceImage.url)}>
+              <DownloadIcon />
+            </Button>
+
+            <InvoiceImagePreviewModal imageUrl={invoiceImage.url} />
+
+            <DeleteInvoicesImageModals
               onSaveSuccess={fetchData}
-              id={invoiceItem.id}
-            />
-            <DeleteInvoiceItemModal
-              onSaveSuccess={fetchData}
-              id={invoiceItem.id}
+              id={invoiceImage.id}
             />
           </div>
         );
+
       default:
         return cellValue;
     }
@@ -301,11 +241,12 @@ function InvoiceItemTable() {
                 ))}
               </DropdownMenu>
             </Dropdown>
+            <AddInvoiceImageModals onSaveSuccess={fetchData} />
           </div>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            عدد المواد {invoiceItem.length}
+            عدد الصور {invoiceImage.length}
           </span>
           <label className="flex items-center text-default-400 text-small">
             عدد الأسطر بالصفحة:
@@ -329,7 +270,7 @@ function InvoiceItemTable() {
     onRowsPerPageChange,
     rowsPerPage,
     fetchData,
-    invoiceItem.length,
+    invoiceImage.length,
   ]);
 
   const bottomContent = useMemo(() => {
@@ -409,7 +350,7 @@ function InvoiceItemTable() {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"لا توجد حسابات للمواد"} items={sortedItems}>
+        <TableBody emptyContent={"لا توجد صور "} items={sortedItems}>
           {(item) => (
             <TableRow key={item.id}>
               {(columnKey) => (
@@ -419,115 +360,8 @@ function InvoiceItemTable() {
           )}
         </TableBody>
       </Table>
-      <div className="relative w-full">
-        <div className="flex flex-col">
-          <div className="w-full bg-white shadow-lg border-t p-4">
-            <div className="flex flex-wrap gap-3 items-end">
-              <Input
-                size="sm"
-                label="الاسم"
-                isRequired
-                className="max-w-[160px]"
-                value={invoiceItemData.name}
-                onChange={(e) =>
-                  setInvoiceItemData({
-                    ...invoiceItemData,
-                    name: e.target.value,
-                  })
-                }
-              />
-
-              <Input
-                size="sm"
-                label="الشرح"
-                className="max-w-[180px]"
-                value={invoiceItemData.desc}
-                onChange={(e) =>
-                  setInvoiceItemData({
-                    ...invoiceItemData,
-                    desc: e.target.value,
-                  })
-                }
-              />
-
-              <Input
-                size="sm"
-                label="الكمية"
-                isRequired
-                type="number"
-                className="max-w-[100px]"
-                value={invoiceItemData.amount}
-                onChange={(e) => {
-                  const amount = e.target.value;
-                  const price = invoiceItemData.price;
-                  const finalprice = Number(price) * Number(amount) || 0;
-
-                  setInvoiceItemData({
-                    ...invoiceItemData,
-                    amount,
-                    finalprice,
-                  });
-                }}
-                // onChange={(e) =>
-                //   setInvoiceItemData({
-                //     ...invoiceItemData,
-                //     amount: e.target.value,
-                //   })
-                // }
-              />
-
-              <Input
-                size="sm"
-                label="السعر"
-                isRequired
-                type="number"
-                className="max-w-[100px]"
-                value={invoiceItemData.price}
-                onChange={(e) => {
-                  const price = e.target.value;
-                  const amount = invoiceItemData.amount;
-                  const finalprice = Number(price) * Number(amount) || 0;
-
-                  setInvoiceItemData({
-                    ...invoiceItemData,
-                    price,
-                    finalprice,
-                  });
-                }}
-              />
-
-              <Input
-                size="sm"
-                label="السعر النهائي"
-                isReadOnly
-                className="max-w-[110px]"
-                value={invoiceItemData.finalprice}
-              />
-
-              <Checkbox
-                size="sm"
-                isSelected={invoiceItemData.payed}
-                onValueChange={(value) =>
-                  setInvoiceItemData({ ...invoiceItemData, payed: value })
-                }
-              >
-                مدفوع
-              </Checkbox>
-
-              <Button
-                size="sm"
-                color="primary"
-                isLoading={submitting}
-                onPress={onSubmit}
-              >
-                إضافة
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
     </>
   );
 }
 
-export default InvoiceItemTable;
+export default ImagePaysTable;

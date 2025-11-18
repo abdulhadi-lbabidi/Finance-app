@@ -1,4 +1,4 @@
-import { Card, CardBody } from "@heroui/react";
+import { Card, CardBody, Tab, Tabs } from "@heroui/react";
 import InvoicesTable from "../../components/Tables/InvoicesTable";
 import { useParams } from "react-router-dom";
 
@@ -20,7 +20,13 @@ const Invoices = () => {
           ></div>
         </CardBody>
       </Card>
-
+      <div className="flex w-full flex-col mt-3">
+        <Tabs aria-label="Options" fullWidth>
+          <Tab key="invoiceImage" title="الفواتير"></Tab>
+          <Tab key="tech" title="الفواتير مع حسومات جزئية"></Tab>
+          <Tab key="invoiceItem" title="الفواتير مع حسومات كلية"></Tab>
+        </Tabs>
+      </div>
       {/*  invoices Table */}
       <InvoicesTable />
     </>

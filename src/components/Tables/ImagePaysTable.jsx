@@ -127,23 +127,13 @@ function ImagePaysTable() {
     });
   }, [sortDescriptor, items]);
 
-  const handelDownload = (fileUrl) => {
-    const fileName = fileUrl.split("/").pop();
-    downloadInvoicesImages(fileName)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+  const handelDownload = (imageId) => {
+    window.open(
+      `http://127.0.0.1:8000/api/data/invoices-images/download/${imageId}`,
+      "_self"
+    );
   };
+
   const renderCell = useCallback((invoiceImage, columnKey) => {
     const cellValue = invoiceImage[columnKey];
 
@@ -151,7 +141,7 @@ function ImagePaysTable() {
       case "image":
         return (
           <img
-            src={invoiceImage.url}
+            src={invoiceImage.fullUrl}
             alt="invoice"
             style={{
               width: 50,
@@ -165,11 +155,11 @@ function ImagePaysTable() {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
-            <Button onPress={() => handelDownload(invoiceImage.url)}>
+            <Button onPress={() => handelDownload(invoiceImage.id)}>
               <DownloadIcon />
             </Button>
 
-            <InvoiceImagePreviewModal imageUrl={invoiceImage.url} />
+            <InvoiceImagePreviewModal imageUrl={invoiceImage.fullUrl} />
 
             <DeleteInvoicesImageModals
               onSaveSuccess={fetchData}

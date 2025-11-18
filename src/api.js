@@ -305,8 +305,11 @@ export const deleteInvoiceImage = (id) => {
   return api.delete(`/data/invoices-image/${id}`);
 };
 // download invoices images
-export const downloadInvoicesImages = (fileName) =>
-  api.get(`/data/invoices-images/${fileName}`);
+
+export const downloadInvoicesImages = (imageId) =>
+  api.get(`/data/invoices-images/download/${imageId}`, {
+    responseType: "blob",
+  });
 
 // technicalTeams
 export const getTechnicalTeams = () => api.get(`/data/technical-teams`);

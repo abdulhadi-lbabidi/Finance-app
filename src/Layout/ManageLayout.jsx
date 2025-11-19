@@ -71,7 +71,7 @@ function ManageLayout() {
   };
   return (
     <div className="flex flex-row min-h-screen">
-      <div className="min-h-screen w-64 bg-gray-800 text-white flex flex-col">
+      <div className="min-h-screen w-64 bg-gray-800 text-white flex flex-col overflow-hidden">
         <div className="text-2xl font-bold pt-2 border-b border-gray-700">
           <NavLink key={"Home"} to={"/home"}>
             {/* لوحة التحكم */}

@@ -42,7 +42,6 @@ export function AddInvoiceModals({ onSaveSuccess }) {
     invoiceable_id: transactionId,
     invoiceable_type:
       type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
-    final_price: 0,
   });
 
   const fetchDataItems = () => {
@@ -84,8 +83,6 @@ export function AddInvoiceModals({ onSaveSuccess }) {
         invoiceable_id: transactionId,
         invoiceable_type:
           type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
-
-        final_price: 0,
       });
 
       // onSaveSuccess();
@@ -176,12 +173,6 @@ export function AddInvoiceModals({ onSaveSuccess }) {
                   onChange={(e) =>
                     setInvoices({ ...invoices, amount: e.target.value })
                   }
-                />
-
-                <Input
-                  isReadOnly
-                  label="السعر النهائي"
-                  value={invoices.final_price}
                 />
 
                 <Autocomplete

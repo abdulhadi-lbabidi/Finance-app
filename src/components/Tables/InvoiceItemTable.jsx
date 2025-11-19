@@ -129,8 +129,17 @@ function InvoiceItemTable() {
         amount: Number(invoiceItemData.amount),
         price: Number(invoiceItemData.price),
         finalprice: Number(invoiceItemData.finalprice),
-        discount_value: Number(invoiceItemData.discount_value),
-        discount_type: invoiceItemData.discount_type,
+        discount_value:
+          invoiceItemData.discount_value === "" ||
+          invoiceItemData.discount_value == null
+            ? 0
+            : Number(invoiceItemData.discount_value),
+
+        discount_type:
+          invoiceItemData.discount_type === "" ||
+          invoiceItemData.discount_type == null
+            ? "قيمة"
+            : invoiceItemData.discount_type,
       };
 
       await addInvoiceItems(payload);
@@ -530,7 +539,7 @@ function InvoiceItemTable() {
                 selectedKeys={
                   invoiceItemData.discount_type
                     ? [invoiceItemData.discount_type]
-                    : []
+                    : ["قيمة"]
                 }
                 onChange={(e) =>
                   setInvoiceItemData({

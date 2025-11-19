@@ -217,7 +217,9 @@ export function UpdateLogicPaysModal({ id, onSaveSuccess }) {
                   label="نوع الخصم"
                   placeholder="اختر نوع الخصم"
                   selectedKeys={
-                    logicPays.discount_type ? [logicPays.discount_type] : []
+                    logicPays.discount_type
+                      ? [logicPays.discount_type]
+                      : ["قيمة"]
                   }
                   onChange={(e) =>
                     setLogicPays({

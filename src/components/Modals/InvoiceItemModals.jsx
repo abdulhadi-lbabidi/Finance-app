@@ -195,7 +195,7 @@ export function UpdateInvoiceItemModal({ id, onSaveSuccess }) {
                   selectedKeys={
                     invoiceItemData.discount_type
                       ? [invoiceItemData.discount_type]
-                      : []
+                      : ["قيمة"]
                   }
                   onChange={(e) =>
                     setInvoiceItemData({

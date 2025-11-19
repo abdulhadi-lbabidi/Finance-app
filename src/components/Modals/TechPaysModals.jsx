@@ -216,7 +216,7 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
                   selectedKeys={
                     technicalPays.discount_type
                       ? [technicalPays.discount_type]
-                      : []
+                      : ["قيمة"]
                   }
                   onChange={(e) =>
                     setTechnicalPays({

@@ -161,8 +161,17 @@ function TechPaysTable() {
         amount: Number(technicalPays.amount),
         price: Number(technicalPays.price),
         finalprice: Number(technicalPays.finalprice),
-        discount_value: Number(technicalPays.discount_value),
-        discount_type: technicalPays.discount_type,
+        discount_value:
+          technicalPays.discount_value === "" ||
+          technicalPays.discount_value == null
+            ? 0
+            : Number(technicalPays.discount_value),
+
+        discount_type:
+          technicalPays.discount_type === "" ||
+          technicalPays.discount_type == null
+            ? "قيمة"
+            : technicalPays.discount_type,
       };
 
       await addTechPays(payload);
@@ -558,7 +567,7 @@ function TechPaysTable() {
                 selectedKeys={
                   technicalPays.discount_type
                     ? [technicalPays.discount_type]
-                    : []
+                    : ["قيمة"]
                 }
                 onChange={(e) =>
                   setTechnicalPays({

@@ -162,8 +162,17 @@ function LogicPaysTable() {
         amount: Number(logisticPays.amount),
         price: Number(logisticPays.price),
         finalprice: Number(logisticPays.finalprice),
-        discount_value: Number(logisticPays.discount_value),
-        discount_type: logisticPays.discount_type,
+        discount_value:
+          logisticPays.discount_value === "" ||
+          logisticPays.discount_value == null
+            ? 0
+            : Number(logisticPays.discount_value),
+
+        discount_type:
+          logisticPays.discount_type === "" ||
+          logisticPays.discount_type == null
+            ? "قيمة"
+            : logisticPays.discount_type,
       };
 
       await addLogicPays(payload);
@@ -555,7 +564,9 @@ function LogicPaysTable() {
                 className="max-w-[200px]"
                 placeholder="اختر نوع الخصم"
                 selectedKeys={
-                  logisticPays.discount_type ? [logisticPays.discount_type] : []
+                  logisticPays.discount_type
+                    ? [logisticPays.discount_type]
+                    : ["قيمة"]
                 }
                 onChange={(e) =>
                   setLogisticPays({

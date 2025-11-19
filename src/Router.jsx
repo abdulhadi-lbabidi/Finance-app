@@ -30,15 +30,13 @@ import {
   SelectEmployeeTresure,
   SelectWorkshopTresure,
 } from "./pages/Tresures/Selectors/TresureSelectors";
-import MoneyTransfareTable from "./components/Tables/MoneyTransfareTable";
-import InnerTransactionTable from "./components/Tables/InnerTransactionTable";
-import OuterTransactionTable from "./components/Tables/OuterTransactionTable";
 import AdminTresure from "./pages/Tresures/AdminTresure";
 import EmployeeForWorkshop from "./pages/Workshop/EmployeeForWorkshop";
 import LogisticForWorkshop from "./pages/Workshop/LogisticForWorkshop";
 import ItemReport from "./pages/Reports/ItemReport";
 import Invoices from "./pages/Invoices";
 import InvoiceInfo from "./pages/Invoices/InvoiceInfo";
+import PrintInnerTransaction from "./pages/Invoices/PrintInnerTransaction";
 
 const router = createBrowserRouter(
   [
@@ -59,6 +57,10 @@ const router = createBrowserRouter(
               path: ":id",
               children: [
                 { index: true, element: <AdminTresure /> },
+                {
+                  path: "print/:type/:transactionId",
+                  element: <PrintInnerTransaction />,
+                },
                 {
                   path: "invoices/:transactionId/:type",
                   element: <Invoices />,

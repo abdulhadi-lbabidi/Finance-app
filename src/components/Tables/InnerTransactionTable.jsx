@@ -178,7 +178,11 @@ function InnerTransactionTable({ tresurefundid }) {
               aria-label="طباعة"
               color="primary"
               variant="faded"
-              onPress={() => navigate(`#`)}
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/print/innerTransaction/${innerTransaction.id}`
+                )
+              }
             >
               <PrintIcon />
             </Button>

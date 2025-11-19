@@ -7,7 +7,7 @@ import {
   Tab,
   Tabs,
 } from "@heroui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import OuterTransactionTable from "../../components/Tables/OuterTransactionTable";
 import MoneyTransfareTable from "../../components/Tables/MoneyTransfareTable";
 import InnerTransactionTable from "../../components/Tables/InnerTransactionTable";

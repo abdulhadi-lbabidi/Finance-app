@@ -178,7 +178,9 @@ function OuterTransactionTable({ tresurefundid }) {
               aria-label="طباعة"
               color="primary"
               variant="faded"
-              onPress={() => navigate(`#`)}
+              onPress={() =>
+                navigate(`/tresure/admin/${id}/print/outerTransaction`)
+              }
             >
               <PrintIcon />
             </Button>

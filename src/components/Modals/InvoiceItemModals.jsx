@@ -8,10 +8,10 @@ import {
   useDisclosure,
   Input,
   Tooltip,
-  Autocomplete,
-  AutocompleteItem,
   addToast,
   Checkbox,
+  SelectItem,
+  Select,
 } from "@heroui/react";
 import { useState } from "react";
 import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
@@ -33,6 +33,8 @@ export function UpdateInvoiceItemModal({ id, onSaveSuccess }) {
     finalprice: "",
     payed: false,
     invoice_id: "",
+    discount_value: "",
+    discount_type: "",
   });
 
   const handleOpen = async () => {
@@ -64,6 +66,8 @@ export function UpdateInvoiceItemModal({ id, onSaveSuccess }) {
         price: Number(invoiceItemData.price),
         finalprice: Number(invoiceItemData.finalprice),
         payed: invoiceItemData.payed,
+        discount_value: Number(invoiceItemData.discount_value),
+        discount_type: invoiceItemData.discount_type,
       });
 
       addToast({
@@ -131,46 +135,88 @@ export function UpdateInvoiceItemModal({ id, onSaveSuccess }) {
                   label="الكمية"
                   type="number"
                   value={invoiceItemData.amount}
-                  onChange={(e) => {
-                    const amount = e.target.value;
-                    const price = invoiceItemData.price;
-                    const finalprice = Number(price) * Number(amount) || 0;
+                  // onChange={(e) => {
+                  //   const amount = e.target.value;
+                  //   const price = invoiceItemData.price;
+                  //   const finalprice = Number(price) * Number(amount) || 0;
 
-                    setInvoiceItemData({
-                      ...invoiceItemData,
-                      amount,
-                      finalprice,
-                    });
-                  }}
-                  // onChange={(e) =>
                   //   setInvoiceItemData({
                   //     ...invoiceItemData,
-                  //     amount: e.target.value,
-                  //   })
-                  // }
+                  //     amount,
+                  //     finalprice,
+                  //   });
+                  // }}
+                  onChange={(e) =>
+                    setInvoiceItemData({
+                      ...invoiceItemData,
+                      amount: e.target.value,
+                    })
+                  }
                 />
 
                 <Input
                   label="السعر"
                   type="number"
                   value={invoiceItemData.price}
-                  onChange={(e) => {
-                    const price = Number(e.target.value);
-                    const amount = Number(invoiceItemData.amount);
-                    const finalprice = price * amount || 0;
+                  // onChange={(e) => {
+                  //   const price = Number(e.target.value);
+                  //   const amount = Number(invoiceItemData.amount);
+                  //   const finalprice = price * amount || 0;
 
+                  //   setInvoiceItemData({
+                  //     ...invoiceItemData,
+                  //     price,
+                  //     finalprice,
+                  //   });
+                  // }}
+                  onChange={(e) =>
                     setInvoiceItemData({
                       ...invoiceItemData,
-                      price,
-                      finalprice,
-                    });
-                  }}
+                      price: e.target.value,
+                    })
+                  }
                 />
+
                 <Input
+                  label="قيمة الخصم"
+                  type="number"
+                  value={invoiceItemData.discount_value}
+                  onChange={(ev) =>
+                    setInvoiceItemData({
+                      ...invoiceItemData,
+                      discount_value: ev.target.value,
+                    })
+                  }
+                />
+
+                <Select
+                  label="نوع الخصم"
+                  placeholder="اختر نوع الخصم"
+                  selectedKeys={
+                    invoiceItemData.discount_type
+                      ? [invoiceItemData.discount_type]
+                      : []
+                  }
+                  onChange={(e) =>
+                    setInvoiceItemData({
+                      ...invoiceItemData,
+                      discount_type: e.target.value,
+                    })
+                  }
+                >
+                  <SelectItem key="قيمة" value="قيمة">
+                    قيمة (خصم ثابت)
+                  </SelectItem>
+                  <SelectItem key="نسبة" value="نسبة">
+                    نسبة (٪)
+                  </SelectItem>
+                </Select>
+
+                {/* <Input
                   label="السعر النهائي"
                   isReadOnly
                   value={invoiceItemData.finalprice}
-                />
+                /> */}
 
                 <Checkbox
                   isSelected={invoiceItemData.payed}

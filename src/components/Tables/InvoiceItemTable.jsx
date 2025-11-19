@@ -9,6 +9,8 @@ import {
   DropdownTrigger,
   Input,
   Pagination,
+  Select,
+  SelectItem,
   Table,
   TableBody,
   TableCell,
@@ -70,6 +72,8 @@ function InvoiceItemTable() {
     finalprice: "",
     payed: false,
     invoice_id: "",
+    discount_value: "",
+    discount_type: "",
   });
 
   const [visibleColumns, setVisibleColumns] = useState(
@@ -125,6 +129,8 @@ function InvoiceItemTable() {
         amount: Number(invoiceItemData.amount),
         price: Number(invoiceItemData.price),
         finalprice: Number(invoiceItemData.finalprice),
+        discount_value: Number(invoiceItemData.discount_value),
+        discount_type: invoiceItemData.discount_type,
       };
 
       await addInvoiceItems(payload);
@@ -144,6 +150,8 @@ function InvoiceItemTable() {
         finalprice: "",
         payed: false,
         invoice_id: "",
+        discount_type: "",
+        discount_value: "",
       });
 
       fetchData();
@@ -457,23 +465,23 @@ function InvoiceItemTable() {
                 type="number"
                 className="max-w-[100px]"
                 value={invoiceItemData.amount}
-                onChange={(e) => {
-                  const amount = e.target.value;
-                  const price = invoiceItemData.price;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                // onChange={(e) => {
+                //   const amount = e.target.value;
+                //   const price = invoiceItemData.price;
+                //   const finalprice = Number(price) * Number(amount) || 0;
 
-                  setInvoiceItemData({
-                    ...invoiceItemData,
-                    amount,
-                    finalprice,
-                  });
-                }}
-                // onChange={(e) =>
                 //   setInvoiceItemData({
                 //     ...invoiceItemData,
-                //     amount: e.target.value,
-                //   })
-                // }
+                //     amount,
+                //     finalprice,
+                //   });
+                // }}
+                onChange={(e) =>
+                  setInvoiceItemData({
+                    ...invoiceItemData,
+                    amount: e.target.value,
+                  })
+                }
               />
 
               <Input
@@ -483,26 +491,69 @@ function InvoiceItemTable() {
                 type="number"
                 className="max-w-[100px]"
                 value={invoiceItemData.price}
-                onChange={(e) => {
-                  const price = e.target.value;
-                  const amount = invoiceItemData.amount;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                // onChange={(e) => {
+                //   const price = e.target.value;
+                //   const amount = invoiceItemData.amount;
+                //   const finalprice = Number(price) * Number(amount) || 0;
 
+                //   setInvoiceItemData({
+                //     ...invoiceItemData,
+                //     price,
+                //     finalprice,
+                //   });
+                // }}
+                onChange={(e) =>
                   setInvoiceItemData({
                     ...invoiceItemData,
-                    price,
-                    finalprice,
-                  });
-                }}
+                    price: e.target.value,
+                  })
+                }
               />
 
+              <Input
+                label="قيمة الخصم"
+                className="max-w-[100px]"
+                type="number"
+                value={invoiceItemData.discount_value}
+                onChange={(e) =>
+                  setInvoiceItemData({
+                    ...invoiceItemData,
+                    discount_value: e.target.value,
+                  })
+                }
+              />
+
+              <Select
+                label="نوع الخصم"
+                className="max-w-[200px]"
+                placeholder="اختر نوع الخصم"
+                selectedKeys={
+                  invoiceItemData.discount_type
+                    ? [invoiceItemData.discount_type]
+                    : []
+                }
+                onChange={(e) =>
+                  setInvoiceItemData({
+                    ...invoiceItemData,
+                    discount_type: e.target.value,
+                  })
+                }
+              >
+                <SelectItem key="قيمة" value="قيمة">
+                  قيمة (خصم ثابت)
+                </SelectItem>
+                <SelectItem key="نسبة" value="نسبة">
+                  نسبة (٪)
+                </SelectItem>
+              </Select>
+              {/*
               <Input
                 size="sm"
                 label="السعر النهائي"
                 isReadOnly
                 className="max-w-[110px]"
                 value={invoiceItemData.finalprice}
-              />
+              /> */}
 
               <Checkbox
                 size="sm"

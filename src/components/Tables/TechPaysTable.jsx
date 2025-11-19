@@ -11,6 +11,8 @@ import {
   DropdownTrigger,
   Input,
   Pagination,
+  Select,
+  SelectItem,
   Table,
   TableBody,
   TableCell,
@@ -36,6 +38,8 @@ const columns = [
   { name: "مدفوعة", uid: "payed", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
   { name: "السعر", uid: "price", sortable: true },
+  { name: "الخصم", uid: "discount_value", sortable: true },
+  { name: "نوع الخصم", uid: "discount_type", sortable: true },
   { name: "الحرفي", uid: "technical_team_id", sortable: true },
   { name: "السعر النهائي", uid: "finalprice", sortable: true },
   { name: "عمليات", uid: "actions" },
@@ -51,6 +55,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
   "amount",
   "price",
+  "discount_value",
+  "discount_type",
   "technical_team_id",
   "finalprice",
 ];
@@ -78,6 +84,8 @@ function TechPaysTable() {
     payed: false,
     invoice_id: "",
     technical_team_id: null,
+    discount_value: "",
+    discount_type: "",
   });
 
   const fetchTechnicalTeams = () => {
@@ -153,6 +161,8 @@ function TechPaysTable() {
         amount: Number(technicalPays.amount),
         price: Number(technicalPays.price),
         finalprice: Number(technicalPays.finalprice),
+        discount_value: Number(technicalPays.discount_value),
+        discount_type: technicalPays.discount_type,
       };
 
       await addTechPays(payload);
@@ -174,6 +184,8 @@ function TechPaysTable() {
         payed: false,
         invoice_id: "",
         technical_team_id: null,
+        discount_value: "",
+        discount_type: "",
       });
 
       fetchData();
@@ -478,19 +490,20 @@ function TechPaysTable() {
                 className="max-w-[100px]"
                 value={technicalPays.amount}
                 onChange={(e) => {
-                  const amount = e.target.value;
-                  const price = technicalPays.price;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                  // const amount = e.target.value;
+                  // const price = technicalPays.price;
+                  // const finalprice = Number(price) * Number(amount) || 0;
+                  // setTechnicalPays({
+                  //   ...technicalPays,
+                  //   amount,
+                  //   finalprice,
+                  // });
 
                   setTechnicalPays({
                     ...technicalPays,
-                    amount,
-                    finalprice,
+                    amount: e.target.value,
                   });
                 }}
-                // onChange={(e) =>
-                //   setTechnicalPays({ ...technicalPays, amount: e.target.value })
-                // }
               />
 
               <Input
@@ -501,25 +514,66 @@ function TechPaysTable() {
                 className="max-w-[100px]"
                 value={technicalPays.price}
                 onChange={(e) => {
-                  const price = e.target.value;
-                  const amount = technicalPays.amount;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                  // const price = e.target.value;
+                  // const amount = technicalPays.amount;
+                  // const finalprice = Number(price) * Number(amount) || 0;
+                  // setTechnicalPays({
+                  //   ...technicalPays,
+                  //   price,
+                  //   finalprice,
+                  // });
 
                   setTechnicalPays({
                     ...technicalPays,
-                    price,
-                    finalprice,
+                    price: e.target.value,
                   });
                 }}
               />
 
-              <Input
+              {/* <Input
                 size="sm"
                 label="السعر النهائي"
                 isReadOnly
                 className="max-w-[110px]"
                 value={technicalPays.finalprice}
+              /> */}
+
+              <Input
+                label="قيمة الخصم"
+                className="max-w-[100px]"
+                type="number"
+                value={technicalPays.discount_value}
+                onChange={(e) =>
+                  setTechnicalPays({
+                    ...technicalPays,
+                    discount_value: e.target.value,
+                  })
+                }
               />
+
+              <Select
+                label="نوع الخصم"
+                className="max-w-[200px]"
+                placeholder="اختر نوع الخصم"
+                selectedKeys={
+                  technicalPays.discount_type
+                    ? [technicalPays.discount_type]
+                    : []
+                }
+                onChange={(e) =>
+                  setTechnicalPays({
+                    ...technicalPays,
+                    discount_type: e.target.value,
+                  })
+                }
+              >
+                <SelectItem key="قيمة" value="قيمة">
+                  قيمة (خصم ثابت)
+                </SelectItem>
+                <SelectItem key="نسبة" value="نسبة">
+                  نسبة (٪)
+                </SelectItem>
+              </Select>
 
               <Input
                 size="sm"

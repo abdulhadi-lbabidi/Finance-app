@@ -8,6 +8,8 @@ import {
   DropdownItem,
   Button,
 } from "@heroui/react";
+
+import logoNouh from "../assets/images/logo.svg";
 function ManageLayout() {
   const TreasureNav = [
     { name: "صناديق المدراء", path: "/tresure/admin" },
@@ -70,9 +72,10 @@ function ManageLayout() {
   return (
     <div className="flex flex-row min-h-screen">
       <div className="min-h-screen w-64 bg-gray-800 text-white flex flex-col">
-        <div className="text-2xl font-bold p-6 border-b border-gray-700">
+        <div className="text-2xl font-bold pt-2 border-b border-gray-700">
           <NavLink key={"Home"} to={"/home"}>
-            لوحة التحكم
+            {/* لوحة التحكم */}
+            <img className="h-23 m-auto" src={logoNouh} alt="logo" />
           </NavLink>
         </div>
         <Accordion className="text-white" itemClasses={itemClasses}>
@@ -267,7 +270,7 @@ function ManageLayout() {
           </Dropdown>
         </div>
       </div>
-      <div className="w-full p-3">
+      <div className="w-full p-3 overflow-auto h-screen">
         <Outlet />
       </div>
     </div>

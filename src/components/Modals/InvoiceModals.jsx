@@ -11,6 +11,8 @@ import {
   Autocomplete,
   AutocompleteItem,
   addToast,
+  SelectItem,
+  Select,
 } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
@@ -40,6 +42,11 @@ export function AddInvoiceModals({ onSaveSuccess }) {
     invoiceable_id: transactionId,
     invoiceable_type:
       type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
+
+    discount_value: "",
+    discount_type: "قيمة", // قيمة | نسبة
+
+    final_price: 0,
   });
 
   const fetchDataItems = () => {
@@ -81,6 +88,9 @@ export function AddInvoiceModals({ onSaveSuccess }) {
         invoiceable_id: transactionId,
         invoiceable_type:
           type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
+        discount_value: "",
+        discount_type: "قيمة",
+        final_price: 0,
       });
 
       // onSaveSuccess();
@@ -101,6 +111,27 @@ export function AddInvoiceModals({ onSaveSuccess }) {
       setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    const amount = parseFloat(invoices.amount) || 0;
+    const discountValue = parseFloat(invoices.discount_value) || 0;
+    const discountType = invoices.discount_type;
+
+    let finalPrice = amount;
+
+    if (discountType === "نسبة") {
+      finalPrice = amount - amount * (discountValue / 100);
+    } else {
+      finalPrice = amount - discountValue;
+    }
+
+    if (finalPrice < 0) finalPrice = 0;
+
+    setInvoices((prev) => ({
+      ...prev,
+      final_price: finalPrice,
+    }));
+  }, [invoices.amount, invoices.discount_value, invoices.discount_type]);
 
   useEffect(() => {
     fetchDataItems();
@@ -152,6 +183,39 @@ export function AddInvoiceModals({ onSaveSuccess }) {
                   }
                 />
 
+                <Input
+                  label="قيمة الخصم"
+                  type="number"
+                  value={invoices.discount_value}
+                  onChange={(e) =>
+                    setInvoices({ ...invoices, discount_value: e.target.value })
+                  }
+                />
+
+                <Select
+                  label="نوع الخصم"
+                  placeholder="اختر نوع الخصم"
+                  selectedKeys={
+                    invoices.discount_type ? [invoices.discount_type] : []
+                  }
+                  onChange={(e) =>
+                    setInvoices({ ...invoices, discount_type: e.target.value })
+                  }
+                >
+                  <SelectItem key="قيمة" value="قيمة">
+                    قيمة (خصم ثابت)
+                  </SelectItem>
+                  <SelectItem key="نسبة" value="نسبة">
+                    نسبة (٪)
+                  </SelectItem>
+                </Select>
+
+                <Input
+                  isReadOnly
+                  label="السعر النهائي"
+                  value={invoices.final_price}
+                />
+
                 <Autocomplete
                   isRequired
                   placeholder={
@@ -199,6 +263,9 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
     invoiceable_id: transactionId,
     invoiceable_type:
       type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
+    discount_value: "",
+    discount_type: "قيمة",
+    final_price: "",
   });
 
   const handleOpen = async () => {
@@ -243,7 +310,9 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
         finance_item_id: invoices.finance_item_id,
         invoiceable_id: invoices.invoiceable_id,
         invoiceable_type:
-          type === "innerTransaction" ? "InnerTransaction" : "outerTransaction",
+          type === "innerTransaction" ? "innerTransaction" : "outerTransaction",
+        discount_value: invoices.discount_value,
+        discount_type: invoices.discount_type,
       });
 
       addToast({
@@ -263,6 +332,27 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const amount = parseFloat(invoices.amount) || 0;
+    const discountValue = parseFloat(invoices.discount_value) || 0;
+    const discountType = invoices.discount_type;
+
+    let finalPrice = amount;
+
+    if (discountType === "نسبة") {
+      finalPrice = amount - amount * (discountValue / 100);
+    } else {
+      finalPrice = amount - discountValue;
+    }
+
+    if (finalPrice < 0) finalPrice = 0;
+
+    setInvoices((prev) => ({
+      ...prev,
+      final_price: finalPrice,
+    }));
+  }, [invoices.amount, invoices.discount_value, invoices.discount_type]);
 
   return (
     <>
@@ -305,6 +395,43 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
                     setInvoices({ ...invoices, amount: ev.target.value })
                   }
                 />
+
+                <Input
+                  label="قيمة الخصم"
+                  type="number"
+                  value={invoices.discount_value}
+                  onChange={(ev) =>
+                    setInvoices({
+                      ...invoices,
+                      discount_value: ev.target.value,
+                    })
+                  }
+                />
+
+                <Select
+                  label="نوع الخصم"
+                  placeholder="اختر نوع الخصم"
+                  selectedKeys={
+                    invoices.discount_type ? [invoices.discount_type] : []
+                  }
+                  onChange={(e) =>
+                    setInvoices({ ...invoices, discount_type: e.target.value })
+                  }
+                >
+                  <SelectItem key="قيمة" value="قيمة">
+                    قيمة (خصم ثابت)
+                  </SelectItem>
+                  <SelectItem key="نسبة" value="نسبة">
+                    نسبة (٪)
+                  </SelectItem>
+                </Select>
+
+                <Input
+                  isReadOnly
+                  label="السعر النهائي"
+                  value={invoices.final_price}
+                />
+
                 <Autocomplete
                   isRequired
                   selectedKey={invoices.finance_item_id?.toString()}

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -13,7 +13,6 @@ import {
   DropdownMenu,
   DropdownItem,
   Chip,
-  User,
   Pagination,
   addToast,
 } from "@heroui/react";
@@ -27,8 +26,9 @@ import {
 } from "../Modals/OuterTransactionModals";
 import { useNavigate, useParams } from "react-router-dom";
 import InvoiceIcon from "../SVG/InvoiceIcon";
+import PrintIcon from "../SVG/PrintIcon";
 
-export const columns = [
+const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "الاسم", uid: "name", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
@@ -46,7 +46,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   "desc",
   "actions",
 ];
-export const statusOptions = [
+const statusOptions = [
   { name: "Active", uid: "active" },
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
@@ -173,6 +173,16 @@ function OuterTransactionTable({ tresurefundid }) {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() => navigate(`#`)}
+            >
+              <PrintIcon />
+            </Button>
+
             <Button
               isIconOnly
               aria-label="الفواتير"

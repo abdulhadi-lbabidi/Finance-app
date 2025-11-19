@@ -179,7 +179,9 @@ function OuterTransactionTable({ tresurefundid }) {
               color="primary"
               variant="faded"
               onPress={() =>
-                navigate(`/tresure/admin/${id}/print/outerTransaction`)
+                navigate(
+                  `/tresure/admin/${id}/print/outerTransaction/${outerTransaction.id}`
+                )
               }
             >
               <PrintIcon />

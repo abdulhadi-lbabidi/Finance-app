@@ -2,9 +2,8 @@ import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import logoBlack from "../../assets/images/logoblack.png";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
-import { getInnerTransactiondata } from "../../api";
+import { useState, useEffect } from "react";
+import { getInnerTransactiondata, getOuterTransactiondata } from "../../api";
 
 function PrintInnerTransaction() {
   const contentRef = useRef();
@@ -17,16 +16,29 @@ function PrintInnerTransaction() {
   });
 
   useEffect(() => {
-    getInnerTransactiondata(transactionId).then((res) => {
-      setTransaction(res.data.InnerTransaction);
-    });
-  }, [transactionId]);
+    async function fetchData() {
+      try {
+        let response;
+        if (type === "innerTransaction") {
+          response = await getInnerTransactiondata(transactionId);
+          setTransaction(response.data.InnerTransaction);
+        } else if (type === "outerTransaction") {
+          response = await getOuterTransactiondata(transactionId);
+          setTransaction(response.data.OuterTransaction);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchData();
+  }, [type, transactionId]);
 
   if (!transaction) return <div>جاري تحميل الفاتورة...</div>;
 
   return (
-    <div className="min-h-screen  direction-rtl">
-      <div className="text-left ">
+    <div className="min-h-screen direction-rtl">
+      <div className="text-left">
         <button
           onClick={handlePrint}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -48,7 +60,7 @@ function PrintInnerTransaction() {
         </div>
 
         <h2 className="text-center text-2xl mb-8 border-b-2 border-black pb-3 font-semibold">
-          فاتورة معاملة رقم {transaction.id}#{" "}
+          فاتورة معاملة رقم {transaction.id}#
         </h2>
 
         <table className="w-full text-lg border-collapse">

@@ -3,6 +3,7 @@ import InvoicesTable from "../../components/Tables/InvoicesTable";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getInvoices } from "../../api";
+import InvoicesWithDiscountTable from "../../components/Tables/InvoicesWithDiscountTable";
 
 const Invoices = () => {
   const { type } = useParams();
@@ -43,12 +44,14 @@ const Invoices = () => {
 
       <div className="flex w-full flex-col mt-3">
         <Tabs aria-label="Options" fullWidth>
-          <Tab key="invoiceImage" title="الفواتير"></Tab>
-          <Tab key="invoiceItem" title="الفواتير مع حسومات كلية"></Tab>
+          <Tab key="invoiceImage" title="الفواتير">
+            <InvoicesTable />
+          </Tab>
+          <Tab key="invoiceItem" title="الفواتير مع حسومات كلية">
+            <InvoicesWithDiscountTable />
+          </Tab>
         </Tabs>
       </div>
-      {/*  invoices Table */}
-      <InvoicesTable />
     </>
   );
 };

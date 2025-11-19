@@ -19,9 +19,9 @@ import ChevronDownIcon from "../SVG/ChevronDownIcon";
 import SearchIcon from "../SVG/SearchIcon";
 import { getInvoices } from "../../api";
 import {
-  AddInvoiceModals,
+  AddInvoiceWithDiscountModals,
   DeleteInvoicesModal,
-  UpdateInvoicesModal,
+  UpdateInvoicesWithDiscountModal,
 } from "../Modals/InvoiceModals";
 import { useNavigate, useParams } from "react-router-dom";
 import VisibilityIcon from "../SVG/VisibilityIcon";
@@ -31,6 +31,8 @@ const columns = [
   { name: "الاسم", uid: "name", sortable: true },
   { name: "الشرح", uid: "desc", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
+  { name: "الخصم", uid: "discount_value", sortable: true },
+  { name: "نوع الخصم", uid: "discount_type", sortable: true },
   { name: "المبلغ النهائي", uid: "final_price", sortable: true },
   { name: "البند", uid: "finance_item_id", sortable: true },
   { name: "عمليات", uid: "actions" },
@@ -41,6 +43,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
   "desc",
   "amount",
+  "discount_value",
+  "discount_type",
   "final_price",
   "finance_item_id",
 ];
@@ -55,7 +59,7 @@ function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-const InvoicesTable = () => {
+const InvoicesWithDiscountTable = () => {
   const { id, transactionId } = useParams();
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
@@ -170,7 +174,10 @@ const InvoicesTable = () => {
             >
               <VisibilityIcon />
             </Button>
-            <UpdateInvoicesModal onSaveSuccess={fetchData} id={invoices.id} />
+            <UpdateInvoicesWithDiscountModal
+              onSaveSuccess={fetchData}
+              id={invoices.id}
+            />
             <DeleteInvoicesModal onSaveSuccess={fetchData} id={invoices.id} />
           </div>
         );
@@ -239,7 +246,7 @@ const InvoicesTable = () => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <AddInvoiceModals onSaveSuccess={fetchData} />
+            <AddInvoiceWithDiscountModals onSaveSuccess={fetchData} />
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -363,4 +370,4 @@ const InvoicesTable = () => {
   );
 };
 
-export default InvoicesTable;
+export default InvoicesWithDiscountTable;

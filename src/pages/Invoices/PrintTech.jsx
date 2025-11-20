@@ -3,7 +3,7 @@ import { useReactToPrint } from "react-to-print";
 import logoBlack from "../../assets/images/logoblack.png";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getInvoiceById, getTechPaysById } from "../../api";
+import { getTechPaysById } from "../../api";
 
 function PrintTech() {
   const contentRef = useRef();
@@ -45,11 +45,9 @@ function PrintTech() {
       <div
         ref={contentRef}
         className="
-            bg-white mx-auto w-[800px] p-10 rounded-xl shadow-lg
-            print:shadow-none print:w-full print:rounded-none
-          "
+            bg-white mx-auto w-[800px] p-5 rounded-xl shadow-lg"
       >
-        <div className="text-center mb-6">
+        <div className="text-center mb-3">
           <img src={logoBlack} alt="Logo" className="w-20 mx-auto" />
           <h2 className="text-2xl font-bold mt-3">شركة نوح</h2>
         </div>
@@ -86,7 +84,7 @@ function PrintTech() {
             </tr>
 
             <tr className="border-b">
-              <td className="py-3 font-semibold">مراقب الورشة:</td>
+              <td className="py-3 font-semibold"> الحرفي:</td>
               <td className="py-3">{transaction.technicalteam?.name}</td>
             </tr>
 

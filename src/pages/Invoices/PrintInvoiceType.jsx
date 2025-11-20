@@ -46,7 +46,7 @@ function PrintInvoiceType() {
         ref={contentRef}
         className="
           bg-white mx-auto w-[800px] p-10 rounded-xl shadow-lg
-          print:shadow-none print:w-full print:rounded-none
+
         "
       >
         <div className="text-center mb-6">

@@ -36,7 +36,8 @@ import LogisticForWorkshop from "./pages/Workshop/LogisticForWorkshop";
 import ItemReport from "./pages/Reports/ItemReport";
 import Invoices from "./pages/Invoices";
 import InvoiceInfo from "./pages/Invoices/InvoiceInfo";
-import PrintInnerTransaction from "./pages/Invoices/PrintInnerTransaction";
+import PrintInvoiceTransaction from "./pages/Invoices/PrintInvoiceTransaction";
+import PrintInvoiceType from "./pages/Invoices/PrintInvoiceType";
 
 const router = createBrowserRouter(
   [
@@ -59,12 +60,19 @@ const router = createBrowserRouter(
                 { index: true, element: <AdminTresure /> },
                 {
                   path: "print/:type/:transactionId",
-                  element: <PrintInnerTransaction />,
+                  element: <PrintInvoiceTransaction />,
                 },
                 {
                   path: "invoices/:transactionId/:type",
-                  element: <Invoices />,
+                  children: [
+                    { index: true, element: <Invoices /> },
+                    {
+                      path: "print",
+                      element: <PrintInvoiceType />,
+                    },
+                  ],
                 },
+
                 {
                   path: "invoices/:transactionId/:type/info/:invoiceId",
                   element: <InvoiceInfo />,

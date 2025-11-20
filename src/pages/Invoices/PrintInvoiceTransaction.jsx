@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getInnerTransactiondata, getOuterTransactiondata } from "../../api";
 
-function PrintInnerTransaction() {
+function PrintInvoiceTransaction() {
   const contentRef = useRef();
   const { type, transactionId } = useParams();
 
@@ -92,4 +92,4 @@ function PrintInnerTransaction() {
   );
 }
 
-export default PrintInnerTransaction;
+export default PrintInvoiceTransaction;

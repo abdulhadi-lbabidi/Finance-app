@@ -25,6 +25,7 @@ import {
 } from "../Modals/InvoiceModals";
 import { useNavigate, useParams } from "react-router-dom";
 import VisibilityIcon from "../SVG/VisibilityIcon";
+import PrintIcon from "../SVG/PrintIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -157,6 +158,20 @@ const InvoicesTable = () => {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${invoices.id}/${type}/print`
+                )
+              }
+            >
+              <PrintIcon />
+            </Button>
+
             <Button
               isIconOnly
               aria-label="الفواتير"

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://finince-api-test.nouh-agency.com/api",
+  baseURL: "https://finance-api-test.nouh-agency.com/api",
   // You can add headers here if needed, e.g. Authorization
 });
 

@@ -104,7 +104,7 @@ function PrintInvoiceType() {
           </tbody>
         </table>
 
-        <div className="mt-12 text-left">
+        <div className="mt-5 text-left">
           <p className="text-lg">التوقيع: _____________________</p>
         </div>
       </div>

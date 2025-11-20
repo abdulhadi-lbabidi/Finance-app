@@ -233,7 +233,6 @@ export function UpdateAdminModal({ id, onSaveSuccess }) {
     department: "",
     user: {
       email: "",
-      password: "",
     },
   });
   const [loading, setLoading] = useState(true);
@@ -353,7 +352,12 @@ export function UpdateAdminModal({ id, onSaveSuccess }) {
                   label="إيميل مستخدم "
                   type="email"
                   value={admin.user.email}
-                  onChange={handleUserChange}
+                  onChange={(ev) =>
+                    setAdmin({
+                      ...admin.user,
+                      email: ev.target.value,
+                    })
+                  }
                 />
                 <Input
                   isRequired

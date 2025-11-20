@@ -35,6 +35,8 @@ const columns = [
   { name: "الشرح", uid: "desc", sortable: true },
   { name: "مدفوعة", uid: "payed", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
+  { name: "قيمة الخصم", uid: "discount_value", sortable: true },
+  { name: "نوع الخصم", uid: "discount_type", sortable: true },
   { name: "السعر", uid: "price", sortable: true },
   { name: "السعر النهائي", uid: "finalprice", sortable: true },
   { name: "عمليات", uid: "actions" },
@@ -50,6 +52,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
   "amount",
   "price",
+  "discount_value",
+  "discount_type",
   "finalprice",
 ];
 

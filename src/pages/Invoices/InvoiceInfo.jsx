@@ -87,8 +87,8 @@ function InvoiceInfo() {
 
       <div className="flex w-full flex-col mt-3">
         <Tabs aria-label="Options" fullWidth>
-          <Tab key="invoiceImage" title="الوثائق">
-            <ImagePaysTable />
+          <Tab key="invoiceItem" title="المواد">
+            <InvoiceItemTable />
           </Tab>
           <Tab key="tech" title="الحرفيين">
             <TechPaysTable />
@@ -96,8 +96,8 @@ function InvoiceInfo() {
           <Tab key="logic" title="مراقب ورشة">
             <LogicPaysTable />
           </Tab>
-          <Tab key="invoiceItem" title="المواد">
-            <InvoiceItemTable />
+          <Tab key="invoiceImage" title="الوثائق">
+            <ImagePaysTable />
           </Tab>
         </Tabs>
       </div>

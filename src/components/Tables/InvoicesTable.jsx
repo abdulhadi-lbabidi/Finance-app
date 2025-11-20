@@ -32,7 +32,6 @@ const columns = [
   { name: "الاسم", uid: "name", sortable: true },
   { name: "الشرح", uid: "desc", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
-  { name: "المبلغ النهائي", uid: "final_price", sortable: true },
   { name: "البند", uid: "finance_item_id", sortable: true },
   { name: "عمليات", uid: "actions" },
 ];
@@ -43,7 +42,6 @@ const INITIAL_VISIBLE_COLUMNS = [
   "desc",
   "amount",
   "final_price",
-  "finance_item_id",
 ];
 
 const statusOptions = [

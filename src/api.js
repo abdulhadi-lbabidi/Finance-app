@@ -317,6 +317,9 @@ export const getTechnicalTeams = () => api.get(`/data/technical-teams`);
 // technicalTeams
 export const getLogicTeams = () => api.get(`/data/logic-teams`);
 
+// tresureFunds
+export const gettresureFunds = () => api.get(`/data/tresure_funds`);
+
 // tecPays
 export const getTechPays = () => api.get(`/data/tech-pays`);
 export const getTechPaysById = (id) => {

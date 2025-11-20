@@ -35,6 +35,8 @@ const columns = [
   { name: "مدفوعة", uid: "payed", sortable: true },
   { name: "التاريخ", uid: "indate", sortable: true },
   { name: "ملاحظات", uid: "desc", sortable: true },
+  { name: "مجموع قبل الخصم", uid: "invoices_total_before_discount" },
+  { name: "مجموع بعد الخصم", uid: "invoices_total_after_discount" },
   { name: "عمليات", uid: "actions" },
 ];
 
@@ -45,6 +47,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "payed",
   "desc",
   "actions",
+  "invoices_total_before_discount",
+  "invoices_total_after_discount",
 ];
 const statusOptions = [
   { name: "Active", uid: "active" },
@@ -160,6 +164,10 @@ function OuterTransactionTable({ tresurefundid }) {
     });
   }, [sortDescriptor, items]);
 
+  const formatValue = (value) => {
+    return value === null || value === undefined ? "—" : value;
+  };
+
   const renderCell = useCallback((outerTransaction, columnKey) => {
     const cellValue = outerTransaction[columnKey];
 
@@ -170,6 +178,12 @@ function OuterTransactionTable({ tresurefundid }) {
         } else {
           return <Chip color="danger">غير مستلم</Chip>;
         }
+
+      case "invoices_total_before_discount":
+        return formatValue(cellValue);
+
+      case "invoices_total_after_discount":
+        return formatValue(cellValue);
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">

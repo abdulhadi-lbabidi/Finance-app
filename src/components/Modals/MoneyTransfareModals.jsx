@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -10,25 +10,56 @@ import {
   Input,
   addToast,
   Tooltip,
+  Autocomplete,
+  AutocompleteItem,
 } from "@heroui/react";
 
 import {
   addMoneyTransfare,
   deleteMoneyTransfare,
   getMoneyTransfaredata,
+  gettresureFunds,
   updateMoneyTransfare,
 } from "../../api";
-import { FaBox, FaPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 export function AddMoneyTransfareModal({ onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [isVisible, setIsVisible] = useState(false);
+
+  const [tresureFund, settresureFund] = useState([]);
+  const [loadingTresureFund, setLoadingTresureFund] = useState(true);
+
   const [moneyTransfare, setMoneyTransfare] = useState({
     id: null,
     name: "",
+    desc: "",
+    amount: "",
+    from_tresure_fund_id: null,
+    to_tresure_fund_id: null,
   });
   const [loading, setLoading] = useState(false);
 
+  const fetchTresureFunds = () => {
+    // Using axios
+    gettresureFunds()
+      .then((response) => {
+        settresureFund(response.data.tresure_funds); // axios get data in response.data
+        setLoadingTresureFund(false);
+      })
+      .catch((err) => {
+        addToast({
+          title: "حدث خطاً",
+          description: `عملية برمجية رقم : ${err.message}`,
+          color: "danger",
+        });
+        setLoadingTresureFund(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchTresureFunds();
+  }, []);
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -84,6 +115,70 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
                     })
                   }
                 />
+
+                <Input
+                  isRequired
+                  label="ملاحظات"
+                  type="text"
+                  value={moneyTransfare.desc}
+                  onChange={(ev) =>
+                    setMoneyTransfare({
+                      ...moneyTransfare,
+                      desc: ev.target.value,
+                    })
+                  }
+                />
+
+                <Input
+                  isRequired
+                  label="القيمة"
+                  type="text"
+                  value={moneyTransfare.amount}
+                  onChange={(ev) =>
+                    setMoneyTransfare({
+                      ...moneyTransfare,
+                      amount: ev.target.value,
+                    })
+                  }
+                />
+
+                <Autocomplete
+                  isRequired
+                  placeholder={
+                    loadingTresureFund ? "جاري التحميل..." : "اختر ملحق "
+                  }
+                  onSelectionChange={(key) =>
+                    setMoneyTransfare({
+                      ...moneyTransfare,
+                      from_tresure_fund_id: key,
+                    })
+                  }
+                >
+                  {tresureFund.map((item) => (
+                    <AutocompleteItem key={item.id} value={item.id}>
+                      {item.name}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
+
+                <Autocomplete
+                  isRequired
+                  placeholder={
+                    loadingTresureFund ? "جاري التحميل..." : "اختر ملحق "
+                  }
+                  onSelectionChange={(key) =>
+                    setMoneyTransfare({
+                      ...moneyTransfare,
+                      to_tresure_fund_id: key,
+                    })
+                  }
+                >
+                  {tresureFund.map((item) => (
+                    <AutocompleteItem key={item.id} value={item.id}>
+                      {item.name}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>

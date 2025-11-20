@@ -129,7 +129,7 @@ function ImagePaysTable() {
 
   const handelDownload = (imageId) => {
     window.open(
-      `http://127.0.0.1:8000/api/data/invoices-images/download/${imageId}`,
+      `https://finance-api-test.nouh-agency.com/api/data/invoices-images/download/${imageId}`,
       "_self"
     );
   };

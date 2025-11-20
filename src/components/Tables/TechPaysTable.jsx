@@ -22,7 +22,7 @@ import {
 } from "@heroui/react";
 import { addTechPays, getTechnicalTeams, getTechPays } from "../../api";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
 
@@ -30,6 +30,7 @@ import {
   DeleteTechPaysModal,
   UpdateTechPaysModal,
 } from "../Modals/TechPaysModals";
+import PrintIcon from "../SVG/PrintIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -66,6 +67,8 @@ function capitalize(s) {
 }
 
 function TechPaysTable() {
+  const { id, invoiceId, transactionId, type } = useParams();
+  const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [techPays, setTechPays] = useState([]);
@@ -119,7 +122,6 @@ function TechPaysTable() {
   });
 
   const [page, setPage] = useState(1);
-  const { type, invoiceId } = useParams();
 
   const fetchData = () => {
     // Using axios
@@ -279,6 +281,20 @@ function TechPaysTable() {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoiceId}/print/tech/${techPays.id}`
+                )
+              }
+            >
+              <PrintIcon />
+            </Button>
+
             <UpdateTechPaysModal onSaveSuccess={fetchData} id={techPays.id} />
             <DeleteTechPaysModal onSaveSuccess={fetchData} id={techPays.id} />
           </div>

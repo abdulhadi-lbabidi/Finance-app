@@ -38,6 +38,9 @@ import Invoices from "./pages/Invoices";
 import InvoiceInfo from "./pages/Invoices/InvoiceInfo";
 import PrintInvoiceTransaction from "./pages/Invoices/PrintInvoiceTransaction";
 import PrintInvoiceType from "./pages/Invoices/PrintInvoiceType";
+import PrintTech from "./pages/Invoices/PrintTech";
+import PrintLogic from "./pages/Invoices/PrintLogic";
+import PrintInvoiceItem from "./pages/Invoices/PrintInvoiceItem";
 
 const router = createBrowserRouter(
   [
@@ -46,12 +49,12 @@ const router = createBrowserRouter(
       element: <ManageLayout />,
       children: [
         {
-          path: "/home",
+          path: "home",
           element: <Home />,
         },
         // Tresures selectors
         {
-          path: "/tresure/admin",
+          path: "tresure/admin",
           children: [
             { index: true, element: <SelectAdminTresure /> },
             {
@@ -72,10 +75,17 @@ const router = createBrowserRouter(
                     },
                   ],
                 },
-
                 {
                   path: "invoices/:transactionId/:type/info/:invoiceId",
-                  element: <InvoiceInfo />,
+                  children: [
+                    { index: true, element: <InvoiceInfo /> },
+                    { path: "print/tech/:techId", element: <PrintTech /> },
+                    { path: "print/logic/:logicId", element: <PrintLogic /> },
+                    {
+                      path: "print/invoice-item/:invoiceItemId",
+                      element: <PrintInvoiceItem />,
+                    },
+                  ],
                 },
               ],
             },

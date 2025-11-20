@@ -20,13 +20,14 @@ import {
 } from "@heroui/react";
 import { addInvoiceItems, getInvoiceItems } from "../../api";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
 import {
   DeleteInvoiceItemModal,
   UpdateInvoiceItemModal,
 } from "../Modals/InvoiceItemModals";
+import PrintIcon from "../SVG/PrintIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -57,7 +58,8 @@ function capitalize(s) {
 }
 
 function InvoiceItemTable() {
-  const { invoiceId } = useParams();
+  const { id, invoiceId, transactionId, type } = useParams();
+  const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [invoiceItem, setInvoiceItem] = useState([]);
@@ -245,6 +247,20 @@ function InvoiceItemTable() {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoiceId}/print/invoice-item/${invoiceItem.id}`
+                )
+              }
+            >
+              <PrintIcon />
+            </Button>
+
             <UpdateInvoiceItemModal
               onSaveSuccess={fetchData}
               id={invoiceItem.id}

@@ -22,13 +22,14 @@ import {
 } from "@heroui/react";
 import { addLogicPays, getLogicPays, getLogicTeams } from "../../api";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
 import {
   DeleteLogicPaysModal,
   UpdateLogicPaysModal,
 } from "../Modals/LogicPaysModals";
+import PrintIcon from "../SVG/PrintIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -65,7 +66,8 @@ function capitalize(s) {
 }
 
 function LogicPaysTable() {
-  const { invoiceId } = useParams();
+  const { id, invoiceId, transactionId, type } = useParams();
+  const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [logicPays, setLogicPays] = useState([]);
@@ -120,7 +122,6 @@ function LogicPaysTable() {
   });
 
   const [page, setPage] = useState(1);
-  const { type } = useParams();
 
   const fetchData = () => {
     // Using axios
@@ -280,6 +281,20 @@ function LogicPaysTable() {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoiceId}/print/logic/${logicPays.id}`
+                )
+              }
+            >
+              <PrintIcon />
+            </Button>
+
             <UpdateLogicPaysModal onSaveSuccess={fetchData} id={logicPays.id} />
             <DeleteLogicPaysModal onSaveSuccess={fetchData} id={logicPays.id} />
           </div>

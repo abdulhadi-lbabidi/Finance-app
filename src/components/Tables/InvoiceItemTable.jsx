@@ -9,6 +9,8 @@ import {
   DropdownTrigger,
   Input,
   Pagination,
+  Select,
+  SelectItem,
   Table,
   TableBody,
   TableCell,
@@ -18,13 +20,14 @@ import {
 } from "@heroui/react";
 import { addInvoiceItems, getInvoiceItems } from "../../api";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
 import {
   DeleteInvoiceItemModal,
   UpdateInvoiceItemModal,
 } from "../Modals/InvoiceItemModals";
+import PrintIcon from "../SVG/PrintIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -55,7 +58,8 @@ function capitalize(s) {
 }
 
 function InvoiceItemTable() {
-  const { invoiceId } = useParams();
+  const { id, invoiceId, transactionId, type } = useParams();
+  const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [invoiceItem, setInvoiceItem] = useState([]);
@@ -70,6 +74,8 @@ function InvoiceItemTable() {
     finalprice: "",
     payed: false,
     invoice_id: "",
+    discount_value: "",
+    discount_type: "",
   });
 
   const [visibleColumns, setVisibleColumns] = useState(
@@ -125,6 +131,17 @@ function InvoiceItemTable() {
         amount: Number(invoiceItemData.amount),
         price: Number(invoiceItemData.price),
         finalprice: Number(invoiceItemData.finalprice),
+        discount_value:
+          invoiceItemData.discount_value === "" ||
+          invoiceItemData.discount_value == null
+            ? 0
+            : Number(invoiceItemData.discount_value),
+
+        discount_type:
+          invoiceItemData.discount_type === "" ||
+          invoiceItemData.discount_type == null
+            ? "قيمة"
+            : invoiceItemData.discount_type,
       };
 
       await addInvoiceItems(payload);
@@ -144,6 +161,8 @@ function InvoiceItemTable() {
         finalprice: "",
         payed: false,
         invoice_id: "",
+        discount_type: "",
+        discount_value: "",
       });
 
       fetchData();
@@ -228,6 +247,20 @@ function InvoiceItemTable() {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoiceId}/print/invoice-item/${invoiceItem.id}`
+                )
+              }
+            >
+              <PrintIcon />
+            </Button>
+
             <UpdateInvoiceItemModal
               onSaveSuccess={fetchData}
               id={invoiceItem.id}
@@ -426,6 +459,7 @@ function InvoiceItemTable() {
               <Input
                 size="sm"
                 label="الاسم"
+                isRequired
                 className="max-w-[160px]"
                 value={invoiceItemData.name}
                 onChange={(e) =>
@@ -452,54 +486,99 @@ function InvoiceItemTable() {
               <Input
                 size="sm"
                 label="الكمية"
+                isRequired
                 type="number"
                 className="max-w-[100px]"
                 value={invoiceItemData.amount}
-                onChange={(e) => {
-                  const amount = e.target.value;
-                  const price = invoiceItemData.price;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                // onChange={(e) => {
+                //   const amount = e.target.value;
+                //   const price = invoiceItemData.price;
+                //   const finalprice = Number(price) * Number(amount) || 0;
 
-                  setInvoiceItemData({
-                    ...invoiceItemData,
-                    amount,
-                    finalprice,
-                  });
-                }}
-                // onChange={(e) =>
                 //   setInvoiceItemData({
                 //     ...invoiceItemData,
-                //     amount: e.target.value,
-                //   })
-                // }
+                //     amount,
+                //     finalprice,
+                //   });
+                // }}
+                onChange={(e) =>
+                  setInvoiceItemData({
+                    ...invoiceItemData,
+                    amount: e.target.value,
+                  })
+                }
               />
 
               <Input
                 size="sm"
                 label="السعر"
+                isRequired
                 type="number"
                 className="max-w-[100px]"
                 value={invoiceItemData.price}
-                onChange={(e) => {
-                  const price = e.target.value;
-                  const amount = invoiceItemData.amount;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                // onChange={(e) => {
+                //   const price = e.target.value;
+                //   const amount = invoiceItemData.amount;
+                //   const finalprice = Number(price) * Number(amount) || 0;
 
+                //   setInvoiceItemData({
+                //     ...invoiceItemData,
+                //     price,
+                //     finalprice,
+                //   });
+                // }}
+                onChange={(e) =>
                   setInvoiceItemData({
                     ...invoiceItemData,
-                    price,
-                    finalprice,
-                  });
-                }}
+                    price: e.target.value,
+                  })
+                }
               />
 
+              <Input
+                label="قيمة الخصم"
+                className="max-w-[100px]"
+                type="number"
+                value={invoiceItemData.discount_value}
+                onChange={(e) =>
+                  setInvoiceItemData({
+                    ...invoiceItemData,
+                    discount_value: e.target.value,
+                  })
+                }
+              />
+
+              <Select
+                label="نوع الخصم"
+                className="max-w-[200px]"
+                placeholder="اختر نوع الخصم"
+                selectedKeys={
+                  invoiceItemData.discount_type
+                    ? [invoiceItemData.discount_type]
+                    : ["قيمة"]
+                }
+                onChange={(e) =>
+                  setInvoiceItemData({
+                    ...invoiceItemData,
+                    discount_type: e.target.value,
+                  })
+                }
+              >
+                <SelectItem key="قيمة" value="قيمة">
+                  قيمة (خصم ثابت)
+                </SelectItem>
+                <SelectItem key="نسبة" value="نسبة">
+                  نسبة (٪)
+                </SelectItem>
+              </Select>
+              {/*
               <Input
                 size="sm"
                 label="السعر النهائي"
                 isReadOnly
                 className="max-w-[110px]"
                 value={invoiceItemData.finalprice}
-              />
+              /> */}
 
               <Checkbox
                 size="sm"

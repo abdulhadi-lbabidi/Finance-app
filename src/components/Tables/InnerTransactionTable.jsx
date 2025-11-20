@@ -26,6 +26,7 @@ import {
 } from "../Modals/InnerTransactionModals";
 import { useNavigate, useParams } from "react-router-dom";
 import InvoiceIcon from "../SVG/InvoiceIcon";
+import PrintIcon from "../SVG/PrintIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -172,6 +173,19 @@ function InnerTransactionTable({ tresurefundid }) {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/print/innerTransaction/${innerTransaction.id}`
+                )
+              }
+            >
+              <PrintIcon />
+            </Button>
             <Button
               isIconOnly
               aria-label="الفواتير"

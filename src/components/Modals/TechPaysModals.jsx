@@ -12,6 +12,8 @@ import {
   AutocompleteItem,
   addToast,
   Checkbox,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { useState } from "react";
 import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
@@ -39,6 +41,8 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
     payed: false,
     invoice_id: "",
     technical_team_id: null,
+    discount_value: "",
+    discount_type: "",
   });
 
   const handleOpen = async () => {
@@ -85,6 +89,8 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
         workshopname: technicalPays.workshopname,
         payed: technicalPays.payed,
         technical_team_id: technicalPays.technical_team_id,
+        discount_value: Number(technicalPays.discount_value),
+        discount_type: technicalPays.discount_type,
       });
 
       addToast({
@@ -152,45 +158,87 @@ export function UpdateTechPaysModal({ id, onSaveSuccess }) {
                   label="الكمية"
                   type="number"
                   value={technicalPays.amount}
-                  onChange={(e) => {
-                    const amount = Number(e.target.value);
-                    const price = Number(technicalPays.price);
-                    const finalprice = price * amount || 0;
-                    setTechnicalPays({
-                      ...technicalPays,
-                      amount,
-                      finalprice,
-                    });
-                  }}
-                  // onChange={(e) =>
+                  // onChange={(e) => {
+                  //   const amount = Number(e.target.value);
+                  //   const price = Number(technicalPays.price);
+                  //   const finalprice = price * amount || 0;
                   //   setTechnicalPays({
                   //     ...technicalPays,
-                  //     amount: e.target.value,
-                  //   })
-                  // }
+                  //     amount,
+                  //     finalprice,
+                  //   });
+                  // }}
+                  onChange={(e) =>
+                    setTechnicalPays({
+                      ...technicalPays,
+                      amount: e.target.value,
+                    })
+                  }
                 />
 
                 <Input
                   label="السعر"
                   type="number"
                   value={technicalPays.price}
-                  onChange={(e) => {
-                    const price = Number(e.target.value);
-                    const amount = Number(technicalPays.amount);
-                    const finalprice = price * amount || 0;
+                  // onChange={(e) => {
+                  //   const price = Number(e.target.value);
+                  //   const amount = Number(technicalPays.amount);
+                  //   const finalprice = price * amount || 0;
+                  //   setTechnicalPays({
+                  //     ...technicalPays,
+                  //     price,
+                  //     finalprice,
+                  //   });
+                  // }}
+                  onChange={(e) =>
                     setTechnicalPays({
                       ...technicalPays,
-                      price,
-                      finalprice,
-                    });
-                  }}
+                      price: e.target.value,
+                    })
+                  }
                 />
 
+                <Input
+                  label="قيمة الخصم"
+                  type="number"
+                  value={technicalPays.discount_value}
+                  onChange={(ev) =>
+                    setTechnicalPays({
+                      ...technicalPays,
+                      discount_value: ev.target.value,
+                    })
+                  }
+                />
+
+                <Select
+                  label="نوع الخصم"
+                  placeholder="اختر نوع الخصم"
+                  selectedKeys={
+                    technicalPays.discount_type
+                      ? [technicalPays.discount_type]
+                      : ["قيمة"]
+                  }
+                  onChange={(e) =>
+                    setTechnicalPays({
+                      ...technicalPays,
+                      discount_type: e.target.value,
+                    })
+                  }
+                >
+                  <SelectItem key="قيمة" value="قيمة">
+                    قيمة (خصم ثابت)
+                  </SelectItem>
+                  <SelectItem key="نسبة" value="نسبة">
+                    نسبة (٪)
+                  </SelectItem>
+                </Select>
+
+                {/*
                 <Input
                   label="السعر النهائي"
                   isReadOnly
                   value={technicalPays.finalprice}
-                />
+                /> */}
 
                 <Input
                   label="اسم الورشة"

@@ -11,6 +11,8 @@ import {
   DropdownTrigger,
   Input,
   Pagination,
+  Select,
+  SelectItem,
   Table,
   TableBody,
   TableCell,
@@ -20,7 +22,7 @@ import {
 } from "@heroui/react";
 import { addTechPays, getTechnicalTeams, getTechPays } from "../../api";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
 
@@ -28,10 +30,7 @@ import {
   DeleteTechPaysModal,
   UpdateTechPaysModal,
 } from "../Modals/TechPaysModals";
-import InvoiceInfo from "../../pages/Invoices/InvoiceInfo";
-import { TbEyeBitcoin } from "react-icons/tb";
-import { BsEyeSlashFill } from "react-icons/bs";
-import VisibilityIcon from "../SVG/VisibilityIcon";
+import PrintIcon from "../SVG/PrintIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -40,6 +39,8 @@ const columns = [
   { name: "مدفوعة", uid: "payed", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
   { name: "السعر", uid: "price", sortable: true },
+  { name: "الخصم", uid: "discount_value", sortable: true },
+  { name: "نوع الخصم", uid: "discount_type", sortable: true },
   { name: "الحرفي", uid: "technical_team_id", sortable: true },
   { name: "السعر النهائي", uid: "finalprice", sortable: true },
   { name: "عمليات", uid: "actions" },
@@ -55,6 +56,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "actions",
   "amount",
   "price",
+  "discount_value",
+  "discount_type",
   "technical_team_id",
   "finalprice",
 ];
@@ -64,6 +67,8 @@ function capitalize(s) {
 }
 
 function TechPaysTable() {
+  const { id, invoiceId, transactionId, type } = useParams();
+  const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [techPays, setTechPays] = useState([]);
@@ -82,6 +87,8 @@ function TechPaysTable() {
     payed: false,
     invoice_id: "",
     technical_team_id: null,
+    discount_value: "",
+    discount_type: "",
   });
 
   const fetchTechnicalTeams = () => {
@@ -115,7 +122,6 @@ function TechPaysTable() {
   });
 
   const [page, setPage] = useState(1);
-  const { type, invoiceId } = useParams();
 
   const fetchData = () => {
     // Using axios
@@ -157,6 +163,17 @@ function TechPaysTable() {
         amount: Number(technicalPays.amount),
         price: Number(technicalPays.price),
         finalprice: Number(technicalPays.finalprice),
+        discount_value:
+          technicalPays.discount_value === "" ||
+          technicalPays.discount_value == null
+            ? 0
+            : Number(technicalPays.discount_value),
+
+        discount_type:
+          technicalPays.discount_type === "" ||
+          technicalPays.discount_type == null
+            ? "قيمة"
+            : technicalPays.discount_type,
       };
 
       await addTechPays(payload);
@@ -178,6 +195,8 @@ function TechPaysTable() {
         payed: false,
         invoice_id: "",
         technical_team_id: null,
+        discount_value: "",
+        discount_type: "",
       });
 
       fetchData();
@@ -262,6 +281,20 @@ function TechPaysTable() {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoiceId}/print/tech/${techPays.id}`
+                )
+              }
+            >
+              <PrintIcon />
+            </Button>
+
             <UpdateTechPaysModal onSaveSuccess={fetchData} id={techPays.id} />
             <DeleteTechPaysModal onSaveSuccess={fetchData} id={techPays.id} />
           </div>
@@ -457,6 +490,7 @@ function TechPaysTable() {
                 size="sm"
                 label="الاسم"
                 className="max-w-[160px]"
+                isRequired
                 value={technicalPays.name}
                 onChange={(e) =>
                   setTechnicalPays({ ...technicalPays, name: e.target.value })
@@ -477,54 +511,99 @@ function TechPaysTable() {
                 size="sm"
                 label="الكمية"
                 type="number"
+                isRequired
                 className="max-w-[100px]"
                 value={technicalPays.amount}
                 onChange={(e) => {
-                  const amount = e.target.value;
-                  const price = technicalPays.price;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                  // const amount = e.target.value;
+                  // const price = technicalPays.price;
+                  // const finalprice = Number(price) * Number(amount) || 0;
+                  // setTechnicalPays({
+                  //   ...technicalPays,
+                  //   amount,
+                  //   finalprice,
+                  // });
 
                   setTechnicalPays({
                     ...technicalPays,
-                    amount,
-                    finalprice,
+                    amount: e.target.value,
                   });
                 }}
-                // onChange={(e) =>
-                //   setTechnicalPays({ ...technicalPays, amount: e.target.value })
-                // }
               />
 
               <Input
                 size="sm"
                 label="السعر"
+                isRequired
                 type="number"
                 className="max-w-[100px]"
                 value={technicalPays.price}
                 onChange={(e) => {
-                  const price = e.target.value;
-                  const amount = technicalPays.amount;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                  // const price = e.target.value;
+                  // const amount = technicalPays.amount;
+                  // const finalprice = Number(price) * Number(amount) || 0;
+                  // setTechnicalPays({
+                  //   ...technicalPays,
+                  //   price,
+                  //   finalprice,
+                  // });
 
                   setTechnicalPays({
                     ...technicalPays,
-                    price,
-                    finalprice,
+                    price: e.target.value,
                   });
                 }}
               />
 
-              <Input
+              {/* <Input
                 size="sm"
                 label="السعر النهائي"
                 isReadOnly
                 className="max-w-[110px]"
                 value={technicalPays.finalprice}
+              /> */}
+
+              <Input
+                label="قيمة الخصم"
+                className="max-w-[100px]"
+                type="number"
+                value={technicalPays.discount_value}
+                onChange={(e) =>
+                  setTechnicalPays({
+                    ...technicalPays,
+                    discount_value: e.target.value,
+                  })
+                }
               />
+
+              <Select
+                label="نوع الخصم"
+                className="max-w-[200px]"
+                placeholder="اختر نوع الخصم"
+                selectedKeys={
+                  technicalPays.discount_type
+                    ? [technicalPays.discount_type]
+                    : ["قيمة"]
+                }
+                onChange={(e) =>
+                  setTechnicalPays({
+                    ...technicalPays,
+                    discount_type: e.target.value,
+                  })
+                }
+              >
+                <SelectItem key="قيمة" value="قيمة">
+                  قيمة (خصم ثابت)
+                </SelectItem>
+                <SelectItem key="نسبة" value="نسبة">
+                  نسبة (٪)
+                </SelectItem>
+              </Select>
 
               <Input
                 size="sm"
                 label="اسم الورشة"
+                isRequired
                 className="max-w-[150px]"
                 value={technicalPays.workshopname}
                 onChange={(e) =>

@@ -1,78 +1,89 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Input,
-  Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  Chip,
-  Pagination,
   addToast,
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+  Pagination,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
 } from "@heroui/react";
-import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
-import { getOuterTransactions } from "../../api";
+import SearchIcon from "../SVG/SearchIcon";
+import { getInvoices } from "../../api";
 import {
-  AddOuterTransactionModal,
-  DeleteOuterTransactionModal,
-  UpdateOuterTransactionModal,
-} from "../Modals/OuterTransactionModals";
+  AddInvoiceWithDiscountModals,
+  DeleteInvoicesModal,
+  UpdateInvoicesWithDiscountModal,
+} from "../Modals/InvoiceModals";
 import { useNavigate, useParams } from "react-router-dom";
-import InvoiceIcon from "../SVG/InvoiceIcon";
-import PrintIcon from "../SVG/PrintIcon";
+import VisibilityIcon from "../SVG/VisibilityIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "الاسم", uid: "name", sortable: true },
+  { name: "الشرح", uid: "desc", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
-  { name: "مدفوعة", uid: "payed", sortable: true },
-  { name: "التاريخ", uid: "indate", sortable: true },
-  { name: "ملاحظات", uid: "desc", sortable: true },
+  { name: "الخصم", uid: "discount_value", sortable: true },
+  { name: "نوع الخصم", uid: "discount_type", sortable: true },
+  { name: "المبلغ النهائي", uid: "final_price", sortable: true },
+  { name: "البند", uid: "finance_item_id", sortable: true },
   { name: "عمليات", uid: "actions" },
 ];
 
 const INITIAL_VISIBLE_COLUMNS = [
   "name",
-  "amount",
-  "indate",
-  "payed",
-  "desc",
   "actions",
+  "desc",
+  "amount",
+  "discount_value",
+  "discount_type",
+  "final_price",
+  "finance_item_id",
 ];
+
 const statusOptions = [
   { name: "Active", uid: "active" },
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
 ];
-const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
-};
 
-export function capitalize(s) {
+function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-function OuterTransactionTable({ tresurefundid }) {
-  const { id } = useParams();
+const InvoicesWithDiscountTable = () => {
+  const { id, transactionId } = useParams();
   const navigate = useNavigate();
-  const [outerTransactions, setOuterTransactions] = useState([]);
+  const [filterValue, setFilterValue] = useState("");
+  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+  const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const [visibleColumns, setVisibleColumns] = useState(
+    new Set(INITIAL_VISIBLE_COLUMNS)
+  );
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [rowsPerPage, setRowsPerPage] = useState(15);
+  const [sortDescriptor, setSortDescriptor] = useState({
+    column: "age",
+    direction: "ascending",
+  });
+  const [page, setPage] = useState(1);
+  const { type } = useParams();
 
   const fetchData = () => {
     // Using axios
-    getOuterTransactions(tresurefundid)
+    getInvoices(type)
       .then((response) => {
-        setOuterTransactions(response.data.outertrans); // axios puts data in response.data
+        setInvoices(response.data.invoices); // axios get data in response.data
         setLoading(false);
       })
       .catch((err) => {
@@ -85,25 +96,11 @@ function OuterTransactionTable({ tresurefundid }) {
       });
   };
 
-  // Fetch data initially
   useEffect(() => {
     fetchData();
   }, []);
 
-  const [filterValue, setFilterValue] = useState("");
-  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
-  const [visibleColumns, setVisibleColumns] = useState(
-    new Set(INITIAL_VISIBLE_COLUMNS)
-  );
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [rowsPerPage, setRowsPerPage] = useState(15);
-  const [sortDescriptor, setSortDescriptor] = useState({
-    column: "age",
-    direction: "ascending",
-  });
-  const [page, setPage] = useState(1);
-
-  const pages = Math.ceil(outerTransactions.length / rowsPerPage);
+  const pages = Math.ceil(invoices.length / rowsPerPage);
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -116,33 +113,30 @@ function OuterTransactionTable({ tresurefundid }) {
   }, [visibleColumns]);
 
   const filteredItems = useMemo(() => {
-    let filteredUsers = [...outerTransactions];
+    let filteredUsers = [...invoices];
 
     if (hasSearchFilter) {
       filteredUsers = filteredUsers.filter(
-        (outerTransaction) =>
-          outerTransaction.name
+        (invoices) =>
+          invoices.name.toLowerCase().includes(filterValue.toLowerCase()) ||
+          invoices.desc?.toLowerCase().includes(filterValue.toLowerCase()) ||
+          invoices.financeitem?.name
             ?.toLowerCase()
             .includes(filterValue.toLowerCase()) ||
-          outerTransaction.amount?.toString().includes(filterValue) ||
-          outerTransaction.payed?.toString().includes(filterValue) ||
-          outerTransaction.indate?.toString().includes(filterValue) ||
-          outerTransaction.desc
-            ?.toLowerCase()
-            .includes(filterValue.toLowerCase())
+          invoices.amount?.toString().includes(filterValue)
       );
     }
     if (
       statusFilter !== "all" &&
       Array.from(statusFilter).length !== statusOptions.length
     ) {
-      filteredUsers = filteredUsers.filter((outerTransaction) =>
-        Array.from(statusFilter).includes(outerTransaction.status)
+      filteredUsers = filteredUsers.filter((invoices) =>
+        Array.from(statusFilter).includes(invoices.status)
       );
     }
 
     return filteredUsers;
-  }, [outerTransactions, filterValue, statusFilter, hasSearchFilter]);
+  }, [invoices, filterValue, statusFilter, hasSearchFilter]);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -160,33 +154,13 @@ function OuterTransactionTable({ tresurefundid }) {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = useCallback((outerTransaction, columnKey) => {
-    const cellValue = outerTransaction[columnKey];
+  const renderCell = useCallback((invoices, columnKey) => {
+    const cellValue = invoices[columnKey];
 
     switch (columnKey) {
-      case "payed":
-        if (outerTransaction.payed === 1) {
-          return <Chip color="success">مستلم</Chip>;
-        } else {
-          return <Chip color="danger">غير مستلم</Chip>;
-        }
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
-            <Button
-              isIconOnly
-              aria-label="طباعة"
-              color="primary"
-              variant="faded"
-              onPress={() =>
-                navigate(
-                  `/tresure/admin/${id}/print/outerTransaction/${outerTransaction.id}`
-                )
-              }
-            >
-              <PrintIcon />
-            </Button>
-
             <Button
               isIconOnly
               aria-label="الفواتير"
@@ -194,23 +168,21 @@ function OuterTransactionTable({ tresurefundid }) {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/invoices/${outerTransaction.id}/outerTransaction`
+                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoices.id}`
                 )
               }
             >
-              <InvoiceIcon />
+              <VisibilityIcon />
             </Button>
-
-            <UpdateOuterTransactionModal
+            <UpdateInvoicesWithDiscountModal
               onSaveSuccess={fetchData}
-              id={outerTransaction.id}
+              id={invoices.id}
             />
-            <DeleteOuterTransactionModal
-              onSaveSuccess={fetchData}
-              id={outerTransaction.id}
-            />
+            <DeleteInvoicesModal onSaveSuccess={fetchData} id={invoices.id} />
           </div>
         );
+      case "finance_item_id":
+        return invoices.financeitem?.name || "-";
       default:
         return cellValue;
     }
@@ -232,7 +204,7 @@ function OuterTransactionTable({ tresurefundid }) {
 
   const topContent = useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mt-3">
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
@@ -240,7 +212,7 @@ function OuterTransactionTable({ tresurefundid }) {
               base: "w-full sm:max-w-[44%]",
               inputWrapper: "border-1",
             }}
-            placeholder=" بحث..."
+            placeholder="البحث عن طريق الاسم"
             size="sm"
             startContent={<SearchIcon className="text-default-300" />}
             value={filterValue}
@@ -274,15 +246,12 @@ function OuterTransactionTable({ tresurefundid }) {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <AddOuterTransactionModal
-              tresurefundid={tresurefundid}
-              onSaveSuccess={fetchData}
-            />
+            <AddInvoiceWithDiscountModals onSaveSuccess={fetchData} />
           </div>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            عدد سجلات المصاريف {outerTransactions.length}
+            عدد الفواتير {invoices.length}
           </span>
           <label className="flex items-center text-default-400 text-small">
             عدد الأسطر بالصفحة:
@@ -301,14 +270,12 @@ function OuterTransactionTable({ tresurefundid }) {
     );
   }, [
     filterValue,
-    fetchData,
-    rowsPerPage,
-    statusFilter,
     visibleColumns,
     onSearchChange,
     onRowsPerPageChange,
-    outerTransactions.length,
-    hasSearchFilter,
+    rowsPerPage,
+    fetchData,
+    invoices.length,
   ]);
 
   const bottomContent = useMemo(() => {
@@ -354,9 +321,11 @@ function OuterTransactionTable({ tresurefundid }) {
     []
   );
 
-  if (loading) return <div>Loading outerTransactions...</div>;
-  if (error) return <div className="text-red-500">Error: {error}</div>;
-  return (
+  return loading ? (
+    <div className="text-center p-5 text-default-400">
+      جاري تحميل الفواتير...
+    </div>
+  ) : (
     <Table
       isCompact
       removeWrapper
@@ -388,10 +357,7 @@ function OuterTransactionTable({ tresurefundid }) {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody
-        emptyContent={"No outerTransactions found"}
-        items={sortedItems}
-      >
+      <TableBody emptyContent={"لا توجد فواتير"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
@@ -402,6 +368,6 @@ function OuterTransactionTable({ tresurefundid }) {
       </TableBody>
     </Table>
   );
-}
+};
 
-export default OuterTransactionTable;
+export default InvoicesWithDiscountTable;

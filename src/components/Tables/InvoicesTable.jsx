@@ -25,17 +25,26 @@ import {
 } from "../Modals/InvoiceModals";
 import { useNavigate, useParams } from "react-router-dom";
 import VisibilityIcon from "../SVG/VisibilityIcon";
+import PrintIcon from "../SVG/PrintIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "الاسم", uid: "name", sortable: true },
   { name: "الشرح", uid: "desc", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
+  { name: "المبلغ النهائي", uid: "final_price", sortable: true },
   { name: "البند", uid: "finance_item_id", sortable: true },
   { name: "عمليات", uid: "actions" },
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "actions", "desc", "amount"];
+const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "actions",
+  "desc",
+  "amount",
+  "final_price",
+  "finance_item_id",
+];
 
 const statusOptions = [
   { name: "Active", uid: "active" },
@@ -149,6 +158,20 @@ const InvoicesTable = () => {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${invoices.id}/${type}/print`
+                )
+              }
+            >
+              <PrintIcon />
+            </Button>
+
             <Button
               isIconOnly
               aria-label="الفواتير"

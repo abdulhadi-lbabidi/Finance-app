@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -8,11 +8,8 @@ import {
   Button,
   useDisclosure,
   Input,
-  Divider,
   addToast,
   Tooltip,
-  user,
-  Spinner,
   NumberInput,
   Checkbox,
 } from "@heroui/react";
@@ -23,7 +20,7 @@ import {
   getInnerTransactiondata,
   updateInnerTransaction,
 } from "../../api";
-import { FaBox, FaPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 export function AddInnerTransactionModal({ onSaveSuccess, tresurefundid }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();

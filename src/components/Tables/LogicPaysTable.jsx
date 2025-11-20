@@ -11,6 +11,8 @@ import {
   DropdownTrigger,
   Input,
   Pagination,
+  Select,
+  SelectItem,
   Table,
   TableBody,
   TableCell,
@@ -20,13 +22,14 @@ import {
 } from "@heroui/react";
 import { addLogicPays, getLogicPays, getLogicTeams } from "../../api";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
 import {
   DeleteLogicPaysModal,
   UpdateLogicPaysModal,
 } from "../Modals/LogicPaysModals";
+import PrintIcon from "../SVG/PrintIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -35,6 +38,8 @@ const columns = [
   { name: "مدفوعة", uid: "payed", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
   { name: "السعر", uid: "price", sortable: true },
+  { name: "الخصم", uid: "discount_value", sortable: true },
+  { name: "نوع الخصم", uid: "discount_type", sortable: true },
   { name: "مراقب ورشة", uid: "logistic_team_id", sortable: true },
   { name: "السعر النهائي", uid: "finalprice", sortable: true },
   { name: "عمليات", uid: "actions" },
@@ -52,6 +57,8 @@ const INITIAL_VISIBLE_COLUMNS = [
   "price",
   "logistic_team_id",
   "finalprice",
+  "discount_value",
+  "discount_type",
 ];
 
 function capitalize(s) {
@@ -59,7 +66,8 @@ function capitalize(s) {
 }
 
 function LogicPaysTable() {
-  const { invoiceId } = useParams();
+  const { id, invoiceId, transactionId, type } = useParams();
+  const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [logicPays, setLogicPays] = useState([]);
@@ -79,6 +87,8 @@ function LogicPaysTable() {
     payed: false,
     invoice_id: "",
     logistic_team_id: null,
+    discount_value: "",
+    discount_type: "",
   });
 
   const fetchLogisticTeams = () => {
@@ -112,7 +122,6 @@ function LogicPaysTable() {
   });
 
   const [page, setPage] = useState(1);
-  const { type } = useParams();
 
   const fetchData = () => {
     // Using axios
@@ -154,6 +163,17 @@ function LogicPaysTable() {
         amount: Number(logisticPays.amount),
         price: Number(logisticPays.price),
         finalprice: Number(logisticPays.finalprice),
+        discount_value:
+          logisticPays.discount_value === "" ||
+          logisticPays.discount_value == null
+            ? 0
+            : Number(logisticPays.discount_value),
+
+        discount_type:
+          logisticPays.discount_type === "" ||
+          logisticPays.discount_type == null
+            ? "قيمة"
+            : logisticPays.discount_type,
       };
 
       await addLogicPays(payload);
@@ -175,6 +195,8 @@ function LogicPaysTable() {
         payed: false,
         invoice_id: "",
         logistic_team_id: null,
+        discount_value: "",
+        discount_type: "",
       });
 
       fetchData();
@@ -259,6 +281,20 @@ function LogicPaysTable() {
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
+            <Button
+              isIconOnly
+              aria-label="طباعة"
+              color="primary"
+              variant="faded"
+              onPress={() =>
+                navigate(
+                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoiceId}/print/logic/${logicPays.id}`
+                )
+              }
+            >
+              <PrintIcon />
+            </Button>
+
             <UpdateLogicPaysModal onSaveSuccess={fetchData} id={logicPays.id} />
             <DeleteLogicPaysModal onSaveSuccess={fetchData} id={logicPays.id} />
           </div>
@@ -453,6 +489,7 @@ function LogicPaysTable() {
               <Input
                 size="sm"
                 label="الاسم"
+                isRequired
                 className="max-w-[160px]"
                 value={logisticPays.name}
                 onChange={(e) =>
@@ -474,54 +511,97 @@ function LogicPaysTable() {
                 size="sm"
                 label="الكمية"
                 type="number"
+                isRequired
                 className="max-w-[100px]"
                 value={logisticPays.amount}
-                onChange={(e) => {
-                  const amount = e.target.value;
-                  const price = logisticPays.price;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                // onChange={(e) => {
+                //   const amount = e.target.value;
+                //   const price = logisticPays.price;
+                //   const finalprice = Number(price) * Number(amount) || 0;
 
-                  setLogisticPays({
-                    ...logisticPays,
-                    amount,
-                    finalprice,
-                  });
-                }}
-                // onChange={(e) =>
-                //   setLogisticPays({ ...logisticPays, amount: e.target.value })
-                // }
+                //   setLogisticPays({
+                //     ...logisticPays,
+                //     amount,
+                //     finalprice,
+                //   });
+                // }}
+                onChange={(e) =>
+                  setLogisticPays({ ...logisticPays, amount: e.target.value })
+                }
               />
 
               <Input
                 size="sm"
                 label="السعر"
                 type="number"
+                isRequired
                 className="max-w-[100px]"
                 value={logisticPays.price}
-                onChange={(e) => {
-                  const price = e.target.value;
-                  const amount = logisticPays.amount;
-                  const finalprice = Number(price) * Number(amount) || 0;
+                // onChange={(e) => {
+                //   const price = e.target.value;
+                //   const amount = logisticPays.amount;
+                //   const finalprice = Number(price) * Number(amount) || 0;
 
-                  setLogisticPays({
-                    ...logisticPays,
-                    price,
-                    finalprice,
-                  });
-                }}
+                //   setLogisticPays({
+                //     ...logisticPays,
+                //     price,
+                //     finalprice,
+                //   });
+                // }}
+                onChange={(e) =>
+                  setLogisticPays({ ...logisticPays, price: e.target.value })
+                }
               />
 
-              <Input
+              {/* <Input
                 size="sm"
                 label="السعر النهائي"
                 isReadOnly
                 className="max-w-[110px]"
                 value={logisticPays.finalprice}
+              /> */}
+
+              <Input
+                label="قيمة الخصم"
+                className="max-w-[100px]"
+                type="number"
+                value={logisticPays.discount_value}
+                onChange={(e) =>
+                  setLogisticPays({
+                    ...logisticPays,
+                    discount_value: e.target.value,
+                  })
+                }
               />
+
+              <Select
+                label="نوع الخصم"
+                className="max-w-[200px]"
+                placeholder="اختر نوع الخصم"
+                selectedKeys={
+                  logisticPays.discount_type
+                    ? [logisticPays.discount_type]
+                    : ["قيمة"]
+                }
+                onChange={(e) =>
+                  setLogisticPays({
+                    ...logisticPays,
+                    discount_type: e.target.value,
+                  })
+                }
+              >
+                <SelectItem key="قيمة" value="قيمة">
+                  قيمة (خصم ثابت)
+                </SelectItem>
+                <SelectItem key="نسبة" value="نسبة">
+                  نسبة (٪)
+                </SelectItem>
+              </Select>
 
               <Input
                 size="sm"
                 label="اسم الورشة"
+                isRequired
                 className="max-w-[150px]"
                 value={logisticPays.workshopname}
                 onChange={(e) =>

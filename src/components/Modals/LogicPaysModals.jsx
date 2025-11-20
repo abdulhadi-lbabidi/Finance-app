@@ -12,6 +12,8 @@ import {
   AutocompleteItem,
   addToast,
   Checkbox,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { useState } from "react";
 import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
@@ -40,6 +42,8 @@ export function UpdateLogicPaysModal({ id, onSaveSuccess }) {
     payed: false,
     invoice_id: "",
     logistic_team_id: null,
+    discount_value: "",
+    discount_type: "",
   });
 
   const handleOpen = async () => {
@@ -86,6 +90,8 @@ export function UpdateLogicPaysModal({ id, onSaveSuccess }) {
         workshopname: logicPays.workshopname,
         payed: logicPays.payed,
         logistic_team_id: logicPays.logistic_team_id,
+        discount_value: Number(logicPays.discount_value),
+        discount_type: logicPays.discount_type,
       });
 
       addToast({
@@ -153,47 +159,88 @@ export function UpdateLogicPaysModal({ id, onSaveSuccess }) {
                   label="الكمية"
                   type="number"
                   value={logicPays.amount}
-                  onChange={(e) => {
-                    const amount = e.target.value;
-                    const price = logicPays.price;
-                    const finalprice = Number(price) * Number(amount) || 0;
+                  // onChange={(e) => {
+                  //   const amount = e.target.value;
+                  //   const price = logicPays.price;
+                  //   const finalprice = Number(price) * Number(amount) || 0;
 
-                    setLogicPays({
-                      ...logicPays,
-                      amount,
-                      finalprice,
-                    });
-                  }}
-                  // onChange={(e) =>
                   //   setLogicPays({
                   //     ...logicPays,
-                  //     amount: e.target.value,
-                  //   })
-                  // }
+                  //     amount,
+                  //     finalprice,
+                  //   });
+                  // }}
+                  onChange={(e) =>
+                    setLogicPays({
+                      ...logicPays,
+                      amount: e.target.value,
+                    })
+                  }
                 />
 
                 <Input
                   label="السعر"
                   type="number"
                   value={logicPays.price}
-                  onChange={(e) => {
-                    const price = Number(e.target.value);
-                    const amount = Number(logicPays.amount);
-                    const finalprice = price * amount || 0;
+                  // onChange={(e) => {
+                  //   const price = Number(e.target.value);
+                  //   const amount = Number(logicPays.amount);
+                  //   const finalprice = price * amount || 0;
 
+                  //   setLogicPays({
+                  //     ...logicPays,
+                  //     price,
+                  //     finalprice,
+                  //   });
+                  // }}
+                  onChange={(e) =>
                     setLogicPays({
                       ...logicPays,
-                      price,
-                      finalprice,
-                    });
-                  }}
+                      price: e.target.value,
+                    })
+                  }
                 />
 
                 <Input
+                  label="قيمة الخصم"
+                  type="number"
+                  value={logicPays.discount_value}
+                  onChange={(ev) =>
+                    setLogicPays({
+                      ...logicPays,
+                      discount_value: ev.target.value,
+                    })
+                  }
+                />
+
+                <Select
+                  label="نوع الخصم"
+                  placeholder="اختر نوع الخصم"
+                  selectedKeys={
+                    logicPays.discount_type
+                      ? [logicPays.discount_type]
+                      : ["قيمة"]
+                  }
+                  onChange={(e) =>
+                    setLogicPays({
+                      ...logicPays,
+                      discount_type: e.target.value,
+                    })
+                  }
+                >
+                  <SelectItem key="قيمة" value="قيمة">
+                    قيمة (خصم ثابت)
+                  </SelectItem>
+                  <SelectItem key="نسبة" value="نسبة">
+                    نسبة (٪)
+                  </SelectItem>
+                </Select>
+
+                {/* <Input
                   label="السعر النهائي"
                   isReadOnly
                   value={logicPays.finalprice}
-                />
+                /> */}
 
                 <Input
                   label="اسم الورشة"

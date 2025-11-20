@@ -286,6 +286,31 @@ export const deleteInvoices = (id) => {
   return api.delete(`/data/invoices/${id}`);
 };
 
+// invoices images
+export const getInvoicesImages = (type) =>
+  api.get(`/data/invoices-images/${type}`);
+
+export const addInvoicesImages = (invoiceId, formData) => {
+  return api.post(`/data/invoices-image/${invoiceId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const getInvoiceImageById = (id) => {
+  return api.get(`data/invoices-image/${id}`);
+};
+export const deleteInvoiceImage = (id) => {
+  return api.delete(`/data/invoices-image/${id}`);
+};
+// download invoices images
+
+export const downloadInvoicesImages = (imageId) =>
+  api.get(`/data/invoices-images/download/${imageId}`, {
+    responseType: "blob",
+  });
+
 // technicalTeams
 export const getTechnicalTeams = () => api.get(`/data/technical-teams`);
 

@@ -28,8 +28,8 @@ const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "الاسم", uid: "name", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
-  { name: "من رقم ملحق", uid: "from_tresure_fund_id", sortable: true },
-  { name: "الى رقم ملحق", uid: "to_tresure_fund_id", sortable: true },
+  { name: "من  ملحق", uid: "from_tresure_fund_id", sortable: true },
+  { name: "الى   ملحق", uid: "to_tresure_fund_id", sortable: true },
   { name: "عمليات", uid: "actions" },
 ];
 
@@ -166,6 +166,11 @@ function MoneyTransfareTable({ tresurefundid }) {
             />
           </div>
         );
+      case "from_tresure_fund_id":
+        return moneyTransfare.fromtresurefund?.name || "—";
+
+      case "to_tresure_fund_id":
+        return moneyTransfare.totresurefund?.name || "—";
       default:
         return cellValue;
     }

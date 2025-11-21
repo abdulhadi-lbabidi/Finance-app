@@ -297,7 +297,8 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
 export function UpdateMoneyTransfareModal({ id, onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [loading, setLoading] = useState(true);
-
+  const [tresureFunds, setTresureFunds] = useState([]);
+  const [loadingTresureFunds, setLoadingTresureFunds] = useState(true);
   const [moneyTransfare, setMoneyTransfare] = useState({
     id: null,
     name: "",
@@ -310,17 +311,24 @@ export function UpdateMoneyTransfareModal({ id, onSaveSuccess }) {
   const handleOpen = async () => {
     setLoading(true);
     try {
-      const res = await getMoneyTransfaredata(id);
-      const data = res.data.moneyTransfer;
+      const response = await getMoneyTransfaredata(id);
+      setMoneyTransfare(response.data.moneyTransfer);
+      const tresureId = response.data.moneyTransfer.fromtresurefund.tresure_id;
 
-      setMoneyTransfare({
-        id: data.id,
-        name: data.name || "",
-        desc: data.desc || "",
-        amount: data.amount || "",
-        from_tresure_fund_id: data.from_tresure_fund_id || null,
-        to_tresure_fund_id: data.to_tresure_fund_id || null,
-      });
+      //get getTresure Funds By TresureId
+      getTresureFundsByTresureId(tresureId)
+        .then((response) => {
+          setTresureFunds(response.data.funds); // axios get data in response.data
+          setLoadingTresureFunds(false);
+        })
+        .catch((err) => {
+          addToast({
+            title: "حدث خطاً",
+            description: `عملية برمجية رقم : ${err.message}`,
+            color: "danger",
+          });
+          setLoadingTresureFunds(false);
+        });
 
       setLoading(false);
       onOpen();
@@ -408,7 +416,7 @@ export function UpdateMoneyTransfareModal({ id, onSaveSuccess }) {
 
                 <Autocomplete
                   label="من الملحق"
-                  value={moneyTransfare.from_tresure_fund_id || ""}
+                  selectedKey={moneyTransfare.from_tresure_fund_id?.toString()}
                   onSelectionChange={(val) =>
                     setMoneyTransfare({
                       ...moneyTransfare,
@@ -416,16 +424,16 @@ export function UpdateMoneyTransfareModal({ id, onSaveSuccess }) {
                     })
                   }
                 >
-                  {(item) => (
-                    <AutocompleteItem key={item.id}>
+                  {tresureFunds.map((item) => (
+                    <AutocompleteItem key={item.id} value={item.id}>
                       {item.name}
                     </AutocompleteItem>
-                  )}
+                  ))}
                 </Autocomplete>
 
                 <Autocomplete
                   label="إلى الملحق"
-                  value={moneyTransfare.to_tresure_fund_id || ""}
+                  selectedKey={moneyTransfare.to_tresure_fund_id?.toString()}
                   onSelectionChange={(val) =>
                     setMoneyTransfare({
                       ...moneyTransfare,
@@ -433,11 +441,11 @@ export function UpdateMoneyTransfareModal({ id, onSaveSuccess }) {
                     })
                   }
                 >
-                  {(item) => (
-                    <AutocompleteItem key={item.id}>
+                  {tresureFunds.map((item) => (
+                    <AutocompleteItem key={item.id} value={item.id}>
                       {item.name}
                     </AutocompleteItem>
-                  )}
+                  ))}
                 </Autocomplete>
               </ModalBody>
               <ModalFooter>

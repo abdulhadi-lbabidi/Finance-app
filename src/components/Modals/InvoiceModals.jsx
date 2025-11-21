@@ -231,19 +231,7 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
     try {
       const response = await getInvoiceById(id);
       setInvoices(response.data.invoice);
-      getFinanceItems()
-        .then((response) => {
-          setFinanceItems(response.data.items); // axios get data in response.data
-          setLoadingItems(false);
-        })
-        .catch((err) => {
-          addToast({
-            title: "حدث خطاً",
-            description: `عملية برمجية رقم : ${err.message}`,
-            color: "danger",
-          });
-          setLoadingItems(false);
-        });
+
       onOpen();
     } catch (err) {
       addToast({

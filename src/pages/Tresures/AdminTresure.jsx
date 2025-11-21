@@ -1,9 +1,12 @@
 import {
+  Accordion,
+  AccordionItem,
   addToast,
   Autocomplete,
   AutocompleteItem,
   Card,
   CardBody,
+  Divider,
   Tab,
   Tabs,
 } from "@heroui/react";
@@ -13,6 +16,11 @@ import MoneyTransfareTable from "../../components/Tables/MoneyTransfareTable";
 import InnerTransactionTable from "../../components/Tables/InnerTransactionTable";
 import { getAdminTresure, getTresureFunds } from "../../api";
 import { useParams } from "react-router-dom";
+import {
+  AddTresureModal,
+  DeleteTresureModal,
+  UpdateTresureModal,
+} from "../../components/Modals/TresureModals";
 
 function AdminTresure() {
   const [admins, setAdmins] = useState([]);
@@ -21,7 +29,6 @@ function AdminTresure() {
   const [tresure, setTresures] = useState([]);
   const [tresureFunds, setTresureFunds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { id } = useParams();
 
   const fetchData = () => {
@@ -104,7 +111,58 @@ function AdminTresure() {
           <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
         )}
       </Autocomplete>
+      {/* Add tresure */}
+      <AddTresureModal
+        onSaveSuccess={fetchData}
+        type={"admin"}
+        id={admins.id}
+      />
 
+      {/* Accordion for Treasures */}
+      <div className="">
+        <Accordion variant="splitted">
+          <AccordionItem
+            key="main"
+            aria-label="جميع الصناديق"
+            title="جميع الصناديق"
+          >
+            {/* All Treasures Table */}
+            <div className=" bg-white p-2 rounded ">
+              {/* Table header */}
+              <div className="grid grid-cols-4 font-bold text-gray-700 border-b pb-2">
+                <span>الاسم</span>
+                <span>الحالة</span>
+                <span>عمليات</span>
+              </div>
+              {/* Rows */}
+              {tresure.map((tre) => (
+                <div
+                  key={tre.id}
+                  className="grid grid-cols-4 text-gray-700 py-4 border-b items-center"
+                >
+                  {/* Name */}
+                  <span>{tre.name}</span>
+
+                  {/* Active */}
+                  <span
+                    className={tre.active ? "text-green-600" : "text-red-600"}
+                  >
+                    {tre.active ? "مفعّل" : "غير مفعّل"}
+                  </span>
+
+                  {/* Edit + Delete */}
+                  <div className="flex gap-2">
+                    <UpdateTresureModal id={tre.id} onSaveSuccess={fetchData} />
+                    <DeleteTresureModal id={tre.id} onSaveSuccess={fetchData} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </AccordionItem>
+        </Accordion>
+      </div>
+
+      {/* ملحق */}
       {selectedTresure && (
         <Autocomplete
           allowsCustomValue={true}
@@ -119,6 +177,12 @@ function AdminTresure() {
             <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
           )}
         </Autocomplete>
+        // Add tresureFund
+        // <AddTresureModal
+        //     onSaveSuccess={fetchData}
+        //     type={"admin"}
+        //     id={admins.id}
+        //   />
       )}
       {selectedTresureFund && (
         <div className="flex w-full flex-col">

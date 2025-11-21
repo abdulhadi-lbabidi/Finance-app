@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -8,11 +8,8 @@ import {
   Button,
   useDisclosure,
   Input,
-  Divider,
   addToast,
   Tooltip,
-  user,
-  Spinner,
   AutocompleteItem,
   Autocomplete,
 } from "@heroui/react";
@@ -24,7 +21,7 @@ import {
   getWorkshopdata,
   updateWorkshop,
 } from "../../api";
-import { FaBox, FaPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 export function AddWorkshopModal({ onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();

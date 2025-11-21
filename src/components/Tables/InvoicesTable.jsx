@@ -33,6 +33,9 @@ const columns = [
   { name: "الشرح", uid: "desc", sortable: true },
   { name: "القيمة", uid: "amount", sortable: true },
   { name: "البند", uid: "finance_item_id", sortable: true },
+
+  { name: "إجمالي قبل الخصم", uid: "total_before_discount", sortable: true },
+  { name: "إجمالي بعد الخصم", uid: "total_after_discount", sortable: true },
   { name: "عمليات", uid: "actions" },
 ];
 
@@ -42,6 +45,10 @@ const INITIAL_VISIBLE_COLUMNS = [
   "desc",
   "amount",
   "final_price",
+  "finance_item_id",
+
+  "total_before_discount",
+  "total_after_discount",
 ];
 
 const statusOptions = [

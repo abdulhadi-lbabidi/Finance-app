@@ -34,7 +34,7 @@ const columns = [
   { name: "الاسم", uid: "name", sortable: true },
   { name: "الشرح", uid: "desc", sortable: true },
   { name: "مدفوعة", uid: "payed", sortable: true },
-  { name: "القيمة", uid: "amount", sortable: true },
+  { name: "الكمية", uid: "amount", sortable: true },
   { name: "قيمة الخصم", uid: "discount_value", sortable: true },
   { name: "نوع الخصم", uid: "discount_type", sortable: true },
   { name: "السعر", uid: "price", sortable: true },

@@ -18,76 +18,135 @@ import {
   addMoneyTransfare,
   deleteMoneyTransfare,
   getMoneyTransfaredata,
-  gettresureFunds,
+  getTresureByType,
+  getTresureFundsByTresureId,
+  getTresuresByUser,
+  getUsersByType,
   updateMoneyTransfare,
 } from "../../api";
 import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 export function AddMoneyTransfareModal({ onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [isVisible, setIsVisible] = useState(false);
 
-  const [tresureFund, settresureFund] = useState([]);
-  const [loadingTresureFund, setLoadingTresureFund] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const [type, setType] = useState(null);
+  const [types, setTypes] = useState([]);
+  const [loadingTypes, setLoadingTypes] = useState(true);
+
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const [tresures, setTresures] = useState([]);
+  const [selectedTresure, setSelectedTresure] = useState(null);
+
+  const [funds, setFunds] = useState([]);
+  const [fromFund, setFromFund] = useState(null);
+  const [toFund, setToFund] = useState(null);
 
   const [moneyTransfare, setMoneyTransfare] = useState({
-    id: null,
     name: "",
     desc: "",
     amount: "",
     from_tresure_fund_id: null,
     to_tresure_fund_id: null,
   });
-  const [loading, setLoading] = useState(false);
 
-  const fetchTresureFunds = () => {
-    // Using axios
-    gettresureFunds()
-      .then((response) => {
-        settresureFund(response.data.tresure_funds); // axios get data in response.data
-        setLoadingTresureFund(false);
+  //==============================
+  // LOAD TYPES
+  //==============================
+  useEffect(() => {
+    getTresureByType()
+      .then((res) => {
+        setTypes(
+          res.data.truserTtype.map((t) => ({
+            key: t,
+            label: t,
+          }))
+        );
+        setLoadingTypes(false);
       })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoadingTresureFund(false);
-      });
+      .catch(() => setLoadingTypes(false));
+  }, []);
+
+  //==============================
+  // TYPE CHANGE
+  //==============================
+  const handleTypeChange = (selectedType) => {
+    setType(selectedType);
+    setSelectedUser(null);
+    setSelectedTresure(null);
+    setFunds([]);
+
+    getUsersByType(selectedType)
+      .then((res) => setUsers(res.data.users))
+      .catch((err) =>
+        addToast({ title: "خطأ", description: err.message, color: "danger" })
+      );
   };
 
-  useEffect(() => {
-    fetchTresureFunds();
-  }, []);
+  //==============================
+  // USER CHANGE
+  //==============================
+  const handleUserChange = (userId) => {
+    setSelectedUser(userId);
+    setSelectedTresure(null);
+    setFunds([]);
+
+    getTresuresByUser(userId, type)
+      .then((res) => setTresures(res.data.tresures))
+      .catch((err) =>
+        addToast({ title: "خطأ", description: err.message, color: "danger" })
+      );
+  };
+
+  //==============================
+  // TRESURE CHANGE
+  //==============================
+  const handleTresureChange = (tresureId) => {
+    setSelectedTresure(tresureId);
+    setFunds([]);
+
+    getTresureFundsByTresureId(tresureId)
+      .then((res) => setFunds(res.data.funds))
+      .catch((err) =>
+        addToast({ title: "خطأ", description: err.message, color: "danger" })
+      );
+  };
+
+  //==============================
+  // SUBMIT
+  //==============================
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      await addMoneyTransfare(moneyTransfare);
+      await addMoneyTransfare({
+        ...moneyTransfare,
+        from_tresure_fund_id: fromFund,
+        to_tresure_fund_id: toFund,
+      });
+
       addToast({
-        title: "تمت العملية بنجاح",
-        description: `تمت إضافة التحويل الجديد`,
+        title: "نجاح",
+        description: "تم إضافة التحويل بنجاح",
         color: "success",
       });
-      setLoading(false); // Axios POST request
-      setMoneyTransfare({
-        ...moneyTransfare,
-        name: "",
-      });
+
+      setLoading(false);
       onSaveSuccess();
       onClose();
     } catch (err) {
+      setLoading(false);
       addToast({
-        title: "حدث خطاً",
-        description: `عملية برمجية رقم : ${err.message}`,
+        title: "خطأ",
+        description: err.message,
         color: "danger",
       });
-      setLoading(false);
     }
   };
-
-  const toggleVisibility = () => setIsVisible(!isVisible);
 
   return (
     <>
@@ -95,97 +154,136 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
         إضافة تحويل جديد
       </Button>
 
-      <Modal backdrop={"blur"} isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
         <ModalContent>
           {(onClose) => (
             <form onSubmit={onSubmit}>
-              <ModalHeader className="flex flex-col gap-1">
-                إضافة تحويل جديد
-              </ModalHeader>
+              <ModalHeader>إضافة تحويل جديد</ModalHeader>
               <ModalBody>
-                <Input
-                  isRequired
-                  label="الاسم"
-                  type="text"
-                  value={moneyTransfare.name}
-                  onChange={(ev) =>
-                    setMoneyTransfare({
-                      ...moneyTransfare,
-                      name: ev.target.value,
-                    })
-                  }
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    isRequired
+                    label="الاسم"
+                    value={moneyTransfare.name}
+                    onChange={(e) =>
+                      setMoneyTransfare({
+                        ...moneyTransfare,
+                        name: e.target.value,
+                      })
+                    }
+                    className="w-full"
+                  />
 
-                <Input
-                  isRequired
-                  label="ملاحظات"
-                  type="text"
-                  value={moneyTransfare.desc}
-                  onChange={(ev) =>
-                    setMoneyTransfare({
-                      ...moneyTransfare,
-                      desc: ev.target.value,
-                    })
-                  }
-                />
+                  <Input
+                    label="ملاحظات"
+                    value={moneyTransfare.desc}
+                    onChange={(e) =>
+                      setMoneyTransfare({
+                        ...moneyTransfare,
+                        desc: e.target.value,
+                      })
+                    }
+                    className="w-full"
+                  />
 
-                <Input
-                  isRequired
-                  label="القيمة"
-                  type="text"
-                  value={moneyTransfare.amount}
-                  onChange={(ev) =>
-                    setMoneyTransfare({
-                      ...moneyTransfare,
-                      amount: ev.target.value,
-                    })
-                  }
-                />
+                  <Input
+                    isRequired
+                    label="القيمة"
+                    value={moneyTransfare.amount}
+                    onChange={(e) =>
+                      setMoneyTransfare({
+                        ...moneyTransfare,
+                        amount: e.target.value,
+                      })
+                    }
+                    className="w-full"
+                  />
 
-                <Autocomplete
-                  isRequired
-                  placeholder={
-                    loadingTresureFund ? "جاري التحميل..." : "اختر ملحق "
-                  }
-                  onSelectionChange={(key) =>
-                    setMoneyTransfare({
-                      ...moneyTransfare,
-                      from_tresure_fund_id: key,
-                    })
-                  }
-                >
-                  {tresureFund.map((item) => (
-                    <AutocompleteItem key={item.id} value={item.id}>
-                      {item.name}
-                    </AutocompleteItem>
-                  ))}
-                </Autocomplete>
+                  <Autocomplete
+                    allowsCustomValue={true}
+                    label="نوع الصندوق"
+                    placeholder={
+                      loadingTypes ? "جاري التحميل..." : "اختر النوع"
+                    }
+                    onSelectionChange={handleTypeChange}
+                    className="w-full"
+                  >
+                    {types.map((t) => (
+                      <AutocompleteItem key={t.key} value={t.key}>
+                        {t.label}
+                      </AutocompleteItem>
+                    ))}
+                  </Autocomplete>
 
-                <Autocomplete
-                  isRequired
-                  placeholder={
-                    loadingTresureFund ? "جاري التحميل..." : "اختر ملحق "
-                  }
-                  onSelectionChange={(key) =>
-                    setMoneyTransfare({
-                      ...moneyTransfare,
-                      to_tresure_fund_id: key,
-                    })
-                  }
-                >
-                  {tresureFund.map((item) => (
-                    <AutocompleteItem key={item.id} value={item.id}>
-                      {item.name}
-                    </AutocompleteItem>
-                  ))}
-                </Autocomplete>
+                  {type && (
+                    <Autocomplete
+                      label="اختر المستخدم"
+                      defaultItems={users}
+                      onSelectionChange={handleUserChange}
+                      className="w-full"
+                    >
+                      {(item) => (
+                        <AutocompleteItem key={item.id}>
+                          {item.name}
+                        </AutocompleteItem>
+                      )}
+                    </Autocomplete>
+                  )}
+
+                  {selectedUser && (
+                    <Autocomplete
+                      label="اختر الصندوق"
+                      defaultItems={tresures}
+                      onSelectionChange={handleTresureChange}
+                      className="w-full"
+                    >
+                      {(item) => (
+                        <AutocompleteItem key={item.id}>
+                          {item.name}
+                        </AutocompleteItem>
+                      )}
+                    </Autocomplete>
+                  )}
+
+                  {selectedTresure && (
+                    <>
+                      <Autocomplete
+                        label="من الملحق"
+                        defaultItems={funds}
+                        onSelectionChange={setFromFund}
+                        className="w-full"
+                      >
+                        {(item) => (
+                          <AutocompleteItem key={item.id}>
+                            {item.name}
+                          </AutocompleteItem>
+                        )}
+                      </Autocomplete>
+
+                      <Autocomplete
+                        label="إلى الملحق"
+                        defaultItems={funds}
+                        onSelectionChange={setToFund}
+                        className="w-full"
+                      >
+                        {(item) => (
+                          <AutocompleteItem key={item.id}>
+                            {item.name}
+                          </AutocompleteItem>
+                        )}
+                      </Autocomplete>
+                    </>
+                  )}
+                </div>
               </ModalBody>
+
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button color="danger" variant="flat" onPress={onClose}>
                   إغلاق
                 </Button>
-                <Button color="primary" type="submit" isLoading={loading}>
-                  {loading ? "جاري التحميل ..." : "حفظ"}
+
+                <Button type="submit" color="primary" isLoading={loading}>
+                  {loading ? "جاري التحميل..." : "حفظ"}
                 </Button>
               </ModalFooter>
             </form>
@@ -198,89 +296,156 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
 
 export function UpdateMoneyTransfareModal({ id, onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [isVisible, setIsVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [moneyTransfare, setMoneyTransfare] = useState({
     id: null,
     name: "",
+    desc: "",
+    amount: "",
+    from_tresure_fund_id: null,
+    to_tresure_fund_id: null,
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
+  const handleOpen = async () => {
     setLoading(true);
     try {
-      await updateMoneyTransfare(moneyTransfare.id, moneyTransfare);
-      addToast({
-        title: "تمت العملية بنجاح",
-        description: `تمت تعديل المدير`,
-        color: "success",
+      const res = await getMoneyTransfaredata(id);
+      const data = res.data.moneyTransfer;
+
+      setMoneyTransfare({
+        id: data.id,
+        name: data.name || "",
+        desc: data.desc || "",
+        amount: data.amount || "",
+        from_tresure_fund_id: data.from_tresure_fund_id || null,
+        to_tresure_fund_id: data.to_tresure_fund_id || null,
       });
-      setLoading(false); // Axios POST request
-      onSaveSuccess();
-      onClose();
+
+      setLoading(false);
+      onOpen();
     } catch (err) {
       addToast({
-        title: "حدث خطاً",
-        description: `عملية برمجية رقم : ${err.message}`,
+        title: "حدث خطأ",
+        description: err.message,
         color: "danger",
       });
       setLoading(false);
     }
   };
-  const toggleVisibility = () => setIsVisible(!isVisible);
-  const handleOpen = () => {
-    // Using axios
-    getMoneyTransfaredata(id)
-      .then((response) => {
-        setLoading(false);
-        setMoneyTransfare(response.data.type); // axios puts data in response.data
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoading(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await updateMoneyTransfare(moneyTransfare.id, moneyTransfare);
+      addToast({
+        title: "نجاح",
+        description: "تم تعديل التحويل بنجاح",
+        color: "success",
       });
-    onOpen();
+      setLoading(false);
+      onSaveSuccess();
+      onClose();
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: err.message,
+        color: "danger",
+      });
+      setLoading(false);
+    }
   };
+
   return (
     <>
       <Tooltip content="تعديل بيانات التحويل" color="success">
-        <Button color="success" isIconOnly onPress={() => handleOpen()}>
+        <Button color="success" isIconOnly onPress={handleOpen}>
           <FaPenToSquare />
         </Button>
       </Tooltip>
-      <Modal backdrop={"blur"} isOpen={isOpen} onOpenChange={onOpenChange}>
+
+      <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
-            <form onSubmit={onSubmit}>
-              <ModalHeader className="flex flex-col gap-1">
-                تعديل بيانات التحويل
-              </ModalHeader>
-              <ModalBody>
+            <form onSubmit={handleSubmit}>
+              <ModalHeader>تعديل بيانات التحويل</ModalHeader>
+              <ModalBody className="flex flex-col gap-3">
                 <Input
                   isRequired
                   label="الاسم"
-                  type="text"
                   value={moneyTransfare.name}
-                  onChange={(ev) =>
+                  onChange={(e) =>
                     setMoneyTransfare({
                       ...moneyTransfare,
-                      name: ev.target.value,
+                      name: e.target.value,
                     })
                   }
                 />
+                <Input
+                  label="ملاحظات"
+                  value={moneyTransfare.desc}
+                  onChange={(e) =>
+                    setMoneyTransfare({
+                      ...moneyTransfare,
+                      desc: e.target.value,
+                    })
+                  }
+                  className="w-full"
+                />
+                <Input
+                  isRequired
+                  label="القيمة"
+                  value={moneyTransfare.amount}
+                  onChange={(e) =>
+                    setMoneyTransfare({
+                      ...moneyTransfare,
+                      amount: e.target.value,
+                    })
+                  }
+                  className="w-full"
+                />
+
+                <Autocomplete
+                  label="من الملحق"
+                  value={moneyTransfare.from_tresure_fund_id || ""}
+                  onSelectionChange={(val) =>
+                    setMoneyTransfare({
+                      ...moneyTransfare,
+                      from_tresure_fund_id: val,
+                    })
+                  }
+                >
+                  {(item) => (
+                    <AutocompleteItem key={item.id}>
+                      {item.name}
+                    </AutocompleteItem>
+                  )}
+                </Autocomplete>
+
+                <Autocomplete
+                  label="إلى الملحق"
+                  value={moneyTransfare.to_tresure_fund_id || ""}
+                  onSelectionChange={(val) =>
+                    setMoneyTransfare({
+                      ...moneyTransfare,
+                      to_tresure_fund_id: val,
+                    })
+                  }
+                >
+                  {(item) => (
+                    <AutocompleteItem key={item.id}>
+                      {item.name}
+                    </AutocompleteItem>
+                  )}
+                </Autocomplete>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   إغلاق
                 </Button>
                 <Button color="primary" type="submit" isLoading={loading}>
-                  {loading ? "" : "حفظ"}
+                  {loading ? "جاري التحميل..." : "حفظ"}
                 </Button>
               </ModalFooter>
             </form>
@@ -300,7 +465,6 @@ export function DeleteMoneyTransfareModal({ id, onSaveSuccess }) {
     name: "",
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -309,7 +473,7 @@ export function DeleteMoneyTransfareModal({ id, onSaveSuccess }) {
       await deleteMoneyTransfare(moneyTransfare.id);
       addToast({
         title: "تمت العملية بنجاح",
-        description: `تمت حذف المدير`,
+        description: `تمت حذف العملية`,
         color: "success",
       });
       setLoading(false); // Axios POST request
@@ -331,7 +495,7 @@ export function DeleteMoneyTransfareModal({ id, onSaveSuccess }) {
     getMoneyTransfaredata(id)
       .then((response) => {
         setLoading(false);
-        setMoneyTransfare(response.data.type); // axios puts data in response.data
+        setMoneyTransfare(response.data.moneyTransfer); // axios puts data in response.data
       })
       .catch((err) => {
         addToast({
@@ -345,7 +509,7 @@ export function DeleteMoneyTransfareModal({ id, onSaveSuccess }) {
   };
   return (
     <>
-      <Tooltip content="حذف نوع المدير" color="danger">
+      <Tooltip content="حذف  التحويل" color="danger">
         <Button color="danger" isIconOnly onPress={() => handleOpen()}>
           <FaTrashCan />
         </Button>
@@ -355,7 +519,7 @@ export function DeleteMoneyTransfareModal({ id, onSaveSuccess }) {
           {(onClose) => (
             <form onSubmit={onSubmit}>
               <ModalHeader className="flex flex-col gap-1">
-                حذف نوع المدير
+                حذف التحويل
               </ModalHeader>
               <ModalBody>
                 <Input

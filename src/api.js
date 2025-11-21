@@ -365,3 +365,20 @@ export const updateInvoiceItems = (id, data) => {
 export const deleteInvoiceItems = (id) => {
   return api.delete(`/data/invoice-items/${id}`);
 };
+
+// tresures
+
+export const getTresureByType = () => {
+  return api.get("/data/tresures-type");
+};
+export const getUsersByType = (type) => {
+  return api.get(`/data/users/by-type/${type}`);
+};
+
+export const getTresuresByUser = (user_id, type) => {
+  return api.get(`/data/tresures/by-user/${user_id}/${type}`);
+};
+
+export const getTresureFundsByTresureId = (tresure_id) => {
+  return api.get(`/data/tresure-funds/${tresure_id}`);
+};

@@ -278,6 +278,22 @@ export function UpdateInvoicesModal({ id, onSaveSuccess }) {
   };
 
   useEffect(() => {
+    getFinanceItems()
+      .then((res) => {
+        setFinanceItems(res.data.items);
+        setLoadingItems(false);
+      })
+      .catch((err) => {
+        addToast({
+          title: "خطأ",
+          description: err.message,
+          color: "danger",
+        });
+        setLoadingItems(false);
+      });
+  }, []);
+
+  useEffect(() => {
     const amount = parseFloat(invoices.amount) || 0;
     const discountValue = parseFloat(invoices.discount_value) || 0;
     const discountType = invoices.discount_type;

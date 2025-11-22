@@ -73,7 +73,12 @@ export function AddTresureModal({ onSaveSuccess, id, type }) {
 
   return (
     <>
-      <Button color="primary" isIconOnly onPress={() => handleOpen()}>
+      <Button
+        color="primary"
+        className="mr-1"
+        isIconOnly
+        onPress={() => handleOpen()}
+      >
         <FaPlus />
       </Button>
       <Modal backdrop={"blur"} isOpen={isOpen} onOpenChange={onOpenChange}>

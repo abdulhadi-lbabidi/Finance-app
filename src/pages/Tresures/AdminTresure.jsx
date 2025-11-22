@@ -194,6 +194,35 @@ function AdminTresure() {
             >
               <div className="bg-white rounded ">
                 <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                  <span>
+                    مجاميع تحويلات الصندوق: {selectedTresureData.name}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                  <span>
+                    مجاميع تحويلات الصادرة من الصندوق:{" "}
+                    {selectedTresureData.name}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                  <span>
+                    مجاميع تحويلات الواردة من الصندوق:{" "}
+                    {selectedTresureData.name}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                  <span>
+                    مجاميع ايرادات الصندوق: {selectedTresureData.name}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                  <span>مجاميع مصاريف الصندوق: {selectedTresureData.name}</span>
+                </div>
+
+                <div className="grid grid-cols-2 text-gray-800 font-semibold">
                   <span>الاسم: {selectedTresureData.name}</span>
                 </div>
 
@@ -224,7 +253,11 @@ function AdminTresure() {
                     />
                     <DeleteTresureModal
                       id={selectedTresureData.id}
-                      onSaveSuccess={fetchData}
+                      onSaveSuccess={() => {
+                        fetchData();
+                        setSelectedTresure(null);
+                        setSelectedTresureData(null);
+                      }}
                     />
                   </div>
                 </div>
@@ -269,6 +302,22 @@ function AdminTresure() {
                 >
                   <div className="bg-white rounded ">
                     <div className="grid grid-cols-1 text-gray-800 font-semibold">
+                      <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                        <span>
+                          مجاميع تحويلات الملحقات الواردة:{" "}
+                          {selectedTresureData.name}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                        <span>
+                          مجاميع ايرادات الملحقات الصادرة:{" "}
+                          {selectedTresureData.name}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                        <span>مجاميع الملحق: {selectedTresureData.name}</span>
+                      </div>
+
                       <span>الاسم: {selectedTresureFundData.name}</span>
                       <span> الوصف: {selectedTresureFundData.desc}</span>
                       <span>
@@ -302,12 +351,15 @@ function AdminTresure() {
                             fetchData();
                             fetchSelectedTresureFund();
                           }}
-                          // onSaveSuccess={fetchData}
                           tresures={tresure}
                         />
                         <DeleteTresureFundModal
                           id={selectedTresureFundData.id}
-                          onSaveSuccess={fetchData}
+                          onSaveSuccess={() => {
+                            fetchData();
+                            setSelectedTresureFund(null);
+                            setSelectedTresureFundData(null);
+                          }}
                         />
                       </div>
                     </div>

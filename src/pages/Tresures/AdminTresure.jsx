@@ -13,7 +13,12 @@ import { useEffect, useState } from "react";
 import OuterTransactionTable from "../../components/Tables/OuterTransactionTable";
 import MoneyTransfareTable from "../../components/Tables/MoneyTransfareTable";
 import InnerTransactionTable from "../../components/Tables/InnerTransactionTable";
-import { getAdminTresure, getTresureFunds } from "../../api";
+import {
+  getAdminTresure,
+  getTresureById,
+  getTresureFundById,
+  getTresureFunds,
+} from "../../api";
 import { useParams } from "react-router-dom";
 import {
   AddTresureModal,
@@ -35,23 +40,8 @@ function AdminTresure() {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
 
-  // const fetchData = () => {
-  //   // Using axios
-  //   getAdminTresure(id)
-  //     .then((response) => {
-  //       setAdmins(response.data.admin); // axios puts data in response.data
-  //       setTresures(response.data.tresures); // axios puts data in response.data
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       addToast({
-  //         title: "حدث خطاً",
-  //         description: `عملية برمجية رقم : ${err.message}`,
-  //         color: "danger",
-  //       });
-  //       setLoading(false);
-  //     });
-  // };
+  const [selectedTresureData, setSelectedTresureData] = useState(null);
+  const [selectedTresureFundData, setSelectedTresureFundData] = useState(null);
 
   const fetchData = () => {
     getAdminTresure(id)
@@ -91,28 +81,67 @@ function AdminTresure() {
   }, []);
 
   const onSelectionChange = (id) => {
+    if (!id) return;
+
     setSelectedTresure(id);
-    if (id === null) {
-    } else {
-      getTresureFunds(id)
+
+    if (id) {
+      getTresureById(id)
         .then((response) => {
-          setTresureFunds(response.data.funds); // axios puts data in response.data
+          setSelectedTresureData(response.data.tresure);
         })
         .catch((err) => {
           addToast({
-            title: "حدث خطاً",
-            description: `عملية برمجية رقم : ${err.message}`,
+            title: "خطأ",
+            description: err.message,
             color: "danger",
           });
-          // setLoading(false);
         });
+    } else {
+      setSelectedTresureData(null);
     }
+
+    getTresureFunds(id)
+      .then((response) => {
+        setTresureFunds(response.data.funds); // axios puts data in response.data
+      })
+      .catch((err) => {
+        addToast({
+          title: "حدث خطاً",
+          description: `عملية برمجية رقم : ${err.message}`,
+          color: "danger",
+        });
+        // setLoading(false);
+      });
+  };
+  const fetchSelectedTresure = async () => {
+    if (!selectedTresure) return;
+    const res = await getTresureById(selectedTresure);
+    setSelectedTresureData(res.data.tresure);
+  };
+  const fetchSelectedTresureFund = async () => {
+    if (!selectedTresureFund) return;
+    const res = await getTresureFundById(selectedTresureFund);
+    setSelectedTresureFundData(res.data.tresureFund);
   };
 
   const onSelectionFundsChange = (id) => {
     setSelectedTresureFund(id);
-    if (id === null) {
+
+    if (id) {
+      getTresureFundById(id)
+        .then((response) => {
+          setSelectedTresureFundData(response.data.tresureFund);
+        })
+        .catch((err) => {
+          addToast({
+            title: "خطأ",
+            description: err.message,
+            color: "danger",
+          });
+        });
     } else {
+      setSelectedTresureFundData(null);
     }
   };
 
@@ -155,50 +184,56 @@ function AdminTresure() {
       />
 
       {/* Accordion for Treasures */}
-      <div className="">
-        <Accordion variant="splitted">
-          <AccordionItem
-            key="main"
-            aria-label="جميع الصناديق"
-            title="جميع الصناديق"
-          >
-            {/* All Treasures Table */}
-            <div className=" bg-white p-2 rounded ">
-              {/* Table header */}
-              <div className="grid grid-cols-4 font-bold text-gray-700 border-b pb-2">
-                <span>الاسم</span>
-                <span>الحالة</span>
-                <span>عمليات</span>
-              </div>
-              {/* Rows */}
-              {tresure.map((tre) => (
-                <div
-                  key={tre.id}
-                  className="grid grid-cols-4 text-gray-700 py-4 border-b items-center"
-                >
-                  {/* Name */}
-                  <span>{tre.name}</span>
+      {selectedTresureData && (
+        <div className="">
+          <Accordion variant="splitted">
+            <AccordionItem
+              key="main"
+              aria-label="معلومات الصندوق"
+              title={`معلومات الصندوق: ${selectedTresureData?.name ?? ""}`}
+            >
+              <div className="bg-white rounded ">
+                <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                  <span>الاسم: {selectedTresureData.name}</span>
+                </div>
 
-                  {/* Active */}
-                  <span
-                    className={tre.active ? "text-green-600" : "text-red-600"}
-                  >
-                    {tre.active ? "مفعّل" : "غير مفعّل"}
+                <div className="grid grid-cols-3 items-center text-gray-700">
+                  <span>
+                    الحالة:{" "}
+                    <span
+                      className={
+                        selectedTresureData.active
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {selectedTresureData.active ? "مفعّل" : "غير مفعّل"}
+                    </span>
                   </span>
 
-                  {/* Edit + Delete */}
-                  <div className="flex gap-2">
-                    <UpdateTresureModal id={tre.id} onSaveSuccess={fetchData} />
-                    <DeleteTresureModal id={tre.id} onSaveSuccess={fetchData} />
+                  <span></span>
+
+                  <div className="flex justify-end gap-2">
+                    <UpdateTresureModal
+                      id={selectedTresureData.id}
+                      tresureable_id={id}
+                      onSaveSuccess={() => {
+                        fetchData();
+                        fetchSelectedTresure();
+                      }}
+                    />
+                    <DeleteTresureModal
+                      id={selectedTresureData.id}
+                      onSaveSuccess={fetchData}
+                    />
                   </div>
                 </div>
-              ))}
-            </div>
-          </AccordionItem>
-        </Accordion>
-      </div>
+              </div>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      )}
 
-      {/* ملحق */}
       {selectedTresure && (
         <>
           <Autocomplete
@@ -222,62 +257,72 @@ function AdminTresure() {
             selectedTresureId={id}
           />
 
-          {/* Accordion for Treasures */}
-          <div className="">
-            <Accordion variant="splitted">
-              <AccordionItem
-                key="main"
-                aria-label="جميع الملحقات"
-                title="جميع الملحقات"
-              >
-                {/* All Treasures Table */}
-                <div className=" bg-white p-2 rounded ">
-                  {/* Table header */}
-                  <div className="grid grid-cols-4 font-bold text-gray-700 border-b pb-2">
-                    <span>الاسم</span>
-                    <span>الوصف</span>
-                    <span>الصندوق</span>
-                    <span>عمليات</span>
-                  </div>
-                  {/* Rows */}
-                  {tresureFunds.map((tre) => (
-                    <div
-                      key={tre.id}
-                      className="grid grid-cols-4 text-gray-700 py-4 border-b items-center"
-                    >
-                      {/* Name */}
-                      <span>{tre.name}</span>
+          {selectedTresureFundData && (
+            <div className="">
+              <Accordion variant="splitted">
+                <AccordionItem
+                  key="fund"
+                  aria-label="معلومات الملحق"
+                  title={`معلومات الملحق: ${
+                    selectedTresureFundData?.name ?? ""
+                  }`}
+                >
+                  <div className="bg-white rounded ">
+                    <div className="grid grid-cols-1 text-gray-800 font-semibold">
+                      <span>الاسم: {selectedTresureFundData.name}</span>
+                      <span> الوصف: {selectedTresureFundData.desc}</span>
+                      <span>
+                        الصندوق:
+                        {selectedTresureFundData.tresure?.name ?? "—"}
+                      </span>
+                    </div>
 
-                      {/* desc */}
-                      <span>{tre.desc}</span>
+                    <div className="grid grid-cols-3 items-center text-gray-700">
+                      <span>
+                        الحالة:{" "}
+                        <span
+                          className={
+                            selectedTresureFundData.active
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }
+                        >
+                          {selectedTresureFundData.active
+                            ? "مفعّل"
+                            : "غير مفعّل"}
+                        </span>
+                      </span>
 
-                      {/* related treasure */}
-                      <span>{tre.tresure?.name ?? "—"}</span>
+                      <span></span>
 
-                      {/* Edit + Delete */}
-                      <div className="flex gap-2">
+                      <div className="flex justify-end gap-2">
                         <UpdateTresureFundModal
-                          id={tre.id}
-                          onSaveSuccess={fetchData}
+                          id={selectedTresureFundData.id}
+                          onSaveSuccess={() => {
+                            fetchData();
+                            fetchSelectedTresureFund();
+                          }}
+                          // onSaveSuccess={fetchData}
                           tresures={tresure}
                         />
                         <DeleteTresureFundModal
-                          id={tre.id}
+                          id={selectedTresureFundData.id}
                           onSaveSuccess={fetchData}
                         />
                       </div>
                     </div>
-                  ))}
-                </div>
-              </AccordionItem>
-            </Accordion>
-          </div>
+                  </div>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          )}
         </>
       )}
+
       {/* 3 Tabs money transfare, inner transfare, outer transfare */}
       {selectedTresureFund && (
-        <div className="flex w-full flex-col">
-          <Tabs aria-label="Options" fullWidth>
+        <div className="flex w-full flex-col mt-6">
+          <Tabs aria-label="Options" fullWidth keepContentMounted>
             <Tab key="moneytrans" title="تحويل صندوق">
               <MoneyTransfareTable tresurefundid={selectedTresureFund} />
             </Tab>

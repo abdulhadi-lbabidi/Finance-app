@@ -127,7 +127,7 @@ export function AddTresureModal({ onSaveSuccess, id, type }) {
   );
 }
 
-export function UpdateTresureModal({ id, onSaveSuccess }) {
+export function UpdateTresureModal({ id, onSaveSuccess, tresureable_id }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
 
@@ -135,7 +135,7 @@ export function UpdateTresureModal({ id, onSaveSuccess }) {
     id: null,
     name: "",
     active: "",
-    tresureable_id: id,
+    tresureable_id: tresureable_id,
     tresureable_type: "admin",
   });
 
@@ -165,7 +165,7 @@ export function UpdateTresureModal({ id, onSaveSuccess }) {
       await updateTresure(tresure.id, {
         name: tresure.name,
         active: tresure.active,
-        tresureable_id: id,
+        tresureable_id: tresureable_id,
         tresureable_type: "admin",
       });
 

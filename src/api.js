@@ -395,3 +395,20 @@ export const getTresureById = (id) => {
 export const deleteTresure = (id) => {
   return api.delete(`/data/tresure/${id}`);
 };
+
+// TresureFund
+export const getAllTresureFunds = () => {
+  return api.get("/data/tresure_funds");
+};
+export const createTresureFund = (data) => {
+  return api.post("/data/tresure_funds", data);
+};
+export const updateTresureFund = (id, data) => {
+  return api.put(`/data/tresure_funds/${id}`, data);
+};
+export const getTresureFundById = (id) => {
+  return api.get(`data/tresure_funds/${id}`);
+};
+export const deleteTresureFund = (id) => {
+  return api.delete(`/data/tresure_funds/${id}`);
+};

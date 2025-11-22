@@ -1,5 +1,5 @@
 import { Accordion, AccordionItem, addToast, Divider } from "@heroui/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getInventories } from "../../api";
 import {
   AddInventoryModal,

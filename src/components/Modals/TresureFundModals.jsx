@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -10,49 +10,72 @@ import {
   Input,
   addToast,
   Tooltip,
-  Checkbox,
+  Autocomplete,
+  AutocompleteItem,
 } from "@heroui/react";
 
 import { FaPenToSquare, FaPlus, FaTrashCan } from "react-icons/fa6";
 import {
-  createTresure,
-  deleteTresure,
+  createTresureFund,
+  deleteTresureFund,
   getTresureById,
-  updateTresure,
+  getTresureFundById,
+  getTresuresByUser,
+  updateTresureFund,
 } from "../../api";
 
-export function AddTresureModal({ onSaveSuccess, id, type }) {
+export function AddTresureFundModal({ onSaveSuccess, id, type }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [tresure, setTresure] = useState({
-    id: null,
-    name: "",
-    active: false,
-    tresureable_id: id,
-    tresureable_type: type,
-  });
   const [loading, setLoading] = useState(false);
 
+  const [tresure, setTresure] = useState([]);
+  const [loadingTresure, setLoadingTresure] = useState(true);
+
+  const [tresureFund, setTresureFund] = useState({
+    id: null,
+    name: "",
+    desc: "",
+    tresure_id: id,
+  });
+
+  const fetchTresure = () => {
+    // Using axios
+    getTresuresByUser(id, type)
+      .then((response) => {
+        setTresure(response.data.tresures); // axios get data in response.data
+        setLoadingTresure(false);
+      })
+      .catch((err) => {
+        addToast({
+          title: "حدث خطاً",
+          description: `عملية برمجية رقم : ${err.message}`,
+          color: "danger",
+        });
+        setLoadingTresure(false);
+      });
+  };
+  useEffect(() => {
+    fetchTresure();
+  }, []);
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await createTresure({
-        ...tresure,
-        tresureable_id: id,
-        tresureable_type: type,
+      await createTresureFund({
+        ...tresureFund,
+        tresure_id: id,
       });
       addToast({
         title: "تمت العملية بنجاح",
-        description: `تمت إضافة  صندوق جديد`,
+        description: `تمت إضافة  ملحق جديد`,
         color: "success",
       });
       setLoading(false); // Axios POST request
-      setTresure({
+      setTresureFund({
         id: null,
         name: "",
-        active: false,
-        tresureable_id: id,
-        tresureable_type: type,
+        desc: "",
+        tresure_id: id,
       });
 
       onSaveSuccess();
@@ -81,30 +104,44 @@ export function AddTresureModal({ onSaveSuccess, id, type }) {
           {(onClose) => (
             <form onSubmit={onSubmit}>
               <ModalHeader className="flex flex-col gap-1">
-                إضافة صندوق جديد
+                إضافة ملحق جديد
               </ModalHeader>
               <ModalBody>
                 <Input
                   isRequired
                   label="الاسم"
                   type="text"
-                  value={tresure.name}
+                  value={tresureFund.name}
                   onChange={(ev) =>
-                    setTresure({ ...tresure, name: ev.target.value })
+                    setTresureFund({ ...tresureFund, name: ev.target.value })
                   }
                 />
 
-                <Checkbox
-                  isSelected={tresure.active}
-                  onValueChange={(ev) =>
-                    setTresure({
-                      ...tresure,
-                      active: ev,
-                    })
+                <Input
+                  isRequired
+                  label="الوصف"
+                  type="text"
+                  value={tresureFund.desc}
+                  onChange={(ev) =>
+                    setTresureFund({ ...tresureFund, desc: ev.target.value })
+                  }
+                />
+
+                <Autocomplete
+                  isRequired
+                  placeholder={
+                    loadingTresure ? "جاري التحميل..." : "اختر صندوق "
+                  }
+                  onSelectionChange={(key) =>
+                    setTresureFund({ ...tresureFund, tresure_id: key })
                   }
                 >
-                  تفعيل
-                </Checkbox>
+                  {tresure.map((item) => (
+                    <AutocompleteItem key={item.id} value={item.id}>
+                      {item.name}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
@@ -122,23 +159,22 @@ export function AddTresureModal({ onSaveSuccess, id, type }) {
   );
 }
 
-export function UpdateTresureModal({ id, onSaveSuccess }) {
+export function UpdateTresureFundModal({ id, onSaveSuccess, tresures }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-  const [loading, setLoading] = useState(false);
 
-  const [tresure, setTresure] = useState({
+  const [loading, setLoading] = useState(false);
+  const [tresureFund, setTresureFund] = useState({
     id: null,
     name: "",
-    active: "",
-    tresureable_id: id,
-    tresureable_type: "admin",
+    desc: "",
+    tresure_id: "",
   });
 
   const handleOpen = async () => {
     setLoading(true);
     try {
-      const response = await getTresureById(id);
-      setTresure(response.data.tresure);
+      const response = await getTresureFundById(id);
+      setTresureFund(response.data.tresureFund);
 
       onOpen();
     } catch (err) {
@@ -157,16 +193,15 @@ export function UpdateTresureModal({ id, onSaveSuccess }) {
     setLoading(true);
 
     try {
-      await updateTresure(tresure.id, {
-        name: tresure.name,
-        active: tresure.active,
-        tresureable_id: id,
-        tresureable_type: "admin",
+      await updateTresureFund(tresureFund.id, {
+        name: tresureFund.name,
+        desc: tresureFund.desc,
+        tresure_id: tresureFund.tresure_id,
       });
 
       addToast({
         title: "تمت العملية بنجاح",
-        description: "تم تعديل بيانات الصندوق بنجاح",
+        description: "تم تعديل بيانات الملحق بنجاح",
         color: "success",
       });
       onSaveSuccess();
@@ -184,7 +219,7 @@ export function UpdateTresureModal({ id, onSaveSuccess }) {
 
   return (
     <>
-      <Tooltip content="تعديل بيانات الصندوق" color="success">
+      <Tooltip content="تعديل بيانات الملحق" color="success">
         <Button color="success" isIconOnly onPress={handleOpen}>
           <FaPenToSquare />
         </Button>
@@ -195,31 +230,41 @@ export function UpdateTresureModal({ id, onSaveSuccess }) {
           {(onClose) => (
             <form onSubmit={onSubmit}>
               <ModalHeader className="flex flex-col gap-1">
-                تعديل بيانات الصندوق
+                تعديل بيانات الملحق
               </ModalHeader>
               <ModalBody>
                 <Input
                   isRequired
                   label="الاسم"
                   type="text"
-                  value={tresure.name}
+                  value={tresureFund.name}
                   onChange={(ev) =>
-                    setTresure({ ...tresure, name: ev.target.value })
+                    setTresureFund({ ...tresureFund, name: ev.target.value })
+                  }
+                />
+                <Input
+                  label="الشرح"
+                  type="text"
+                  value={tresureFund.desc}
+                  onChange={(ev) =>
+                    setTresureFund({ ...tresureFund, desc: ev.target.value })
                   }
                 />
 
-                <Checkbox
-                  isSelected={tresure.active}
-                  value={tresure.active}
-                  onValueChange={(ev) =>
-                    setTresure({
-                      ...tresure,
-                      active: ev,
-                    })
+                <Autocomplete
+                  isRequired
+                  selectedKey={String(tresureFund.tresure_id)}
+                  placeholder="اختر صندوق"
+                  onSelectionChange={(key) =>
+                    setTresureFund({ ...tresureFund, tresure_id: key })
                   }
                 >
-                  تفعيل
-                </Checkbox>
+                  {tresures.map((item) => (
+                    <AutocompleteItem key={item.id}>
+                      {item.name}
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
@@ -237,10 +282,10 @@ export function UpdateTresureModal({ id, onSaveSuccess }) {
   );
 }
 
-export function DeleteTresureModal({ id, onSaveSuccess }) {
+export function DeleteTresureFundModal({ id, onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-  const [Tresure, setTresure] = useState({
+  const [tresureFund, setTresureFund] = useState({
     name: "",
   });
   const [loading, setLoading] = useState(true);
@@ -249,10 +294,10 @@ export function DeleteTresureModal({ id, onSaveSuccess }) {
     e.preventDefault();
     setLoading(true);
     try {
-      await deleteTresure(id);
+      await deleteTresureFund(id);
       addToast({
         title: "تمت العملية بنجاح",
-        description: `تمت حذف الصندوق`,
+        description: `تمت حذف الملحق`,
         color: "success",
       });
       setLoading(false); // Axios POST request
@@ -273,7 +318,7 @@ export function DeleteTresureModal({ id, onSaveSuccess }) {
     getTresureById(id)
       .then((response) => {
         setLoading(false);
-        setTresure(response.data.tresure); // axios puts data in response.data
+        setTresureFund(response.data.tresureFund); // axios puts data in response.data
       })
       .catch((err) => {
         addToast({
@@ -288,7 +333,7 @@ export function DeleteTresureModal({ id, onSaveSuccess }) {
 
   return (
     <>
-      <Tooltip content="حذف الصندوق " color="danger">
+      <Tooltip content="حذف الملحق " color="danger">
         <Button color="danger" isIconOnly onPress={() => handleOpen()}>
           <FaTrashCan />
         </Button>
@@ -298,14 +343,14 @@ export function DeleteTresureModal({ id, onSaveSuccess }) {
           {(onClose) => (
             <form onSubmit={onSubmit}>
               <ModalHeader className="flex flex-col gap-1">
-                حذف الصندوق{" "}
+                حذف الملحق{" "}
               </ModalHeader>
               <ModalBody>
                 <Input
                   isDisabled
                   label="الاسم"
                   type="text"
-                  value={Tresure.name}
+                  value={tresureFund.name}
                 />
               </ModalBody>
               <ModalFooter>

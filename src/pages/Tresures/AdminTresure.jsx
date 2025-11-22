@@ -6,7 +6,6 @@ import {
   AutocompleteItem,
   Card,
   CardBody,
-  Divider,
   Tab,
   Tabs,
 } from "@heroui/react";
@@ -21,6 +20,11 @@ import {
   DeleteTresureModal,
   UpdateTresureModal,
 } from "../../components/Modals/TresureModals";
+import {
+  AddTresureFundModal,
+  DeleteTresureFundModal,
+  UpdateTresureFundModal,
+} from "../../components/Modals/TresureFundModals";
 
 function AdminTresure() {
   const [admins, setAdmins] = useState([]);
@@ -164,26 +168,80 @@ function AdminTresure() {
 
       {/* ملحق */}
       {selectedTresure && (
-        <Autocomplete
-          allowsCustomValue={true}
-          className="max-w-xs mx-1 my-5"
-          defaultItems={tresureFunds}
-          label="اختر الملحق"
-          variant="bordered"
-          // onInputChange={onInputChange}
-          onSelectionChange={onSelectionFundsChange}
-        >
-          {(item) => (
-            <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
-          )}
-        </Autocomplete>
-        // Add tresureFund
-        // <AddTresureModal
-        //     onSaveSuccess={fetchData}
-        //     type={"admin"}
-        //     id={admins.id}
-        //   />
+        <>
+          <Autocomplete
+            allowsCustomValue={true}
+            className="max-w-xs mx-1 my-5"
+            defaultItems={tresureFunds}
+            label="اختر الملحق"
+            variant="bordered"
+            // onInputChange={onInputChange}
+            onSelectionChange={onSelectionFundsChange}
+          >
+            {(item) => (
+              <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+            )}
+          </Autocomplete>
+          {/* // Add tresureFund */}
+          <AddTresureFundModal
+            onSaveSuccess={fetchData}
+            id={admins.id}
+            type={"admin"}
+          />
+
+          {/* Accordion for Treasures */}
+          <div className="">
+            <Accordion variant="splitted">
+              <AccordionItem
+                key="main"
+                aria-label="جميع الملحقات"
+                title="جميع الملحقات"
+              >
+                {/* All Treasures Table */}
+                <div className=" bg-white p-2 rounded ">
+                  {/* Table header */}
+                  <div className="grid grid-cols-4 font-bold text-gray-700 border-b pb-2">
+                    <span>الاسم</span>
+                    <span>الوصف</span>
+                    <span>الصندوق</span>
+                    <span>عمليات</span>
+                  </div>
+                  {/* Rows */}
+                  {tresureFunds.map((tre) => (
+                    <div
+                      key={tre.id}
+                      className="grid grid-cols-4 text-gray-700 py-4 border-b items-center"
+                    >
+                      {/* Name */}
+                      <span>{tre.name}</span>
+
+                      {/* desc */}
+                      <span>{tre.desc}</span>
+
+                      {/* related treasure */}
+                      <span>{tre.tresure?.name ?? "—"}</span>
+
+                      {/* Edit + Delete */}
+                      <div className="flex gap-2">
+                        <UpdateTresureFundModal
+                          id={tre.id}
+                          onSaveSuccess={fetchData}
+                          tresures={tresure}
+                        />
+                        <DeleteTresureFundModal
+                          id={tre.id}
+                          onSaveSuccess={fetchData}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </>
       )}
+      {/* 3 Tabs money transfare, inner transfare, outer transfare */}
       {selectedTresureFund && (
         <div className="flex w-full flex-col">
           <Tabs aria-label="Options" fullWidth>

@@ -24,7 +24,12 @@ import {
   updateTresureFund,
 } from "../../api";
 
-export function AddTresureFundModal({ onSaveSuccess, id, type }) {
+export function AddTresureFundModal({
+  onSaveSuccess,
+  id,
+  type,
+  selectedTresureId,
+}) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
 
@@ -40,10 +45,11 @@ export function AddTresureFundModal({ onSaveSuccess, id, type }) {
 
   const fetchTresure = () => {
     // Using axios
-    getTresuresByUser(id, type)
+    getTresuresByUser(selectedTresureId, type)
       .then((response) => {
         setTresure(response.data.tresures); // axios get data in response.data
         setLoadingTresure(false);
+        console.log(response.data.tresures);
       })
       .catch((err) => {
         addToast({
@@ -56,7 +62,7 @@ export function AddTresureFundModal({ onSaveSuccess, id, type }) {
   };
   useEffect(() => {
     fetchTresure();
-  }, []);
+  }, [id]);
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -91,6 +97,7 @@ export function AddTresureFundModal({ onSaveSuccess, id, type }) {
   };
 
   const handleOpen = () => {
+    fetchTresure();
     onOpen();
   };
 

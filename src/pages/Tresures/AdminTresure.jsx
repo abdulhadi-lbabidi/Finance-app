@@ -35,12 +35,44 @@ function AdminTresure() {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
 
+  // const fetchData = () => {
+  //   // Using axios
+  //   getAdminTresure(id)
+  //     .then((response) => {
+  //       setAdmins(response.data.admin); // axios puts data in response.data
+  //       setTresures(response.data.tresures); // axios puts data in response.data
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       addToast({
+  //         title: "حدث خطاً",
+  //         description: `عملية برمجية رقم : ${err.message}`,
+  //         color: "danger",
+  //       });
+  //       setLoading(false);
+  //     });
+  // };
+
   const fetchData = () => {
-    // Using axios
     getAdminTresure(id)
       .then((response) => {
-        setAdmins(response.data.admin); // axios puts data in response.data
-        setTresures(response.data.tresures); // axios puts data in response.data
+        setAdmins(response.data.admin);
+        setTresures(response.data.tresures);
+
+        if (selectedTresure) {
+          getTresureFunds(selectedTresure)
+            .then((res) => {
+              setTresureFunds(res.data.funds);
+            })
+            .catch((err) => {
+              addToast({
+                title: "حدث خطاً",
+                description: `عملية برمجية رقم : ${err.message}`,
+                color: "danger",
+              });
+            });
+        }
+
         setLoading(false);
       })
       .catch((err) => {
@@ -185,8 +217,9 @@ function AdminTresure() {
           {/* // Add tresureFund */}
           <AddTresureFundModal
             onSaveSuccess={fetchData}
-            id={admins.id}
+            id={selectedTresure}
             type={"admin"}
+            selectedTresureId={id}
           />
 
           {/* Accordion for Treasures */}

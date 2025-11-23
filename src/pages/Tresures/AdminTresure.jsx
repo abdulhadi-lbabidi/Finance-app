@@ -161,8 +161,8 @@ function AdminTresure() {
             style={{ justifyItems: "right" }}
           >
             <h1>الاسم: {admins.name}</h1>
-            <h1>مجموع الصناديق: ${totals.total_tresure_count}</h1>
-            <h1>عدد الملحقات: ${totals.total_fund_count}</h1>
+            <h1>مجموع الصناديق: {totals.total_tresure_count}</h1>
+            <h1>عدد الملحقات: {totals.total_fund_count}</h1>
             <h1>تحويلات واردة: ${totals.total_incoming}</h1>
             <h1>تحويلات صادرة: ${totals.total_outgoing}</h1>
             <h1>إيرادات: ${totals.total_inners}</h1>
@@ -208,7 +208,7 @@ function AdminTresure() {
                       مجموع الملحقات:
                     </span>{" "}
                     <span className="text-gray-700">
-                      $ {selectedTresureData.stats.fund_count}
+                      {selectedTresureData.stats.fund_count}
                     </span>
                   </h1>
                   <h1>
@@ -268,11 +268,10 @@ function AdminTresure() {
                     </span>
                   </span>
                 </div>
-
                 {/* === Row 5 – Buttons === */}
                 <div className="flex justify-end gap-2">
                   <UpdateTresureModal
-                    id={selectedTresureData.id}
+                    id={selectedTresureData.tresure.id}
                     tresureable_id={id}
                     onSaveSuccess={() => {
                       fetchData();
@@ -280,7 +279,7 @@ function AdminTresure() {
                     }}
                   />
                   <DeleteTresureModal
-                    id={selectedTresureData.id}
+                    id={selectedTresureData.tresure.id}
                     onSaveSuccess={() => {
                       fetchData();
                       setSelectedTresure(null);
@@ -316,7 +315,7 @@ function AdminTresure() {
             type={"admin"}
             selectedTresureId={id}
           />
-
+          {console.log(selectedTresureFundData)}
           {selectedTresureFundData && (
             <div className="">
               <Accordion variant="splitted">
@@ -374,7 +373,7 @@ function AdminTresure() {
                           التحويلات الواردة:
                         </span>{" "}
                         <span className="text-gray-700">
-                          4 {selectedTresureFundData.stats.total_incoming}
+                          $ {selectedTresureFundData.stats.total_incoming}
                         </span>
                       </h1>
                       <h1>
@@ -420,7 +419,7 @@ function AdminTresure() {
                     {/* === Row 6 – Buttons === */}
                     <div className="flex justify-end gap-2">
                       <UpdateTresureFundModal
-                        id={selectedTresureFundData.id}
+                        id={selectedTresureFundData.tresureFund.id}
                         tresures={tresure}
                         onSaveSuccess={() => {
                           fetchData();
@@ -428,7 +427,7 @@ function AdminTresure() {
                         }}
                       />
                       <DeleteTresureFundModal
-                        id={selectedTresureFundData.id}
+                        id={selectedTresureFundData.tresureFund.id}
                         onSaveSuccess={() => {
                           fetchData();
                           setSelectedTresureFund(null);

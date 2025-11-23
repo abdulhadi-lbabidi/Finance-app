@@ -126,17 +126,6 @@ export function AddTresureFundModal({
                 />
 
                 <Input
-                  isRequired
-                  label="المبلغ"
-                  type="number"
-                  value={tresureFund.amount}
-                  onChange={(e) =>
-                    setTresureFund({ ...tresureFund, amount: e.target.value })
-                  }
-                />
-
-                <Input
-                  isRequired
                   label="الوصف"
                   type="text"
                   value={tresureFund.desc}
@@ -264,14 +253,6 @@ export function UpdateTresureFundModal({ id, onSaveSuccess, tresures }) {
                 />
 
                 <Input
-                  label="القيمة"
-                  type="number"
-                  value={tresureFund.amount}
-                  onChange={(ev) =>
-                    setTresureFund({ ...tresureFund, amount: ev.target.value })
-                  }
-                />
-                <Input
                   label="الشرح"
                   type="text"
                   value={tresureFund.desc}
@@ -344,7 +325,7 @@ export function DeleteTresureFundModal({ id, onSaveSuccess }) {
 
   const handleOpen = () => {
     // Using axios
-    getTresureById(id)
+    getTresureFundById(id)
       .then((response) => {
         setLoading(false);
         setTresureFund(response.data.tresureFund); // axios puts data in response.data

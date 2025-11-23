@@ -1,46 +1,46 @@
 import { createBrowserRouter } from "react-router-dom";
-import ManageLayout from "./Layout/ManageLayout";
-import AdminAccounts from "./pages/Account/AdminAccounts";
-import CustomerAccounts from "./pages/Account/CustomerAccounts";
-import EmployeeAccounts from "./pages/Account/EmployeeAccounts";
-import LogisticAccounts from "./pages/Account/LogisticAccounts";
-import TechnicalAccounts from "./pages/Account/TechnicalAccounts";
-import AdminInventory from "./pages/Inventory/AdminInventory";
-import CustomerInventory from "./pages/Inventory/CustomerInventory";
-import EmployeeInventory from "./pages/Inventory/EmployeeInventory";
-import LogisticInventory from "./pages/Inventory/LogisticInventory";
-import TechnicalInventory from "./pages/Inventory/TechnicalInventory";
-import WorkshopInventory from "./pages/Inventory/WorkshopInventory";
-import AdminType from "./pages/Types/AdminType";
-import Department from "./pages/Types/Department";
-import EmployeeType from "./pages/Types/EmployeeType";
-import FinanceItem from "./pages/Types/FinanceItem";
-import SocialMediaType from "./pages/Types/SocialMediaType";
-import UserNotes from "./pages/Note/UserNotes";
-import AdminContacts from "./pages/Contacts/AdminContacts";
-import CustomerContacts from "./pages/Contacts/CustomerContacts";
-import EmployeeContacts from "./pages/Contacts/EmployeeContacts";
-import LogisticContacts from "./pages/Contacts/LogisticContacts";
-import TechnicalsContacts from "./pages/Contacts/TechnicalsContacts";
-import ShowWorkshops from "./pages/Workshop/ShowWorkshops";
-import Home from "./pages/Home";
+import ManageLayout from "../Layout/ManageLayout";
+import AdminAccounts from "../pages/Account/AdminAccounts";
+import CustomerAccounts from "../pages/Account/CustomerAccounts";
+import EmployeeAccounts from "../pages/Account/EmployeeAccounts";
+import LogisticAccounts from "../pages/Account/LogisticAccounts";
+import TechnicalAccounts from "../pages/Account/TechnicalAccounts";
+import AdminInventory from "../pages/Inventory/AdminInventory";
+import CustomerInventory from "../pages/Inventory/CustomerInventory";
+import EmployeeInventory from "../pages/Inventory/EmployeeInventory";
+import LogisticInventory from "../pages/Inventory/LogisticInventory";
+import TechnicalInventory from "../pages/Inventory/TechnicalInventory";
+import WorkshopInventory from "../pages/Inventory/WorkshopInventory";
+import AdminType from "../pages/Types/AdminType";
+import Department from "../pages/Types/Department";
+import EmployeeType from "../pages/Types/EmployeeType";
+import FinanceItem from "../pages/Types/FinanceItem";
+import SocialMediaType from "../pages/Types/SocialMediaType";
+import UserNotes from "../pages/Note/UserNotes";
+import AdminContacts from "../pages/Contacts/AdminContacts";
+import CustomerContacts from "../pages/Contacts/CustomerContacts";
+import EmployeeContacts from "../pages/Contacts/EmployeeContacts";
+import LogisticContacts from "../pages/Contacts/LogisticContacts";
+import TechnicalsContacts from "../pages/Contacts/TechnicalsContacts";
+import ShowWorkshops from "../pages/Workshop/ShowWorkshops";
+import Home from "../pages/Home";
 import {
   SelectAdminTresure,
   SelectCustomerTresure,
   SelectEmployeeTresure,
   SelectWorkshopTresure,
-} from "./pages/Tresures/Selectors/TresureSelectors";
-import AdminTresure from "./pages/Tresures/AdminTresure";
-import EmployeeForWorkshop from "./pages/Workshop/EmployeeForWorkshop";
-import LogisticForWorkshop from "./pages/Workshop/LogisticForWorkshop";
-import ItemReport from "./pages/Reports/ItemReport";
-import Invoices from "./pages/Invoices";
-import InvoiceInfo from "./pages/Invoices/InvoiceInfo";
-import PrintInvoiceTransaction from "./pages/Invoices/PrintInvoiceTransaction";
-import PrintInvoiceType from "./pages/Invoices/PrintInvoiceType";
-import PrintTech from "./pages/Invoices/PrintTech";
-import PrintLogic from "./pages/Invoices/PrintLogic";
-import PrintInvoiceItem from "./pages/Invoices/PrintInvoiceItem";
+} from "../pages/Tresures/Selectors/TresureSelectors";
+import AdminTresure from "../pages/Tresures/AdminTresure";
+import EmployeeForWorkshop from "../pages/Workshop/EmployeeForWorkshop";
+import LogisticForWorkshop from "../pages/Workshop/LogisticForWorkshop";
+import ItemReport from "../pages/Reports/ItemReport";
+import Invoices from "../pages/Invoices";
+import InvoiceInfo from "../pages/Invoices/InvoiceInfo";
+import PrintInvoiceTransaction from "../pages/Invoices/PrintInvoiceTransaction";
+import PrintInvoiceType from "../pages/Invoices/PrintInvoiceType";
+import PrintTech from "../pages/Invoices/PrintTech";
+import PrintLogic from "../pages/Invoices/PrintLogic";
+import PrintInvoiceItem from "../pages/Invoices/PrintInvoiceItem";
 
 const router = createBrowserRouter(
   [

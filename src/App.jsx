@@ -1,7 +1,4 @@
-import React from "react";
-import UserNotes from "./pages/Note/UserNotes";
-import AdminTable from "./components/Tables/AdminTable";
-import Router from "./Router";
+import { Router } from "react-router-dom";
 
 function App() {
   return <Router />;

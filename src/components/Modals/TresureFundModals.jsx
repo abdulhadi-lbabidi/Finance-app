@@ -40,6 +40,7 @@ export function AddTresureFundModal({
     id: null,
     name: "",
     desc: "",
+    amount: "",
     tresure_id: id,
   });
 
@@ -126,6 +127,16 @@ export function AddTresureFundModal({
 
                 <Input
                   isRequired
+                  label="المبلغ"
+                  type="number"
+                  value={tresureFund.amount}
+                  onChange={(e) =>
+                    setTresureFund({ ...tresureFund, amount: e.target.value })
+                  }
+                />
+
+                <Input
+                  isRequired
                   label="الوصف"
                   type="text"
                   value={tresureFund.desc}
@@ -174,6 +185,7 @@ export function UpdateTresureFundModal({ id, onSaveSuccess, tresures }) {
     id: null,
     name: "",
     desc: "",
+    amount: "",
     tresure_id: "",
   });
 
@@ -203,6 +215,7 @@ export function UpdateTresureFundModal({ id, onSaveSuccess, tresures }) {
       await updateTresureFund(tresureFund.id, {
         name: tresureFund.name,
         desc: tresureFund.desc,
+        amount: tresureFund.amount,
         tresure_id: tresureFund.tresure_id,
       });
 
@@ -247,6 +260,15 @@ export function UpdateTresureFundModal({ id, onSaveSuccess, tresures }) {
                   value={tresureFund.name}
                   onChange={(ev) =>
                     setTresureFund({ ...tresureFund, name: ev.target.value })
+                  }
+                />
+
+                <Input
+                  label="القيمة"
+                  type="number"
+                  value={tresureFund.amount}
+                  onChange={(ev) =>
+                    setTresureFund({ ...tresureFund, amount: ev.target.value })
                   }
                 />
                 <Input

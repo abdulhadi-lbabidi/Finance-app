@@ -90,6 +90,7 @@ function AdminTresure() {
     if (!id) return;
 
     setSelectedTresure(id);
+    localStorage.setItem("selectedTresure", id);
 
     if (id) {
       getTresureById(id)
@@ -133,7 +134,7 @@ function AdminTresure() {
 
   const onSelectionFundsChange = (id) => {
     setSelectedTresureFund(id);
-
+    localStorage.setItem("selectedTresureFund", id);
     if (id) {
       getTresureFundById(id)
         .then((response) => {
@@ -151,6 +152,25 @@ function AdminTresure() {
     }
   };
 
+  useEffect(() => {
+    const savedTresure = localStorage.getItem("selectedTresure");
+    const savedFund = localStorage.getItem("selectedTresureFund");
+
+    if (savedTresure) {
+      setSelectedTresure(savedTresure);
+      getTresureFunds(savedTresure).then((res) => {
+        setTresureFunds(res.data.funds);
+
+        if (savedFund) {
+          setSelectedTresureFund(savedFund);
+        }
+      });
+      getTresureById(savedTresure).then((res) => {
+        setSelectedTresureData(res.data);
+      });
+    }
+  }, []);
+
   return (
     <div>
       <Card className="">
@@ -161,7 +181,7 @@ function AdminTresure() {
             style={{ justifyItems: "right" }}
           >
             <h1>الاسم: {admins.name}</h1>
-            <h1>مجموع الصناديق: {totals.total_tresure_count}</h1>
+            <h1>عدد الصناديق: {totals.total_tresure_count}</h1>
             <h1>عدد الملحقات: {totals.total_fund_count}</h1>
             <h1>تحويلات واردة: ${totals.total_incoming}</h1>
             <h1>تحويلات صادرة: ${totals.total_outgoing}</h1>
@@ -177,7 +197,6 @@ function AdminTresure() {
         defaultItems={tresure}
         label="اختر الصندوق"
         variant="bordered"
-        // onInputChange={onInputChange}
         onSelectionChange={onSelectionChange}
       >
         {(item) => (
@@ -301,7 +320,6 @@ function AdminTresure() {
             defaultItems={tresureFunds}
             label="اختر الملحق"
             variant="bordered"
-            // onInputChange={onInputChange}
             onSelectionChange={onSelectionFundsChange}
           >
             {(item) => (

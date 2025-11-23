@@ -154,9 +154,7 @@ export function AddInvoiceModals({ onSaveSuccess }) {
                     setInvoices({ ...invoices, name: e.target.value })
                   }
                 />
-
                 <Input
-                  isRequired
                   label="الشرح"
                   type="text"
                   value={invoices.desc}
@@ -164,7 +162,6 @@ export function AddInvoiceModals({ onSaveSuccess }) {
                     setInvoices({ ...invoices, desc: e.target.value })
                   }
                 />
-
                 <Input
                   isRequired
                   label="المبلغ"

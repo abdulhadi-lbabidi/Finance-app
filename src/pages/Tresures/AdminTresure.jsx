@@ -161,13 +161,13 @@ function AdminTresure() {
             style={{ justifyItems: "right" }}
           >
             <h1>الاسم: {admins.name}</h1>
-            <h1>مجموع الصناديق: {totals.total_tresure_count}</h1>
-            <h1>عدد الملحقات: {totals.total_fund_count}</h1>
-            <h1>تحويلات واردة: {totals.total_incoming}</h1>
-            <h1>تحويلات صادرة: {totals.total_outgoing}</h1>
-            <h1>إيرادات: {totals.total_inners}</h1>
-            <h1>مصاريف: {totals.total_outers}</h1>
-            <h1>مجموع التحويلات: {totals.total_transfers_sum}</h1>
+            <h1>مجموع الصناديق: ${totals.total_tresure_count}</h1>
+            <h1>عدد الملحقات: ${totals.total_fund_count}</h1>
+            <h1>تحويلات واردة: ${totals.total_incoming}</h1>
+            <h1>تحويلات صادرة: ${totals.total_outgoing}</h1>
+            <h1>إيرادات: ${totals.total_inners}</h1>
+            <h1>مصاريف: ${totals.total_outers}</h1>
+            <h1>مجموع التحويلات: ${totals.total_transfers_sum}</h1>
           </div>
         </CardBody>
       </Card>

@@ -53,6 +53,14 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
     to_tresure_fund_id: null,
   });
 
+  const typeTranslations = {
+    admin: "مدير",
+    customer: "عميل",
+    employee: "موظف",
+    workshop: "صاحب ورشة",
+    office: "مكتب",
+  };
+
   //==============================
   // LOAD TYPES
   //==============================
@@ -62,7 +70,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
         setTypes(
           res.data.truserTtype.map((t) => ({
             key: t,
-            label: t,
+            label: typeTranslations[t] || t,
           }))
         );
         setLoadingTypes(false);

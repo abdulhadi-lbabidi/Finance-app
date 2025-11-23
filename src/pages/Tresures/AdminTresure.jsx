@@ -32,13 +32,13 @@ import {
 } from "../../components/Modals/TresureFundModals";
 
 function AdminTresure() {
+  const { id } = useParams();
   const [admins, setAdmins] = useState([]);
   const [selectedTresure, setSelectedTresure] = useState(null);
   const [selectedTresureFund, setSelectedTresureFund] = useState(null);
-  const [tresure, setTresures] = useState([]);
-  const [tresureFunds, setTresureFunds] = useState([]);
+  const [tresure, setTresures] = useState([]); // صناديق الأدمن
+  const [tresureFunds, setTresureFunds] = useState([]); // ملحقات الصناديق
   const [loading, setLoading] = useState(true);
-  const { id } = useParams();
 
   const [selectedTresureData, setSelectedTresureData] = useState(null);
   const [selectedTresureFundData, setSelectedTresureFundData] = useState(null);
@@ -88,7 +88,7 @@ function AdminTresure() {
     if (id) {
       getTresureById(id)
         .then((response) => {
-          setSelectedTresureData(response.data.tresure);
+          setSelectedTresureData(response.data);
         })
         .catch((err) => {
           addToast({
@@ -131,7 +131,7 @@ function AdminTresure() {
     if (id) {
       getTresureFundById(id)
         .then((response) => {
-          setSelectedTresureFundData(response.data.tresureFund);
+          setSelectedTresureFundData(response.data);
         })
         .catch((err) => {
           addToast({
@@ -189,77 +189,96 @@ function AdminTresure() {
           <Accordion variant="splitted">
             <AccordionItem
               key="main"
-              aria-label="معلومات الصندوق"
-              title={`معلومات الصندوق: ${selectedTresureData?.name ?? ""}`}
+              aria-label={`معلومات الصندوق: ${selectedTresureData.tresure.name}`}
+              title={`معلومات الصندوق: ${selectedTresureData.tresure.name}`}
             >
-              <div className="bg-white rounded ">
-                <div className="grid grid-cols-2 text-gray-800 font-semibold">
-                  <span>
-                    مجاميع تحويلات الصندوق: {selectedTresureData.name}
-                  </span>
+              <div className="bg-white rounded p-2">
+                {/* === Row 1 === */}
+                <div className="grid grid-cols-2 gap-4">
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      مجموع الملحقات:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      $ {selectedTresureData.stats.fund_count}
+                    </span>
+                  </h1>
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      تحويلات واردة:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      $ {selectedTresureData.stats.total_incoming}
+                    </span>
+                  </h1>
                 </div>
 
-                <div className="grid grid-cols-2 text-gray-800 font-semibold">
-                  <span>
-                    مجاميع تحويلات الصادرة من الصندوق:{" "}
-                    {selectedTresureData.name}
-                  </span>
+                {/* === Row 2 === */}
+                <div className="grid grid-cols-2 gap-4">
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      تحويلات مستلمة:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      $ {selectedTresureData.stats.total_outgoing}
+                    </span>
+                  </h1>
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      مجموع التحويلات:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      ${selectedTresureData.stats.total_transfers_sum}
+                    </span>
+                  </h1>
                 </div>
 
-                <div className="grid grid-cols-2 text-gray-800 font-semibold">
-                  <span>
-                    مجاميع تحويلات الواردة من الصندوق:{" "}
-                    {selectedTresureData.name}
-                  </span>
+                {/* === Row 3 === */}
+                <div className="grid grid-cols-2 gap-4">
+                  <h1>
+                    <span className="text-gray-900 font-semibold">مصاريف:</span>{" "}
+                    <span className="text-gray-700">
+                      $ {selectedTresureData.stats.total_outers}
+                    </span>
+                  </h1>
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      إيرادات:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      $ {selectedTresureData.stats.total_inners}
+                    </span>
+                  </h1>
                 </div>
 
-                <div className="grid grid-cols-2 text-gray-800 font-semibold">
+                {/* === Row 4 ===: الحالة */}
+                <div className="grid grid-cols-2 gap-4">
                   <span>
-                    مجاميع ايرادات الصندوق: {selectedTresureData.name}
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 text-gray-800 font-semibold">
-                  <span>مجاميع مصاريف الصندوق: {selectedTresureData.name}</span>
-                </div>
-
-                <div className="grid grid-cols-2 text-gray-800 font-semibold">
-                  <span>الاسم: {selectedTresureData.name}</span>
-                </div>
-
-                <div className="grid grid-cols-3 items-center text-gray-700">
-                  <span>
-                    الحالة:{" "}
-                    <span
-                      className={
-                        selectedTresureData.active
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }
-                    >
+                    <span className="text-gray-900 font-semibold">الحالة:</span>{" "}
+                    <span className="text-gray-700">
                       {selectedTresureData.active ? "مفعّل" : "غير مفعّل"}
                     </span>
                   </span>
+                </div>
 
-                  <span></span>
-
-                  <div className="flex justify-end gap-2">
-                    <UpdateTresureModal
-                      id={selectedTresureData.id}
-                      tresureable_id={id}
-                      onSaveSuccess={() => {
-                        fetchData();
-                        fetchSelectedTresure();
-                      }}
-                    />
-                    <DeleteTresureModal
-                      id={selectedTresureData.id}
-                      onSaveSuccess={() => {
-                        fetchData();
-                        setSelectedTresure(null);
-                        setSelectedTresureData(null);
-                      }}
-                    />
-                  </div>
+                {/* === Row 5 – Buttons === */}
+                <div className="flex justify-end gap-2">
+                  <UpdateTresureModal
+                    id={selectedTresureData.id}
+                    tresureable_id={id}
+                    onSaveSuccess={() => {
+                      fetchData();
+                      fetchSelectedTresure();
+                    }}
+                  />
+                  <DeleteTresureModal
+                    id={selectedTresureData.id}
+                    onSaveSuccess={() => {
+                      fetchData();
+                      setSelectedTresure(null);
+                      setSelectedTresureData(null);
+                    }}
+                  />
                 </div>
               </div>
             </AccordionItem>
@@ -295,73 +314,119 @@ function AdminTresure() {
               <Accordion variant="splitted">
                 <AccordionItem
                   key="fund"
-                  aria-label="معلومات الملحق"
-                  title={`معلومات الملحق: ${
-                    selectedTresureFundData?.name ?? ""
-                  }`}
+                  aria-label={`معلومات الملحق: ${selectedTresureFundData.tresureFund.name}`}
+                  title={`معلومات الملحق: ${selectedTresureFundData.tresureFund.name}`}
                 >
-                  <div className="bg-white rounded ">
-                    <div className="grid grid-cols-1 text-gray-800 font-semibold">
-                      <div className="grid grid-cols-2 text-gray-800 font-semibold">
-                        <span>
-                          مجاميع تحويلات الملحقات الواردة:{" "}
-                          {selectedTresureData.name}
+                  <div className="bg-white rounded p-2">
+                    {/* === Row 1 ===: معلومات الملحق الأساسية */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          الاسم:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          {selectedTresureFundData.tresureFund.name}
                         </span>
-                      </div>
-                      <div className="grid grid-cols-2 text-gray-800 font-semibold">
-                        <span>
-                          مجاميع ايرادات الملحقات الصادرة:{" "}
-                          {selectedTresureData.name}
+                      </h1>
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          الوصف:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          {selectedTresureFundData.tresureFund.desc}
                         </span>
-                      </div>
-                      <div className="grid grid-cols-2 text-gray-800 font-semibold">
-                        <span>مجاميع الملحق: {selectedTresureData.name}</span>
-                      </div>
-
-                      <span>الاسم: {selectedTresureFundData.name}</span>
-                      <span> الوصف: {selectedTresureFundData.desc}</span>
-                      <span>
-                        الصندوق:
-                        {selectedTresureFundData.tresure?.name ?? "—"}
-                      </span>
+                      </h1>
                     </div>
 
-                    <div className="grid grid-cols-3 items-center text-gray-700">
-                      <span>
-                        الحالة:{" "}
-                        <span
-                          className={
-                            selectedTresureFundData.active
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }
-                        >
-                          {selectedTresureFundData.active
-                            ? "مفعّل"
-                            : "غير مفعّل"}
+                    {/* === Row 2 ===: الصندوق والمبلغ */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          الصندوق:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          {selectedTresureFundData.tresureFund.tresure?.name ??
+                            "—"}
                         </span>
-                      </span>
+                      </h1>
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          المبلغ الموجود:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.tresureFund.amount}
+                        </span>
+                      </h1>
+                    </div>
 
-                      <span></span>
+                    {/* === Row 3 ===: التحويلات */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          التحويلات الواردة:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          4 {selectedTresureFundData.stats.total_incoming}
+                        </span>
+                      </h1>
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          التحويلات الصادرة:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.stats.total_outgoing}
+                        </span>
+                      </h1>
+                    </div>
 
-                      <div className="flex justify-end gap-2">
-                        <UpdateTresureFundModal
-                          id={selectedTresureFundData.id}
-                          onSaveSuccess={() => {
-                            fetchData();
-                            fetchSelectedTresureFund();
-                          }}
-                          tresures={tresure}
-                        />
-                        <DeleteTresureFundModal
-                          id={selectedTresureFundData.id}
-                          onSaveSuccess={() => {
-                            fetchData();
-                            setSelectedTresureFund(null);
-                            setSelectedTresureFundData(null);
-                          }}
-                        />
-                      </div>
+                    {/* === Row 4 ===: مجموع التحويلات + الإيرادات والمصاريف */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          مجموع التحويلات:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.stats.total_transfers_sum}
+                        </span>
+                      </h1>
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          الإيرادات :
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.stats.total_inners}
+                        </span>
+                      </h1>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          المصاريف :
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.stats.total_outers}
+                        </span>
+                      </h1>
+                    </div>
+
+                    {/* === Row 6 – Buttons === */}
+                    <div className="flex justify-end gap-2">
+                      <UpdateTresureFundModal
+                        id={selectedTresureFundData.id}
+                        tresures={tresure}
+                        onSaveSuccess={() => {
+                          fetchData();
+                          fetchSelectedTresureFund();
+                        }}
+                      />
+                      <DeleteTresureFundModal
+                        id={selectedTresureFundData.id}
+                        onSaveSuccess={() => {
+                          fetchData();
+                          setSelectedTresureFund(null);
+                          setSelectedTresureFundData(null);
+                        }}
+                      />
                     </div>
                   </div>
                 </AccordionItem>

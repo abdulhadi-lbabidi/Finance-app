@@ -92,7 +92,7 @@ function InnerTransactionTable({ tresurefundid }) {
   // Fetch data initially
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [tresurefundid]);
 
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));

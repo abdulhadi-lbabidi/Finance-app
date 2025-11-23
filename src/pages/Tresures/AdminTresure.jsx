@@ -38,6 +38,7 @@ function AdminTresure() {
   const [selectedTresureFund, setSelectedTresureFund] = useState(null);
   const [tresure, setTresures] = useState([]); // صناديق الأدمن
   const [tresureFunds, setTresureFunds] = useState([]); // ملحقات الصناديق
+  const [totals, setTotals] = useState({}); //totals
   const [loading, setLoading] = useState(true);
 
   const [selectedTresureData, setSelectedTresureData] = useState(null);
@@ -47,8 +48,13 @@ function AdminTresure() {
     getAdminTresure(id)
       .then((response) => {
         setAdmins(response.data.admin);
-        setTresures(response.data.tresures);
-
+        setTotals(response.data.totals);
+        setTresures(
+          response.data.tresures.map((t) => ({
+            id: t.tresure.id,
+            name: t.tresure.name,
+          }))
+        );
         if (selectedTresure) {
           getTresureFunds(selectedTresure)
             .then((res) => {
@@ -155,11 +161,13 @@ function AdminTresure() {
             style={{ justifyItems: "right" }}
           >
             <h1>الاسم: {admins.name}</h1>
-            <h1>مجموع الصناديق: {}</h1>
-            <h1>تحويلات واردة: {}</h1>
-            <h1>تحويلات مستلمة: {}</h1>
-            <h1>مصاريف: {}</h1>
-            <h1>إيرادات: {}</h1>
+            <h1>مجموع الصناديق: {totals.total_tresure_count}</h1>
+            <h1>عدد الملحقات: {totals.total_fund_count}</h1>
+            <h1>تحويلات واردة: {totals.total_incoming}</h1>
+            <h1>تحويلات صادرة: {totals.total_outgoing}</h1>
+            <h1>إيرادات: {totals.total_inners}</h1>
+            <h1>مصاريف: {totals.total_outers}</h1>
+            <h1>مجموع التحويلات: {totals.total_transfers_sum}</h1>
           </div>
         </CardBody>
       </Card>

@@ -67,17 +67,9 @@ function AdminTresure() {
           }))
         );
         if (selectedTresure) {
-          getTresureFunds(selectedTresure)
-            .then((res) => {
-              setTresureFunds(res.data.funds);
-            })
-            .catch((err) => {
-              addToast({
-                title: "حدث خطاً",
-                description: `عملية برمجية رقم : ${err.message}`,
-                color: "danger",
-              });
-            });
+          getTresureFunds(selectedTresure).then((res) => {
+            setTresureFunds(res.data.funds);
+          });
         }
 
         setLoading(false);
@@ -177,7 +169,11 @@ function AdminTresure() {
   };
 
   useEffect(() => {
-    if (!selectedTresure) return;
+    if (!selectedTresure) {
+      setSelectedTresureData(null);
+      setTresureFunds([]);
+      return;
+    }
 
     getTresureById(selectedTresure).then((res) => {
       setSelectedTresureData(res.data);
@@ -189,7 +185,10 @@ function AdminTresure() {
   }, [selectedTresure]);
 
   useEffect(() => {
-    if (!selectedTresureFund) return;
+    if (!selectedTresureFund) {
+      setSelectedTresureFundData(null);
+      return;
+    }
 
     getTresureFundById(selectedTresureFund).then((res) => {
       setSelectedTresureFundData(res.data);
@@ -220,7 +219,6 @@ function AdminTresure() {
         allowsCustomValue={true}
         className="max-w-xs my-5"
         defaultItems={tresure}
-        // selectedKey={selectedTresure}
         label="اختر الصندوق"
         variant="bordered"
         onSelectionChange={onSelectionChange}
@@ -326,9 +324,11 @@ function AdminTresure() {
                   <DeleteTresureModal
                     id={selectedTresureData.tresure.id}
                     onSaveSuccess={() => {
-                      fetchData();
                       setSelectedTresure(null);
                       setSelectedTresureData(null);
+                      fetchData();
+
+                      navigate("", { replace: true });
                     }}
                   />
                 </div>
@@ -344,7 +344,6 @@ function AdminTresure() {
             allowsCustomValue={true}
             className="max-w-xs mx-1 my-5"
             defaultItems={tresureFunds}
-            // selectedKey={selectedTresureFund}
             label="اختر الملحق"
             variant="bordered"
             onSelectionChange={onSelectionFundsChange}
@@ -476,6 +475,7 @@ function AdminTresure() {
                           fetchData();
                           setSelectedTresureFund(null);
                           setSelectedTresureFundData(null);
+                          navigate("", { replace: true });
                         }}
                       />
                     </div>

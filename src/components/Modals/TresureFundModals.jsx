@@ -13,12 +13,10 @@ import {
   Autocomplete,
   AutocompleteItem,
 } from "@heroui/react";
-
 import { FaPenToSquare, FaPlus, FaTrashCan } from "react-icons/fa6";
 import {
   createTresureFund,
   deleteTresureFund,
-  getTresureById,
   getTresureFundById,
   getTresuresByUser,
   updateTresureFund,

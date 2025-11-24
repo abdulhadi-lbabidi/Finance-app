@@ -19,7 +19,7 @@ import {
   getTresureFundById,
   getTresureFunds,
 } from "../../api";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   AddTresureModal,
   DeleteTresureModal,
@@ -34,8 +34,19 @@ import {
 function AdminTresure() {
   const { id } = useParams();
   const [admins, setAdmins] = useState([]);
-  const [selectedTresure, setSelectedTresure] = useState(null);
-  const [selectedTresureFund, setSelectedTresureFund] = useState(null);
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
+  const initialTresure = params.get("selected");
+  const initialFund = params.get("fund");
+  const [selectedTresure, setSelectedTresure] = useState(initialTresure);
+  const [selectedTresureFund, setSelectedTresureFund] = useState(initialFund);
+
+  // const [selectedTresure, setSelectedTresure] = useState(null);
+  // const [selectedTresureFund, setSelectedTresureFund] = useState(null);
+
   const [tresure, setTresures] = useState([]); // صناديق الأدمن
   const [tresureFunds, setTresureFunds] = useState([]); // ملحقات الصناديق
   const [totals, setTotals] = useState({}); //totals
@@ -88,9 +99,11 @@ function AdminTresure() {
 
   const onSelectionChange = (id) => {
     if (!id) return;
-
     setSelectedTresure(id);
-    localStorage.setItem("selectedTresure", id);
+    setSelectedTresureFund(null); // reset fund
+    updateURL(id, null);
+
+    // setSelectedTresure(id);
 
     if (id) {
       getTresureById(id)
@@ -124,17 +137,19 @@ function AdminTresure() {
   const fetchSelectedTresure = async () => {
     if (!selectedTresure) return;
     const res = await getTresureById(selectedTresure);
-    setSelectedTresureData(res.data.tresure);
+    setSelectedTresureData(res.data);
   };
   const fetchSelectedTresureFund = async () => {
     if (!selectedTresureFund) return;
     const res = await getTresureFundById(selectedTresureFund);
-    setSelectedTresureFundData(res.data.tresureFund);
+    setSelectedTresureFundData(res.data);
   };
 
   const onSelectionFundsChange = (id) => {
+    // setSelectedTresureFund(id);
+
     setSelectedTresureFund(id);
-    localStorage.setItem("selectedTresureFund", id);
+    updateURL(selectedTresure, id);
     if (id) {
       getTresureFundById(id)
         .then((response) => {
@@ -152,24 +167,34 @@ function AdminTresure() {
     }
   };
 
+  const updateURL = (tresure, fund) => {
+    const params = new URLSearchParams();
+
+    if (tresure) params.set("selected", tresure);
+    if (fund) params.set("fund", fund);
+
+    navigate(`?${params.toString()}`, { replace: true });
+  };
+
   useEffect(() => {
-    const savedTresure = localStorage.getItem("selectedTresure");
-    const savedFund = localStorage.getItem("selectedTresureFund");
+    if (!selectedTresure) return;
 
-    if (savedTresure) {
-      setSelectedTresure(savedTresure);
-      getTresureFunds(savedTresure).then((res) => {
-        setTresureFunds(res.data.funds);
+    getTresureById(selectedTresure).then((res) => {
+      setSelectedTresureData(res.data);
+    });
 
-        if (savedFund) {
-          setSelectedTresureFund(savedFund);
-        }
-      });
-      getTresureById(savedTresure).then((res) => {
-        setSelectedTresureData(res.data);
-      });
-    }
-  }, []);
+    getTresureFunds(selectedTresure).then((res) => {
+      setTresureFunds(res.data.funds);
+    });
+  }, [selectedTresure]);
+
+  useEffect(() => {
+    if (!selectedTresureFund) return;
+
+    getTresureFundById(selectedTresureFund).then((res) => {
+      setSelectedTresureFundData(res.data);
+    });
+  }, [selectedTresureFund]);
 
   return (
     <div>
@@ -195,6 +220,7 @@ function AdminTresure() {
         allowsCustomValue={true}
         className="max-w-xs my-5"
         defaultItems={tresure}
+        // selectedKey={selectedTresure}
         label="اختر الصندوق"
         variant="bordered"
         onSelectionChange={onSelectionChange}
@@ -318,6 +344,7 @@ function AdminTresure() {
             allowsCustomValue={true}
             className="max-w-xs mx-1 my-5"
             defaultItems={tresureFunds}
+            // selectedKey={selectedTresureFund}
             label="اختر الملحق"
             variant="bordered"
             onSelectionChange={onSelectionFundsChange}
@@ -333,7 +360,6 @@ function AdminTresure() {
             type={"admin"}
             selectedTresureId={id}
           />
-          {console.log(selectedTresureFundData)}
           {selectedTresureFundData && (
             <div className="">
               <Accordion variant="splitted">

@@ -55,7 +55,7 @@ function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-function MoneyTransfareTable({ tresurefundid }) {
+function MoneyTransfareTable({ tresurefundid, onSaveSuccess }) {
   const [moneyTransfares, setMoneyTransfares] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -234,7 +234,12 @@ function MoneyTransfareTable({ tresurefundid }) {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <AddMoneyTransfareModal onSaveSuccess={fetchData} />
+            <AddMoneyTransfareModal
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
+            />
           </div>
         </div>
         <div className="flex justify-between items-center">

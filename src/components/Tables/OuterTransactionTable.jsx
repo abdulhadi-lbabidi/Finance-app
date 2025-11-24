@@ -65,7 +65,7 @@ export function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-function OuterTransactionTable({ tresurefundid }) {
+function OuterTransactionTable({ tresurefundid, onSaveSuccess }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [outerTransactions, setOuterTransactions] = useState([]);
@@ -290,7 +290,10 @@ function OuterTransactionTable({ tresurefundid }) {
             </Dropdown>
             <AddOuterTransactionModal
               tresurefundid={tresurefundid}
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
             />
           </div>
         </div>

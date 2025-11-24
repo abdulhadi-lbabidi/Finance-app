@@ -473,6 +473,8 @@ function AdminTresure() {
                         id={selectedTresureFundData.tresureFund.id}
                         onSaveSuccess={() => {
                           fetchData();
+                          fetchSelectedTresure();
+
                           setSelectedTresureFund(null);
                           setSelectedTresureFundData(null);
                           navigate("", { replace: true });
@@ -492,14 +494,35 @@ function AdminTresure() {
         <div className="flex w-full flex-col mt-6">
           <Tabs aria-label="Options" fullWidth keepContentMounted>
             <Tab key="moneytrans" title="تحويل صندوق">
-              <MoneyTransfareTable tresurefundid={selectedTresureFund} />
+              <MoneyTransfareTable
+                tresurefundid={selectedTresureFund}
+                onSaveSuccess={() => {
+                  fetchData();
+                  fetchSelectedTresure();
+                  fetchSelectedTresureFund();
+                }}
+              />
             </Tab>
 
             <Tab key="innertrans" title="إيرادات">
-              <InnerTransactionTable tresurefundid={selectedTresureFund} />
+              <InnerTransactionTable
+                tresurefundid={selectedTresureFund}
+                onSaveSuccess={() => {
+                  fetchData();
+                  fetchSelectedTresure();
+                  fetchSelectedTresureFund();
+                }}
+              />
             </Tab>
             <Tab key="outertrans" title="مصاريف">
-              <OuterTransactionTable tresurefundid={selectedTresureFund} />
+              <OuterTransactionTable
+                tresurefundid={selectedTresureFund}
+                onSaveSuccess={() => {
+                  fetchData();
+                  fetchSelectedTresure();
+                  fetchSelectedTresureFund();
+                }}
+              />
             </Tab>
           </Tabs>
         </div>

@@ -268,7 +268,7 @@ function AdminTresure() {
                 <div className="grid grid-cols-2 gap-4">
                   <h1>
                     <span className="text-gray-900 font-semibold">
-                      تحويلات مستلمة:
+                      تحويلات صادرة:
                     </span>{" "}
                     <span className="text-gray-700">
                       $ {selectedTresureData.stats.total_outgoing}

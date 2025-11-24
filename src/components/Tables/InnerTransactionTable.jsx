@@ -213,11 +213,17 @@ function InnerTransactionTable({ tresurefundid, onSaveSuccess }) {
               <InvoiceIcon />
             </Button>
             <UpdateInnerTransactionModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={innerTransaction.id}
             />
             <DeleteInnerTransactionModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={innerTransaction.id}
             />
           </div>

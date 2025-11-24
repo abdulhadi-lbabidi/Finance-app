@@ -216,11 +216,17 @@ function OuterTransactionTable({ tresurefundid, onSaveSuccess }) {
             </Button>
 
             <UpdateOuterTransactionModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={outerTransaction.id}
             />
             <DeleteOuterTransactionModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={outerTransaction.id}
             />
           </div>

@@ -157,11 +157,17 @@ function MoneyTransfareTable({ tresurefundid, onSaveSuccess }) {
         return (
           <div className="relative flex justify-end items-center gap-2">
             <UpdateMoneyTransfareModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={moneyTransfare.id}
             />
             <DeleteMoneyTransfareModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={moneyTransfare.id}
             />
           </div>

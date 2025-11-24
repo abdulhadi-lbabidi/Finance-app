@@ -148,9 +148,13 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
       onClose();
     } catch (err) {
       setLoading(false);
+
+      const errorMessage =
+        err?.response?.data?.message || err.message || "حدث خطأ غير متوقع";
+
       addToast({
         title: "خطأ",
-        description: err.message,
+        description: errorMessage,
         color: "danger",
       });
     }
@@ -271,6 +275,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
                       <Autocomplete
                         label="إلى الملحق"
                         defaultItems={funds}
+                        disabledKeys={[fromFund]}
                         onSelectionChange={setToFund}
                         className="w-full"
                       >

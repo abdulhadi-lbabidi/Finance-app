@@ -320,6 +320,33 @@ function LogicPaysTable() {
     }
   }, []);
 
+  useEffect(() => {
+    const amount = Number(logisticPays.amount) || 0;
+    const price = Number(logisticPays.price) || 0;
+    const discountValue = Number(logisticPays.discount_value) || 0;
+    const discountType = logisticPays.discount_type || "قيمة";
+
+    let finalPrice = amount * price;
+
+    if (discountType === "نسبة") {
+      finalPrice = finalPrice - finalPrice * (discountValue / 100);
+    } else {
+      finalPrice = finalPrice - discountValue;
+    }
+
+    if (finalPrice < 0) finalPrice = 0;
+
+    setLogisticPays((prev) => ({
+      ...prev,
+      finalprice: finalPrice,
+    }));
+  }, [
+    logisticPays.amount,
+    logisticPays.price,
+    logisticPays.discount_value,
+    logisticPays.discount_type,
+  ]);
+
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4 mt-3">
@@ -514,17 +541,6 @@ function LogicPaysTable() {
                 isRequired
                 className="max-w-[100px]"
                 value={logisticPays.amount}
-                // onChange={(e) => {
-                //   const amount = e.target.value;
-                //   const price = logisticPays.price;
-                //   const finalprice = Number(price) * Number(amount) || 0;
-
-                //   setLogisticPays({
-                //     ...logisticPays,
-                //     amount,
-                //     finalprice,
-                //   });
-                // }}
                 onChange={(e) =>
                   setLogisticPays({ ...logisticPays, amount: e.target.value })
                 }
@@ -537,29 +553,10 @@ function LogicPaysTable() {
                 isRequired
                 className="max-w-[100px]"
                 value={logisticPays.price}
-                // onChange={(e) => {
-                //   const price = e.target.value;
-                //   const amount = logisticPays.amount;
-                //   const finalprice = Number(price) * Number(amount) || 0;
-
-                //   setLogisticPays({
-                //     ...logisticPays,
-                //     price,
-                //     finalprice,
-                //   });
-                // }}
                 onChange={(e) =>
                   setLogisticPays({ ...logisticPays, price: e.target.value })
                 }
               />
-
-              {/* <Input
-                size="sm"
-                label="السعر النهائي"
-                isReadOnly
-                className="max-w-[110px]"
-                value={logisticPays.finalprice}
-              /> */}
 
               <Input
                 label="قيمة الخصم"
@@ -597,6 +594,14 @@ function LogicPaysTable() {
                   نسبة (٪)
                 </SelectItem>
               </Select>
+
+              <Input
+                size="sm"
+                label="السعر النهائي"
+                isReadOnly
+                className="max-w-[110px]"
+                value={logisticPays.finalprice}
+              />
 
               <Input
                 size="sm"

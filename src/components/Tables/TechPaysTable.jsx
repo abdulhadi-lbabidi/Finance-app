@@ -438,6 +438,33 @@ function TechPaysTable() {
     []
   );
 
+  useEffect(() => {
+    const amount = Number(technicalPays.amount) || 0;
+    const price = Number(technicalPays.price) || 0;
+    const discountValue = Number(technicalPays.discount_value) || 0;
+    const discountType = technicalPays.discount_type || "قيمة";
+
+    let finalPrice = amount * price;
+
+    if (discountType === "نسبة") {
+      finalPrice = finalPrice - finalPrice * (discountValue / 100);
+    } else {
+      finalPrice = finalPrice - discountValue;
+    }
+
+    if (finalPrice < 0) finalPrice = 0;
+
+    setTechnicalPays((prev) => ({
+      ...prev,
+      finalprice: finalPrice,
+    }));
+  }, [
+    technicalPays.amount,
+    technicalPays.price,
+    technicalPays.discount_value,
+    technicalPays.discount_type,
+  ]);
+
   return (
     <>
       <Table
@@ -515,15 +542,6 @@ function TechPaysTable() {
                 className="max-w-[100px]"
                 value={technicalPays.amount}
                 onChange={(e) => {
-                  // const amount = e.target.value;
-                  // const price = technicalPays.price;
-                  // const finalprice = Number(price) * Number(amount) || 0;
-                  // setTechnicalPays({
-                  //   ...technicalPays,
-                  //   amount,
-                  //   finalprice,
-                  // });
-
                   setTechnicalPays({
                     ...technicalPays,
                     amount: e.target.value,
@@ -539,29 +557,12 @@ function TechPaysTable() {
                 className="max-w-[100px]"
                 value={technicalPays.price}
                 onChange={(e) => {
-                  // const price = e.target.value;
-                  // const amount = technicalPays.amount;
-                  // const finalprice = Number(price) * Number(amount) || 0;
-                  // setTechnicalPays({
-                  //   ...technicalPays,
-                  //   price,
-                  //   finalprice,
-                  // });
-
                   setTechnicalPays({
                     ...technicalPays,
                     price: e.target.value,
                   });
                 }}
               />
-
-              {/* <Input
-                size="sm"
-                label="السعر النهائي"
-                isReadOnly
-                className="max-w-[110px]"
-                value={technicalPays.finalprice}
-              /> */}
 
               <Input
                 label="قيمة الخصم"
@@ -599,6 +600,14 @@ function TechPaysTable() {
                   نسبة (٪)
                 </SelectItem>
               </Select>
+
+              <Input
+                size="sm"
+                label="السعر النهائي"
+                isReadOnly
+                className="max-w-[110px]"
+                value={technicalPays.finalprice}
+              />
 
               <Input
                 size="sm"

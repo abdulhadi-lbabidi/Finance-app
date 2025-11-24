@@ -25,6 +25,7 @@ import {
 } from "../../api";
 import { useNavigate, useParams } from "react-router-dom";
 import EyeFilledIcon from "../SVG/EyeFilledIcon";
+import { AddFinanceItemModal } from "./FinanceItemModals";
 
 export function AddInvoiceModals({ onSaveSuccess }) {
   const { id, transactionId, type } = useParams();
@@ -33,6 +34,7 @@ export function AddInvoiceModals({ onSaveSuccess }) {
   const [financeItems, setFinanceItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+
   const [invoices, setInvoices] = useState({
     id: null,
     name: "",
@@ -187,6 +189,7 @@ export function AddInvoiceModals({ onSaveSuccess }) {
                     </AutocompleteItem>
                   ))}
                 </Autocomplete>
+                <AddFinanceItemModal onSaveSuccess={fetchDataItems} />
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>

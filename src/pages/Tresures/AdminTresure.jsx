@@ -222,6 +222,12 @@ function AdminTresure() {
         label="اختر الصندوق"
         variant="bordered"
         onSelectionChange={onSelectionChange}
+        onClear={() => {
+          setSelectedTresureFund(null);
+          setSelectedTresureFundData(null);
+          setSelectedTresureData(null);
+          updateURL(selectedTresure, null); // تنظيف URL من fund
+        }}
       >
         {(item) => (
           <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>

@@ -65,7 +65,7 @@ function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-function InnerTransactionTable({ tresurefundid }) {
+function InnerTransactionTable({ tresurefundid, onSaveSuccess }) {
   const [innerTransactions, setInnerTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -213,11 +213,17 @@ function InnerTransactionTable({ tresurefundid }) {
               <InvoiceIcon />
             </Button>
             <UpdateInnerTransactionModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={innerTransaction.id}
             />
             <DeleteInnerTransactionModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={innerTransaction.id}
             />
           </div>
@@ -287,7 +293,10 @@ function InnerTransactionTable({ tresurefundid }) {
             </Dropdown>
             <AddInnerTransactionModal
               tresurefundid={tresurefundid}
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
             />
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -8,11 +8,8 @@ import {
   Button,
   useDisclosure,
   Input,
-  Divider,
   addToast,
   Tooltip,
-  user,
-  Spinner,
 } from "@heroui/react";
 
 import {
@@ -21,7 +18,7 @@ import {
   getFinanceItemdata,
   updateFinanceItem,
 } from "../../api";
-import { FaBox, FaPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 export function AddFinanceItemModal({ onSaveSuccess }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -34,6 +31,8 @@ export function AddFinanceItemModal({ onSaveSuccess }) {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
     setLoading(true);
     try {
       await addFinanceItem(financeItem);

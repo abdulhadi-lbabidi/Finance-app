@@ -19,7 +19,7 @@ import {
   getTresureFundById,
   getTresureFunds,
 } from "../../api";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   AddTresureModal,
   DeleteTresureModal,
@@ -34,8 +34,19 @@ import {
 function AdminTresure() {
   const { id } = useParams();
   const [admins, setAdmins] = useState([]);
-  const [selectedTresure, setSelectedTresure] = useState(null);
-  const [selectedTresureFund, setSelectedTresureFund] = useState(null);
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
+  const initialTresure = params.get("selected");
+  const initialFund = params.get("fund");
+  const [selectedTresure, setSelectedTresure] = useState(initialTresure);
+  const [selectedTresureFund, setSelectedTresureFund] = useState(initialFund);
+
+  // const [selectedTresure, setSelectedTresure] = useState(null);
+  // const [selectedTresureFund, setSelectedTresureFund] = useState(null);
+
   const [tresure, setTresures] = useState([]); // صناديق الأدمن
   const [tresureFunds, setTresureFunds] = useState([]); // ملحقات الصناديق
   const [totals, setTotals] = useState({}); //totals
@@ -56,17 +67,9 @@ function AdminTresure() {
           }))
         );
         if (selectedTresure) {
-          getTresureFunds(selectedTresure)
-            .then((res) => {
-              setTresureFunds(res.data.funds);
-            })
-            .catch((err) => {
-              addToast({
-                title: "حدث خطاً",
-                description: `عملية برمجية رقم : ${err.message}`,
-                color: "danger",
-              });
-            });
+          getTresureFunds(selectedTresure).then((res) => {
+            setTresureFunds(res.data.funds);
+          });
         }
 
         setLoading(false);
@@ -88,8 +91,11 @@ function AdminTresure() {
 
   const onSelectionChange = (id) => {
     if (!id) return;
-
     setSelectedTresure(id);
+    setSelectedTresureFund(null); // reset fund
+    updateURL(id, null);
+
+    // setSelectedTresure(id);
 
     if (id) {
       getTresureById(id)
@@ -123,17 +129,19 @@ function AdminTresure() {
   const fetchSelectedTresure = async () => {
     if (!selectedTresure) return;
     const res = await getTresureById(selectedTresure);
-    setSelectedTresureData(res.data.tresure);
+    setSelectedTresureData(res.data);
   };
   const fetchSelectedTresureFund = async () => {
     if (!selectedTresureFund) return;
     const res = await getTresureFundById(selectedTresureFund);
-    setSelectedTresureFundData(res.data.tresureFund);
+    setSelectedTresureFundData(res.data);
   };
 
   const onSelectionFundsChange = (id) => {
-    setSelectedTresureFund(id);
+    // setSelectedTresureFund(id);
 
+    setSelectedTresureFund(id);
+    updateURL(selectedTresure, id);
     if (id) {
       getTresureFundById(id)
         .then((response) => {
@@ -151,6 +159,42 @@ function AdminTresure() {
     }
   };
 
+  const updateURL = (tresure, fund) => {
+    const params = new URLSearchParams();
+
+    if (tresure) params.set("selected", tresure);
+    if (fund) params.set("fund", fund);
+
+    navigate(`?${params.toString()}`, { replace: true });
+  };
+
+  useEffect(() => {
+    if (!selectedTresure) {
+      setSelectedTresureData(null);
+      setTresureFunds([]);
+      return;
+    }
+
+    getTresureById(selectedTresure).then((res) => {
+      setSelectedTresureData(res.data);
+    });
+
+    getTresureFunds(selectedTresure).then((res) => {
+      setTresureFunds(res.data.funds);
+    });
+  }, [selectedTresure]);
+
+  useEffect(() => {
+    if (!selectedTresureFund) {
+      setSelectedTresureFundData(null);
+      return;
+    }
+
+    getTresureFundById(selectedTresureFund).then((res) => {
+      setSelectedTresureFundData(res.data);
+    });
+  }, [selectedTresureFund]);
+
   return (
     <div>
       <Card className="">
@@ -161,8 +205,8 @@ function AdminTresure() {
             style={{ justifyItems: "right" }}
           >
             <h1>الاسم: {admins.name}</h1>
-            <h1>مجموع الصناديق: ${totals.total_tresure_count}</h1>
-            <h1>عدد الملحقات: ${totals.total_fund_count}</h1>
+            <h1>عدد الصناديق: {totals.total_tresure_count}</h1>
+            <h1>عدد الملحقات: {totals.total_fund_count}</h1>
             <h1>تحويلات واردة: ${totals.total_incoming}</h1>
             <h1>تحويلات صادرة: ${totals.total_outgoing}</h1>
             <h1>إيرادات: ${totals.total_inners}</h1>
@@ -177,7 +221,6 @@ function AdminTresure() {
         defaultItems={tresure}
         label="اختر الصندوق"
         variant="bordered"
-        // onInputChange={onInputChange}
         onSelectionChange={onSelectionChange}
       >
         {(item) => (
@@ -208,7 +251,7 @@ function AdminTresure() {
                       مجموع الملحقات:
                     </span>{" "}
                     <span className="text-gray-700">
-                      $ {selectedTresureData.stats.fund_count}
+                      {selectedTresureData.stats.fund_count}
                     </span>
                   </h1>
                   <h1>
@@ -225,7 +268,7 @@ function AdminTresure() {
                 <div className="grid grid-cols-2 gap-4">
                   <h1>
                     <span className="text-gray-900 font-semibold">
-                      تحويلات مستلمة:
+                      تحويلات صادرة:
                     </span>{" "}
                     <span className="text-gray-700">
                       $ {selectedTresureData.stats.total_outgoing}
@@ -268,11 +311,10 @@ function AdminTresure() {
                     </span>
                   </span>
                 </div>
-
                 {/* === Row 5 – Buttons === */}
                 <div className="flex justify-end gap-2">
                   <UpdateTresureModal
-                    id={selectedTresureData.id}
+                    id={selectedTresureData.tresure.id}
                     tresureable_id={id}
                     onSaveSuccess={() => {
                       fetchData();
@@ -280,11 +322,13 @@ function AdminTresure() {
                     }}
                   />
                   <DeleteTresureModal
-                    id={selectedTresureData.id}
+                    id={selectedTresureData.tresure.id}
                     onSaveSuccess={() => {
-                      fetchData();
                       setSelectedTresure(null);
                       setSelectedTresureData(null);
+                      fetchData();
+
+                      navigate("", { replace: true });
                     }}
                   />
                 </div>
@@ -302,7 +346,6 @@ function AdminTresure() {
             defaultItems={tresureFunds}
             label="اختر الملحق"
             variant="bordered"
-            // onInputChange={onInputChange}
             onSelectionChange={onSelectionFundsChange}
           >
             {(item) => (
@@ -316,7 +359,6 @@ function AdminTresure() {
             type={"admin"}
             selectedTresureId={id}
           />
-
           {selectedTresureFundData && (
             <div className="">
               <Accordion variant="splitted">
@@ -374,7 +416,7 @@ function AdminTresure() {
                           التحويلات الواردة:
                         </span>{" "}
                         <span className="text-gray-700">
-                          4 {selectedTresureFundData.stats.total_incoming}
+                          $ {selectedTresureFundData.stats.total_incoming}
                         </span>
                       </h1>
                       <h1>
@@ -420,7 +462,7 @@ function AdminTresure() {
                     {/* === Row 6 – Buttons === */}
                     <div className="flex justify-end gap-2">
                       <UpdateTresureFundModal
-                        id={selectedTresureFundData.id}
+                        id={selectedTresureFundData.tresureFund.id}
                         tresures={tresure}
                         onSaveSuccess={() => {
                           fetchData();
@@ -428,11 +470,14 @@ function AdminTresure() {
                         }}
                       />
                       <DeleteTresureFundModal
-                        id={selectedTresureFundData.id}
+                        id={selectedTresureFundData.tresureFund.id}
                         onSaveSuccess={() => {
                           fetchData();
+                          fetchSelectedTresure();
+
                           setSelectedTresureFund(null);
                           setSelectedTresureFundData(null);
+                          navigate("", { replace: true });
                         }}
                       />
                     </div>
@@ -449,14 +494,35 @@ function AdminTresure() {
         <div className="flex w-full flex-col mt-6">
           <Tabs aria-label="Options" fullWidth keepContentMounted>
             <Tab key="moneytrans" title="تحويل صندوق">
-              <MoneyTransfareTable tresurefundid={selectedTresureFund} />
+              <MoneyTransfareTable
+                tresurefundid={selectedTresureFund}
+                onSaveSuccess={() => {
+                  fetchData();
+                  fetchSelectedTresure();
+                  fetchSelectedTresureFund();
+                }}
+              />
             </Tab>
 
             <Tab key="innertrans" title="إيرادات">
-              <InnerTransactionTable tresurefundid={selectedTresureFund} />
+              <InnerTransactionTable
+                tresurefundid={selectedTresureFund}
+                onSaveSuccess={() => {
+                  fetchData();
+                  fetchSelectedTresure();
+                  fetchSelectedTresureFund();
+                }}
+              />
             </Tab>
             <Tab key="outertrans" title="مصاريف">
-              <OuterTransactionTable tresurefundid={selectedTresureFund} />
+              <OuterTransactionTable
+                tresurefundid={selectedTresureFund}
+                onSaveSuccess={() => {
+                  fetchData();
+                  fetchSelectedTresure();
+                  fetchSelectedTresureFund();
+                }}
+              />
             </Tab>
           </Tabs>
         </div>

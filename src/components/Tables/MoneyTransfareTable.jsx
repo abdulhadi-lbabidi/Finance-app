@@ -55,7 +55,7 @@ function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-function MoneyTransfareTable({ tresurefundid }) {
+function MoneyTransfareTable({ tresurefundid, onSaveSuccess }) {
   const [moneyTransfares, setMoneyTransfares] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -157,11 +157,17 @@ function MoneyTransfareTable({ tresurefundid }) {
         return (
           <div className="relative flex justify-end items-center gap-2">
             <UpdateMoneyTransfareModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={moneyTransfare.id}
             />
             <DeleteMoneyTransfareModal
-              onSaveSuccess={fetchData}
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
               id={moneyTransfare.id}
             />
           </div>
@@ -234,7 +240,12 @@ function MoneyTransfareTable({ tresurefundid }) {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <AddMoneyTransfareModal onSaveSuccess={fetchData} />
+            <AddMoneyTransfareModal
+              onSaveSuccess={() => {
+                fetchData();
+                onSaveSuccess();
+              }}
+            />
           </div>
         </div>
         <div className="flex justify-between items-center">

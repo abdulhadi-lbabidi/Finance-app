@@ -294,6 +294,33 @@ function InvoiceItemTable() {
     }
   }, []);
 
+  useEffect(() => {
+    const amount = Number(invoiceItemData.amount) || 0;
+    const price = Number(invoiceItemData.price) || 0;
+    const discountValue = Number(invoiceItemData.discount_value) || 0;
+    const discountType = invoiceItemData.discount_type || "قيمة";
+
+    let finalPrice = amount * price;
+
+    if (discountType === "نسبة") {
+      finalPrice = finalPrice - finalPrice * (discountValue / 100);
+    } else {
+      finalPrice = finalPrice - discountValue;
+    }
+
+    if (finalPrice < 0) finalPrice = 0;
+
+    setInvoiceItemData((prev) => ({
+      ...prev,
+      finalprice: finalPrice,
+    }));
+  }, [
+    invoiceItemData.amount,
+    invoiceItemData.price,
+    invoiceItemData.discount_value,
+    invoiceItemData.discount_type,
+  ]);
+
   const topContent = useMemo(() => {
     return (
       <div className="flex flex-col gap-4 mt-3">
@@ -494,23 +521,12 @@ function InvoiceItemTable() {
                 type="number"
                 className="max-w-[100px]"
                 value={invoiceItemData.amount}
-                // onChange={(e) => {
-                //   const amount = e.target.value;
-                //   const price = invoiceItemData.price;
-                //   const finalprice = Number(price) * Number(amount) || 0;
-
-                //   setInvoiceItemData({
-                //     ...invoiceItemData,
-                //     amount,
-                //     finalprice,
-                //   });
-                // }}
-                onChange={(e) =>
+                onChange={(e) => {
                   setInvoiceItemData({
                     ...invoiceItemData,
                     amount: e.target.value,
-                  })
-                }
+                  });
+                }}
               />
 
               <Input
@@ -520,23 +536,12 @@ function InvoiceItemTable() {
                 type="number"
                 className="max-w-[100px]"
                 value={invoiceItemData.price}
-                // onChange={(e) => {
-                //   const price = e.target.value;
-                //   const amount = invoiceItemData.amount;
-                //   const finalprice = Number(price) * Number(amount) || 0;
-
-                //   setInvoiceItemData({
-                //     ...invoiceItemData,
-                //     price,
-                //     finalprice,
-                //   });
-                // }}
-                onChange={(e) =>
+                onChange={(e) => {
                   setInvoiceItemData({
                     ...invoiceItemData,
                     price: e.target.value,
-                  })
-                }
+                  });
+                }}
               />
 
               <Input
@@ -575,14 +580,14 @@ function InvoiceItemTable() {
                   نسبة (٪)
                 </SelectItem>
               </Select>
-              {/*
+
               <Input
                 size="sm"
                 label="السعر النهائي"
                 isReadOnly
                 className="max-w-[110px]"
                 value={invoiceItemData.finalprice}
-              /> */}
+              />
 
               <Checkbox
                 size="sm"

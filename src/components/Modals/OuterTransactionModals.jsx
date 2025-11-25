@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -8,11 +8,8 @@ import {
   Button,
   useDisclosure,
   Input,
-  Divider,
   addToast,
   Tooltip,
-  user,
-  Spinner,
   NumberInput,
   Checkbox,
 } from "@heroui/react";
@@ -23,7 +20,7 @@ import {
   getOuterTransactiondata,
   updateOuterTransaction,
 } from "../../api";
-import { FaBox, FaPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { FaPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 export function AddOuterTransactionModal({ onSaveSuccess, tresurefundid }) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
@@ -59,12 +56,16 @@ export function AddOuterTransactionModal({ onSaveSuccess, tresurefundid }) {
       onSaveSuccess();
       onClose();
     } catch (err) {
+      setLoading(false);
+
+      const errorMessage =
+        err?.response?.data?.message || err.message || "حدث خطأ غير متوقع";
+
       addToast({
-        title: "حدث خطاً",
-        description: `عملية برمجية رقم : ${err.message}`,
+        title: "خطأ",
+        description: errorMessage,
         color: "danger",
       });
-      setLoading(false);
     }
   };
 
@@ -325,7 +326,6 @@ export function DeleteOuterTransactionModal({ id, onSaveSuccess }) {
     indate: "",
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   const onSubmit = async (e) => {
     e.preventDefault();

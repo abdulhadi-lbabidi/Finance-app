@@ -53,6 +53,14 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
     to_tresure_fund_id: null,
   });
 
+  const typeTranslations = {
+    admin: "مدير",
+    customer: "عميل",
+    employee: "موظف",
+    workshop: "صاحب ورشة",
+    office: "مكتب",
+  };
+
   //==============================
   // LOAD TYPES
   //==============================
@@ -62,7 +70,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
         setTypes(
           res.data.truserTtype.map((t) => ({
             key: t,
-            label: t,
+            label: typeTranslations[t] || t,
           }))
         );
         setLoadingTypes(false);
@@ -140,9 +148,13 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
       onClose();
     } catch (err) {
       setLoading(false);
+
+      const errorMessage =
+        err?.response?.data?.message || err.message || "حدث خطأ غير متوقع";
+
       addToast({
         title: "خطأ",
-        description: err.message,
+        description: errorMessage,
         color: "danger",
       });
     }
@@ -263,6 +275,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
                       <Autocomplete
                         label="إلى الملحق"
                         defaultItems={funds}
+                        disabledKeys={[fromFund]}
                         onSelectionChange={setToFund}
                         className="w-full"
                       >

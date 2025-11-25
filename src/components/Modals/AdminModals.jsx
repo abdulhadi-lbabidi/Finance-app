@@ -37,10 +37,7 @@ export function AddAdminModal({ onSaveSuccess }) {
     address: "",
     department: "",
     admintype_id: null,
-    user: {
-      email: "",
-      password: "",
-    },
+    email: "",
   });
   const [loading, setLoading] = useState(false);
 

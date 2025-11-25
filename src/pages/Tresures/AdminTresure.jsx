@@ -9,7 +9,7 @@ import {
   Tab,
   Tabs,
 } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import OuterTransactionTable from "../../components/Tables/OuterTransactionTable";
 import MoneyTransfareTable from "../../components/Tables/MoneyTransfareTable";
 import InnerTransactionTable from "../../components/Tables/InnerTransactionTable";
@@ -33,14 +33,13 @@ import {
 
 function AdminTresure() {
   const { id } = useParams();
-  const [admins, setAdmins] = useState([]);
-  const navigate = useNavigate();
-
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-
+  const navigate = useNavigate();
   const initialTresure = params.get("selected");
   const initialFund = params.get("fund");
+
+  const [admins, setAdmins] = useState([]);
   const [selectedTresure, setSelectedTresure] = useState(initialTresure);
   const [selectedTresureFund, setSelectedTresureFund] = useState(initialFund);
 
@@ -52,39 +51,39 @@ function AdminTresure() {
   const [selectedTresureData, setSelectedTresureData] = useState(null);
   const [selectedTresureFundData, setSelectedTresureFundData] = useState(null);
 
-  const fetchData = () => {
-    getAdminTresure(id)
-      .then((response) => {
-        setAdmins(response.data.admin);
-        setTotals(response.data.totals);
-        setTresures(
-          response.data.tresures.map((t) => ({
-            id: t.tresure.id,
-            name: t.tresure.name,
-          }))
-        );
-        if (selectedTresure) {
-          getTresureFunds(selectedTresure).then((res) => {
-            setTresureFunds(res.data.funds);
-          });
-        }
-
-        setLoading(false);
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await getAdminTresure(id);
+      setAdmins(response.data.admin);
+      setTotals(response.data.totals);
+      setTresures(
+        response.data.tresures.map((t) => ({
+          id: t.tresure.id,
+          name: t.tresure.name,
+        }))
+      );
+      if (selectedTresure) {
+        getTresureFunds(selectedTresure).then((res) => {
+          setTresureFunds(res.data.funds);
         });
-        setLoading(false);
-      });
-  };
+      }
 
-  // Fetch data initially
+      setLoading(false);
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: `عملية برمجية رقم : ${err.message}`,
+        color: "danger",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const onSelectionChange = (id) => {
     if (!id) return;

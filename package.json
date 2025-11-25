@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@heroui/react": "^2.8.4",
-    "@heroui/toast": "^2.0.17",
+    "@heroui/react": "^2.8.5",
+    "@heroui/toast": "^2.0.13",
     "@internationalized/date": "^3.10.0",
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.12.2",

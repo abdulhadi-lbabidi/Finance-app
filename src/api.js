@@ -267,7 +267,12 @@ export const deleteWorkshopLogistic = (id) => {
 //Data
 export const getTresureSelector = (type) =>
   api.get(`/data/tresure?type=${type}`);
+
 export const getAdminTresure = (id) => api.get(`/data/admin/tresure/${id}`);
+export const getEmployeeTresure = (id) =>
+  api.get(`/data/employee/tresure/${id}`);
+export const getCustomerTresure = (id) =>
+  api.get(`/data/customer/tresure/${id}`);
 export const getWorkshopTresure = (id) =>
   api.get(`/data/workshop/tresure/${id}`);
 export const getTresureFunds = (id) => api.get(`/data/tresurefund/${id}`);

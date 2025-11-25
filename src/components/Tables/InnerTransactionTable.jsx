@@ -15,6 +15,7 @@ import {
   Chip,
   Pagination,
   addToast,
+  Spinner,
 } from "@heroui/react";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
@@ -72,21 +73,20 @@ function InnerTransactionTable({ tresurefundid, onSaveSuccess }) {
 
   const { id } = useParams();
 
-  const fetchData = () => {
-    // Using axios
-    getInnerTransactions(tresurefundid)
-      .then((response) => {
-        setInnerTransactions(response.data.innertrans); // axios puts data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoading(false);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await getInnerTransactions(tresurefundid);
+      setInnerTransactions(response.data.innertrans);
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: `عملية برمجية رقم : ${err.message}`,
+        color: "danger",
       });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Fetch data initially
@@ -374,7 +374,16 @@ function InnerTransactionTable({ tresurefundid, onSaveSuccess }) {
     []
   );
 
-  if (loading) return <div>Loading innerTransactions...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-10 w-full">
+        <Spinner
+          classNames={{ label: "text-foreground" }}
+          label="جاري التحميل..."
+          variant="wave"
+        />
+      </div>
+    );
   if (error) return <div className="text-red-500">Error: {error}</div>;
   return (
     <Table
@@ -408,10 +417,7 @@ function InnerTransactionTable({ tresurefundid, onSaveSuccess }) {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody
-        emptyContent={"No innerTransactions found"}
-        items={sortedItems}
-      >
+      <TableBody emptyContent={"لا توجد إيرادات"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

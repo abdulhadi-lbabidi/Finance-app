@@ -8,6 +8,7 @@ import {
   DropdownTrigger,
   Input,
   Pagination,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -85,26 +86,25 @@ const InvoicesWithDiscountTable = () => {
   const [page, setPage] = useState(1);
   const { type } = useParams();
 
-  const fetchData = () => {
-    // Using axios
-    getInvoices(type)
-      .then((response) => {
-        setInvoices(response.data.invoices); // axios get data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoading(false);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await getInvoices(type);
+      setInvoices(response.data.invoices);
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: `عملية برمجية رقم : ${err.message}`,
+        color: "danger",
       });
-  };
+    } finally {
+      setLoading(false);
+    }
+  }, [type]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const pages = Math.ceil(invoices.length / rowsPerPage);
 
@@ -328,8 +328,12 @@ const InvoicesWithDiscountTable = () => {
   );
 
   return loading ? (
-    <div className="text-center p-5 text-default-400">
-      جاري تحميل الفواتير...
+    <div className="flex justify-center items-center py-10 w-full">
+      <Spinner
+        classNames={{ label: "text-foreground" }}
+        label="جاري التحميل..."
+        variant="wave"
+      />
     </div>
   ) : (
     <Table

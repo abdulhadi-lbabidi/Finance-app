@@ -7,6 +7,7 @@ import {
   DropdownTrigger,
   Input,
   Pagination,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -316,6 +317,17 @@ function ImagePaysTable() {
     []
   );
 
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-2 w-full">
+        <Spinner
+          classNames={{ label: "text-foreground" }}
+          label="جاري التحميل..."
+          variant="wave"
+        />
+      </div>
+    );
+
   return (
     <>
       <Table
@@ -350,7 +362,7 @@ function ImagePaysTable() {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"لا توجد صور "} items={sortedItems}>
+        <TableBody emptyContent={"لا توجد فواتير وثائق "} items={sortedItems}>
           {(item) => (
             <TableRow key={item.id}>
               {(columnKey) => (

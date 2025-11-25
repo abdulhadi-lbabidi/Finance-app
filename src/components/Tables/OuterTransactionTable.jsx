@@ -15,6 +15,7 @@ import {
   Chip,
   Pagination,
   addToast,
+  Spinner,
 } from "@heroui/react";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
@@ -72,21 +73,20 @@ function OuterTransactionTable({ tresurefundid, onSaveSuccess }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchData = () => {
-    // Using axios
-    getOuterTransactions(tresurefundid)
-      .then((response) => {
-        setOuterTransactions(response.data.outertrans); // axios puts data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoading(false);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await getOuterTransactions(tresurefundid);
+      setOuterTransactions(response.data.outertrans);
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: `عملية برمجية رقم : ${err.message}`,
+        color: "danger",
       });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Fetch data initially
@@ -377,7 +377,16 @@ function OuterTransactionTable({ tresurefundid, onSaveSuccess }) {
     []
   );
 
-  if (loading) return <div>Loading outerTransactions...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-10 w-full">
+        <Spinner
+          classNames={{ label: "text-foreground" }}
+          label="جاري التحميل..."
+          variant="wave"
+        />
+      </div>
+    );
   if (error) return <div className="text-red-500">Error: {error}</div>;
   return (
     <Table
@@ -411,10 +420,7 @@ function OuterTransactionTable({ tresurefundid, onSaveSuccess }) {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody
-        emptyContent={"No outerTransactions found"}
-        items={sortedItems}
-      >
+      <TableBody emptyContent={"لا توجد مصاريف"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

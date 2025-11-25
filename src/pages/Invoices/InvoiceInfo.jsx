@@ -1,4 +1,4 @@
-import { addToast, Card, CardBody, Tab, Tabs } from "@heroui/react";
+import { addToast, Card, CardBody, Spinner, Tab, Tabs } from "@heroui/react";
 import TechPaysTable from "../../components/Tables/TechPaysTable";
 import LogicPaysTable from "../../components/Tables/LogicPaysTable";
 import InvoiceItemTable from "../../components/Tables/InvoiceItemTable";
@@ -50,7 +50,16 @@ function InvoiceInfo() {
     fetchData();
   }, []);
 
-  if (loading) return <p>جاري التحميل...</p>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-2 w-full">
+        <Spinner
+          classNames={{ label: "text-foreground" }}
+          label="جاري التحميل..."
+          variant="wave"
+        />
+      </div>
+    );
 
   return (
     <>

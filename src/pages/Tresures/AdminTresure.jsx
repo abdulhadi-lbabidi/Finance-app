@@ -44,10 +44,7 @@ function AdminTresure() {
   const [selectedTresure, setSelectedTresure] = useState(initialTresure);
   const [selectedTresureFund, setSelectedTresureFund] = useState(initialFund);
 
-  // const [selectedTresure, setSelectedTresure] = useState(null);
-  // const [selectedTresureFund, setSelectedTresureFund] = useState(null);
-
-  const [tresure, setTresures] = useState([]); // صناديق الأدمن
+  const [tresure, setTresures] = useState([]); // صناديق
   const [tresureFunds, setTresureFunds] = useState([]); // ملحقات الصناديق
   const [totals, setTotals] = useState({}); //totals
   const [loading, setLoading] = useState(true);
@@ -223,6 +220,7 @@ function AdminTresure() {
         variant="bordered"
         onSelectionChange={onSelectionChange}
         onClear={() => {
+          setSelectedTresure(null);
           setSelectedTresureFund(null);
           setSelectedTresureFundData(null);
           setSelectedTresureData(null);
@@ -312,11 +310,20 @@ function AdminTresure() {
                 <div className="grid grid-cols-2 gap-4">
                   <span>
                     <span className="text-gray-900 font-semibold">الحالة:</span>{" "}
-                    <span className="text-gray-700">
-                      {selectedTresureData.active ? "مفعّل" : "غير مفعّل"}
+                    <span
+                      className={
+                        selectedTresureData.tresure.active
+                          ? "text-green-600 font-medium"
+                          : "text-red-600 font-medium"
+                      }
+                    >
+                      {selectedTresureData.tresure.active
+                        ? "مفعّل"
+                        : "غير مفعّل"}
                     </span>
                   </span>
                 </div>
+
                 {/* === Row 5 – Buttons === */}
                 <div className="flex justify-end gap-2">
                   <UpdateTresureModal

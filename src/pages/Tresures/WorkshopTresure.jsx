@@ -14,7 +14,7 @@ import OuterTransactionTable from "../../components/Tables/OuterTransactionTable
 import MoneyTransfareTable from "../../components/Tables/MoneyTransfareTable";
 import InnerTransactionTable from "../../components/Tables/InnerTransactionTable";
 import {
-  getCustomerTresure,
+  getWorkshopTresure,
   getTresureById,
   getTresureFundById,
   getTresureFunds,
@@ -31,9 +31,9 @@ import {
   UpdateTresureFundModal,
 } from "../../components/Modals/TresureFundModals";
 
-function CustomerTresure() {
+function WorkshopTresure() {
   const { id } = useParams();
-  const [customers, setCustomers] = useState([]);
+  const [workshops, setWorkshops] = useState([]);
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -53,9 +53,9 @@ function CustomerTresure() {
   const [selectedTresureFundData, setSelectedTresureFundData] = useState(null);
 
   const fetchData = () => {
-    getCustomerTresure(id)
+    getWorkshopTresure(id)
       .then((response) => {
-        setCustomers(response.data.customer);
+        setWorkshops(response.data.workshop);
         setTotals(response.data.totals);
         setTresures(
           response.data.tresures.map((t) => ({
@@ -197,7 +197,7 @@ function CustomerTresure() {
             className="grid grid-cols-3 rtl-grid"
             style={{ justifyItems: "right" }}
           >
-            <h1>الاسم: {customers.name}</h1>
+            <h1>الاسم: {workshops.name}</h1>
             <h1>عدد الصناديق: {totals.total_tresure_count}</h1>
             <h1>عدد الملحقات: {totals.total_fund_count}</h1>
             <h1>تحويلات واردة: ${totals.total_incoming}</h1>
@@ -229,8 +229,8 @@ function CustomerTresure() {
       {/* Add tresure */}
       <AddTresureModal
         onSaveSuccess={fetchData}
-        type={"customer"}
-        id={customers.id}
+        type={"workshop"}
+        id={workshops.id}
       />
 
       {/* Accordion for Treasures */}
@@ -364,7 +364,7 @@ function CustomerTresure() {
           <AddTresureFundModal
             onSaveSuccess={fetchData}
             id={selectedTresure}
-            type={"customer"}
+            type={"workshop"}
             selectedTresureId={id}
           />
           {selectedTresureFundData && (
@@ -539,4 +539,4 @@ function CustomerTresure() {
   );
 }
 
-export default CustomerTresure;
+export default WorkshopTresure;

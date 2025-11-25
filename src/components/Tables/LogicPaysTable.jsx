@@ -13,6 +13,7 @@ import {
   Pagination,
   Select,
   SelectItem,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -123,23 +124,23 @@ function LogicPaysTable() {
 
   const [page, setPage] = useState(1);
 
-  const fetchData = () => {
-    // Using axios
-    getLogicPays(type)
-      .then((response) => {
-        setLogicPays(response.data.logicPays); // axios get data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoading(false);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await getLogicPays(type);
+      setLogicPays(response.data.logicPays);
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: `عملية برمجية رقم : ${err.message}`,
+        color: "danger",
       });
+    } finally {
+      setLoading(false);
+    }
   };
 
+  // Fetch data initially
   useEffect(() => {
     fetchData();
   }, []);
@@ -465,6 +466,17 @@ function LogicPaysTable() {
     []
   );
 
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-2 w-full">
+        <Spinner
+          classNames={{ label: "text-foreground" }}
+          label="جاري التحميل..."
+          variant="wave"
+        />
+      </div>
+    );
+
   return (
     <>
       <Table
@@ -499,7 +511,10 @@ function LogicPaysTable() {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"لا توجد حسابات حرفيين"} items={sortedItems}>
+        <TableBody
+          emptyContent={"لا توجد فواتير مراقبين ورشات"}
+          items={sortedItems}
+        >
           {(item) => (
             <TableRow key={item.id}>
               {(columnKey) => (

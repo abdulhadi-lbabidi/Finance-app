@@ -42,6 +42,8 @@ import PrintTech from "../pages/Invoices/PrintTech";
 import PrintLogic from "../pages/Invoices/PrintLogic";
 import PrintInvoiceItem from "../pages/Invoices/PrintInvoiceItem";
 import EmployeeTresure from "../pages/Tresures/EmployeeTresure";
+import WorkshopTresure from "../pages/Tresures/WorkshopTresure";
+import CustomerTresure from "../pages/Tresures/CustomerTresure";
 
 const router = createBrowserRouter(
   [
@@ -53,7 +55,7 @@ const router = createBrowserRouter(
           path: "home",
           element: <Home />,
         },
-        // Tresures selectors
+        // Admin Tresures selectors
         {
           path: "tresure/admin",
           children: [
@@ -93,7 +95,7 @@ const router = createBrowserRouter(
           ],
         },
 
-        // Tresures selectors
+        // Employee Tresures selectors
         {
           path: "tresure/employee",
           children: [
@@ -133,18 +135,90 @@ const router = createBrowserRouter(
           ],
         },
 
+        // Workshop Tresures selectors
+        {
+          path: "tresure/workshop",
+          children: [
+            { index: true, element: <SelectWorkshopTresure /> },
+            {
+              path: ":id",
+              children: [
+                { index: true, element: <WorkshopTresure /> },
+                {
+                  path: "print/:type/:transactionId",
+                  element: <PrintInvoiceTransaction />,
+                },
+                {
+                  path: "invoices/:transactionId/:type",
+                  children: [
+                    { index: true, element: <Invoices /> },
+                    {
+                      path: "print",
+                      element: <PrintInvoiceType />,
+                    },
+                  ],
+                },
+                {
+                  path: "invoices/:transactionId/:type/info/:invoiceId",
+                  children: [
+                    { index: true, element: <InvoiceInfo /> },
+                    { path: "print/tech/:techId", element: <PrintTech /> },
+                    { path: "print/logic/:logicId", element: <PrintLogic /> },
+                    {
+                      path: "print/invoice-item/:invoiceItemId",
+                      element: <PrintInvoiceItem />,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+
+        // Customer Tresures selectors
+        {
+          path: "tresure/customer",
+          children: [
+            { index: true, element: <SelectCustomerTresure /> },
+            {
+              path: ":id",
+              children: [
+                { index: true, element: <CustomerTresure /> },
+                {
+                  path: "print/:type/:transactionId",
+                  element: <PrintInvoiceTransaction />,
+                },
+                {
+                  path: "invoices/:transactionId/:type",
+                  children: [
+                    { index: true, element: <Invoices /> },
+                    {
+                      path: "print",
+                      element: <PrintInvoiceType />,
+                    },
+                  ],
+                },
+                {
+                  path: "invoices/:transactionId/:type/info/:invoiceId",
+                  children: [
+                    { index: true, element: <InvoiceInfo /> },
+                    { path: "print/tech/:techId", element: <PrintTech /> },
+                    { path: "print/logic/:logicId", element: <PrintLogic /> },
+                    {
+                      path: "print/invoice-item/:invoiceItemId",
+                      element: <PrintInvoiceItem />,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+
         // {
-        //   path: "/tresure/employee",
-        //   element: <SelectEmployeeTresure />,
+        //   path: "/tresure/customer",
+        //   element: <SelectCustomerTresure />,
         // },
-        {
-          path: "/tresure/workshop",
-          element: <SelectWorkshopTresure />,
-        },
-        {
-          path: "/tresure/customer",
-          element: <SelectCustomerTresure />,
-        },
         // Accounts
         {
           path: "/admin/accounts",

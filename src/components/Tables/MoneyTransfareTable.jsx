@@ -14,6 +14,7 @@ import {
   DropdownItem,
   Pagination,
   addToast,
+  Spinner,
 } from "@heroui/react";
 import SearchIcon from "../SVG/SearchIcon";
 import ChevronDownIcon from "../SVG/ChevronDownIcon";
@@ -60,21 +61,21 @@ function MoneyTransfareTable({ tresurefundid, onSaveSuccess }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchData = () => {
-    // Using axios
-    getMoneyTransfares(tresurefundid)
-      .then((response) => {
-        setMoneyTransfares(response.data.moneytrans); // axios puts data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoading(false);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await getMoneyTransfares(tresurefundid);
+      setMoneyTransfares(response.data.moneytrans);
+    } catch (err) {
+      addToast({
+        title: "حدث خطأ",
+        description: err.message,
+        color: "danger",
       });
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Fetch data initially
@@ -320,7 +321,17 @@ function MoneyTransfareTable({ tresurefundid, onSaveSuccess }) {
     []
   );
 
-  if (loading) return <div>Loading moneyTransfares...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-10 w-full">
+        <Spinner
+          classNames={{ label: "text-foreground" }}
+          label="جاري التحميل..."
+          variant="wave"
+        />
+      </div>
+    );
+
   if (error) return <div className="text-red-500">Error: {error}</div>;
   return (
     <Table
@@ -343,6 +354,18 @@ function MoneyTransfareTable({ tresurefundid, onSaveSuccess }) {
       onSelectionChange={setSelectedKeys}
       onSortChange={setSortDescriptor}
     >
+      {loading && (
+        <div className="flex justify-center items-center py-10 w-full">
+          <Spinner
+            classNames={{
+              label: "flex justify-center items-center py-10 w-full",
+            }}
+            label="dots"
+            variant="dots"
+          />
+        </div>
+      )}
+
       <TableHeader columns={headerColumns}>
         {(column) => (
           <TableColumn
@@ -354,7 +377,7 @@ function MoneyTransfareTable({ tresurefundid, onSaveSuccess }) {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No moneyTransfares found"} items={sortedItems}>
+      <TableBody emptyContent={"لا توجد تحويلات مالية"} items={sortedItems}>
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (

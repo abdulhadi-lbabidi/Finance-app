@@ -24,7 +24,6 @@ import {
   updateInvoices,
 } from "../../api";
 import { useNavigate, useParams } from "react-router-dom";
-import EyeFilledIcon from "../SVG/EyeFilledIcon";
 import { AddFinanceItemModal } from "./FinanceItemModals";
 
 export function AddInvoiceModals({ onSaveSuccess }) {
@@ -624,7 +623,6 @@ export function AddInvoiceWithDiscountModals({ onSaveSuccess }) {
                 />
 
                 <Input
-                  isRequired
                   label="الشرح"
                   type="text"
                   value={invoices.desc}
@@ -691,6 +689,7 @@ export function AddInvoiceWithDiscountModals({ onSaveSuccess }) {
                     </AutocompleteItem>
                   ))}
                 </Autocomplete>
+                <AddFinanceItemModal onSaveSuccess={fetchDataItems} />
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>

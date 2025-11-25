@@ -41,6 +41,7 @@ import PrintInvoiceType from "../pages/Invoices/PrintInvoiceType";
 import PrintTech from "../pages/Invoices/PrintTech";
 import PrintLogic from "../pages/Invoices/PrintLogic";
 import PrintInvoiceItem from "../pages/Invoices/PrintInvoiceItem";
+import EmployeeTresure from "../pages/Tresures/EmployeeTresure";
 
 const router = createBrowserRouter(
   [
@@ -92,18 +93,50 @@ const router = createBrowserRouter(
           ],
         },
 
-        // {
-        //   path: "/tresure/admin",
-        //   element: <SelectAdminTresure />,
-        // },
-        // {
-        //   path: "/tresure/admin/:id",
-        //   element: <AdminTresure />,
-        // },
+        // Tresures selectors
         {
-          path: "/tresure/employee",
-          element: <SelectEmployeeTresure />,
+          path: "tresure/employee",
+          children: [
+            { index: true, element: <SelectEmployeeTresure /> },
+            {
+              path: ":id",
+              children: [
+                { index: true, element: <EmployeeTresure /> },
+                {
+                  path: "print/:type/:transactionId",
+                  element: <PrintInvoiceTransaction />,
+                },
+                {
+                  path: "invoices/:transactionId/:type",
+                  children: [
+                    { index: true, element: <Invoices /> },
+                    {
+                      path: "print",
+                      element: <PrintInvoiceType />,
+                    },
+                  ],
+                },
+                {
+                  path: "invoices/:transactionId/:type/info/:invoiceId",
+                  children: [
+                    { index: true, element: <InvoiceInfo /> },
+                    { path: "print/tech/:techId", element: <PrintTech /> },
+                    { path: "print/logic/:logicId", element: <PrintLogic /> },
+                    {
+                      path: "print/invoice-item/:invoiceItemId",
+                      element: <PrintInvoiceItem />,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         },
+
+        // {
+        //   path: "/tresure/employee",
+        //   element: <SelectEmployeeTresure />,
+        // },
         {
           path: "/tresure/workshop",
           element: <SelectWorkshopTresure />,

@@ -8,6 +8,7 @@ import { getInvoiceById } from "../../api";
 function PrintInvoiceType() {
   const contentRef = useRef();
   const { type, transactionId } = useParams();
+  const [note, setNote] = useState("");
 
   const [transaction, setTransaction] = useState(null);
 
@@ -97,9 +98,20 @@ function PrintInvoiceType() {
               </td>
             </tr>
 
-            <tr className="border-b">
+            {/* <tr className="border-b">
               <td className="py-3 font-semibold">ملاحظات:</td>
               <td className="py-3">{transaction.desc}</td>
+            </tr> */}
+
+            <tr className="border-b">
+              <td className="py-3 font-semibold"> ملاحظات:</td>
+              <td className="py-3">
+                <input
+                  className="w-full border-none outline-none p-2 rounded"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
+              </td>
             </tr>
           </tbody>
         </table>

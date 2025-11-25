@@ -8,6 +8,7 @@ import { getInnerTransactiondata, getOuterTransactiondata } from "../../api";
 function PrintInvoiceTransaction() {
   const contentRef = useRef();
   const { type, transactionId } = useParams();
+  const [note, setNote] = useState("");
 
   const [transaction, setTransaction] = useState(null);
 
@@ -60,7 +61,10 @@ function PrintInvoiceTransaction() {
         </div>
 
         <h2 className="text-center text-2xl mb-8 border-b-2 border-black pb-3 font-semibold">
-          فاتورة معاملة رقم {transaction.id}#
+          فاتورة معاملة رقم
+          {type === "innerTransaction"
+            ? ` inner#${transaction.id}`
+            : ` outer#${transaction.id}`}
         </h2>
 
         <table className="w-full text-lg border-collapse">
@@ -77,9 +81,20 @@ function PrintInvoiceTransaction() {
               <td className="py-3 font-semibold">التاريخ:</td>
               <td className="py-3">{transaction.indate}</td>
             </tr>
-            <tr className="border-b">
+            {/* <tr className="border-b">
               <td className="py-3 font-semibold">ملاحظات:</td>
               <td className="py-3">{transaction.desc}</td>
+            </tr> */}
+
+            <tr className="border-b">
+              <td className="py-3 font-semibold"> ملاحظات:</td>
+              <td className="py-3">
+                <input
+                  className="w-full border-none outline-none p-2 rounded"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
+              </td>
             </tr>
           </tbody>
         </table>

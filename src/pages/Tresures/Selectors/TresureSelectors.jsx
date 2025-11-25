@@ -1,10 +1,9 @@
-export function AddAdminModal({ onSaveSuccess }) {}
-
 import { useEffect, useState } from "react";
 import { FaMoneyCheckAlt } from "react-icons/fa";
 import { getTresureSelector } from "../../../api";
 import { addToast } from "@heroui/react";
 import { NavLink } from "react-router-dom";
+import SkeletonCard from "../../../components/Skeleton";
 
 export function SelectAdminTresure() {
   const [data, setData] = useState([]);
@@ -12,38 +11,28 @@ export function SelectAdminTresure() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
-  const filteredData = data.filter((item) => {
-    const lowerSearch = search.toLowerCase();
+  const filteredData = data.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
 
-    // Check if name includes search term
-    const nameMatch = item.name.toLowerCase().includes(lowerSearch);
-
-    return nameMatch;
-  });
-
-  const fetchData = () => {
-    // Using axios
-    getTresureSelector("admin")
-      .then((response) => {
-        setData(response.data.data); // axios puts data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
+  useEffect(() => {
+    const fetchDataAsync = async () => {
+      setLoading(true);
+      try {
+        const response = await getTresureSelector("admin");
+        setData(response.data.data);
+      } catch (err) {
         addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
+          title: "حدث خطأ",
+          description: `عملية برمجية رقم: ${err.message}`,
           color: "danger",
         });
+        setError(err.message);
+      } finally {
         setLoading(false);
-      });
-  };
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <p>{error}</p>;
-
-  // Fetch data initially
-  useEffect(() => {
-    fetchData();
+      }
+    };
+    fetchDataAsync();
   }, []);
 
   return (
@@ -56,6 +45,8 @@ export function SelectAdminTresure() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+      {error && <p className="text-red-500 text-center">{error}</p>}
+
       <div
         style={{
           display: "flex",
@@ -64,27 +55,35 @@ export function SelectAdminTresure() {
           direction: "rtl",
         }}
       >
-        {filteredData.map((data) => (
-          <NavLink to={`/tresure/admin/${data.id}`}>
-            <div
-              key={data.id}
-              style={{
-                backgroundColor: "#fff",
-                borderRadius: "8px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                padding: "20px",
-                width: "200px",
-                textAlign: "center",
-                fontSize: "18px",
-                color: "#333",
-              }}
-              className="flex flex-col"
-            >
-              <FaMoneyCheckAlt className="m-auto" />
-              {data.name}
-            </div>
-          </NavLink>
-        ))}
+        {loading
+          ? Array.from({ length: 2 }).map((_, idx) => (
+              <SkeletonCard key={idx} />
+            ))
+          : filteredData.map((data) => (
+              <NavLink key={data.id} to={`/tresure/admin/${data.id}`}>
+                <div
+                  style={{
+                    backgroundColor: "#fff",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                    padding: "20px",
+                    width: "200px",
+                    textAlign: "center",
+                    fontSize: "18px",
+                    color: "#333",
+                  }}
+                  className="flex flex-col"
+                >
+                  <FaMoneyCheckAlt className="m-auto" />
+                  {data.name}
+                </div>
+              </NavLink>
+            ))}
+        {!loading && filteredData.length === 0 && (
+          <p className="text-center text-gray-500 mt-4">
+            لا توجد نتائج مطابقة للبحث.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -96,38 +95,28 @@ export function SelectCustomerTresure() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
-  const filteredData = data.filter((item) => {
-    const lowerSearch = search.toLowerCase();
+  const filteredData = data.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
 
-    // Check if name includes search term
-    const nameMatch = item.name.toLowerCase().includes(lowerSearch);
-
-    return nameMatch;
-  });
-
-  const fetchData = () => {
-    // Using axios
-    getTresureSelector("customer")
-      .then((response) => {
-        setData(response.data.data); // axios puts data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
+  useEffect(() => {
+    const fetchDataAsync = async () => {
+      setLoading(true);
+      try {
+        const response = await getTresureSelector("customer");
+        setData(response.data.data);
+      } catch (err) {
         addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
+          title: "حدث خطأ",
+          description: `عملية برمجية رقم: ${err.message}`,
           color: "danger",
         });
+        setError(err.message);
+      } finally {
         setLoading(false);
-      });
-  };
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <p>{error}</p>;
-
-  // Fetch data initially
-  useEffect(() => {
-    fetchData();
+      }
+    };
+    fetchDataAsync();
   }, []);
 
   return (
@@ -140,6 +129,7 @@ export function SelectCustomerTresure() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+      {error && <p className="text-red-500 text-center">{error}</p>}
       <div
         style={{
           display: "flex",
@@ -148,25 +138,35 @@ export function SelectCustomerTresure() {
           direction: "rtl",
         }}
       >
-        {filteredData.map((data) => (
-          <div
-            key={data.id}
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: "8px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-              padding: "20px",
-              width: "200px",
-              textAlign: "center",
-              fontSize: "18px",
-              color: "#333",
-            }}
-            className="flex flex-col"
-          >
-            <FaMoneyCheckAlt className="m-auto" />
-            {data.name}
-          </div>
-        ))}
+        {loading
+          ? Array.from({ length: 2 }).map((_, idx) => (
+              <SkeletonCard key={idx} />
+            ))
+          : filteredData.map((data) => (
+              <NavLink key={data.id} to={`/tresure/customer/${data.id}`}>
+                <div
+                  style={{
+                    backgroundColor: "#fff",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                    padding: "20px",
+                    width: "200px",
+                    textAlign: "center",
+                    fontSize: "18px",
+                    color: "#333",
+                  }}
+                  className="flex flex-col"
+                >
+                  <FaMoneyCheckAlt className="m-auto" />
+                  {data.name}
+                </div>
+              </NavLink>
+            ))}
+        {!loading && filteredData.length === 0 && (
+          <p className="text-center text-gray-500 mt-4">
+            لا توجد نتائج مطابقة للبحث.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -178,38 +178,28 @@ export function SelectEmployeeTresure() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
-  const filteredData = data.filter((item) => {
-    const lowerSearch = search.toLowerCase();
+  const filteredData = data.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
 
-    // Check if name includes search term
-    const nameMatch = item.name.toLowerCase().includes(lowerSearch);
-
-    return nameMatch;
-  });
-
-  const fetchData = () => {
-    // Using axios
-    getTresureSelector("employee")
-      .then((response) => {
-        setData(response.data.data); // axios puts data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
+  useEffect(() => {
+    const fetchDataAsync = async () => {
+      setLoading(true);
+      try {
+        const response = await getTresureSelector("employee");
+        setData(response.data.data);
+      } catch (err) {
         addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
+          title: "حدث خطأ",
+          description: `عملية برمجية رقم: ${err.message}`,
           color: "danger",
         });
+        setError(err.message);
+      } finally {
         setLoading(false);
-      });
-  };
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <p>{error}</p>;
-
-  // Fetch data initially
-  useEffect(() => {
-    fetchData();
+      }
+    };
+    fetchDataAsync();
   }, []);
 
   return (
@@ -222,6 +212,7 @@ export function SelectEmployeeTresure() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+      {error && <p className="text-red-500 text-center">{error}</p>}
       <div
         style={{
           display: "flex",
@@ -230,25 +221,35 @@ export function SelectEmployeeTresure() {
           direction: "rtl",
         }}
       >
-        {filteredData.map((data) => (
-          <div
-            key={data.id}
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: "8px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-              padding: "20px",
-              width: "200px",
-              textAlign: "center",
-              fontSize: "18px",
-              color: "#333",
-            }}
-            className="flex flex-col"
-          >
-            <FaMoneyCheckAlt className="m-auto" />
-            {data.name}
-          </div>
-        ))}
+        {loading
+          ? Array.from({ length: 2 }).map((_, idx) => (
+              <SkeletonCard key={idx} />
+            ))
+          : filteredData.map((data) => (
+              <NavLink key={data.id} to={`/tresure/employee/${data.id}`}>
+                <div
+                  style={{
+                    backgroundColor: "#fff",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                    padding: "20px",
+                    width: "200px",
+                    textAlign: "center",
+                    fontSize: "18px",
+                    color: "#333",
+                  }}
+                  className="flex flex-col"
+                >
+                  <FaMoneyCheckAlt className="m-auto" />
+                  {data.name}
+                </div>
+              </NavLink>
+            ))}
+        {!loading && filteredData.length === 0 && (
+          <p className="text-center text-gray-500 mt-4">
+            لا توجد نتائج مطابقة للبحث.
+          </p>
+        )}
       </div>
     </div>
   );
@@ -260,38 +261,28 @@ export function SelectWorkshopTresure() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
-  const filteredData = data.filter((item) => {
-    const lowerSearch = search.toLowerCase();
+  const filteredData = data.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
 
-    // Check if name includes search term
-    const nameMatch = item.name.toLowerCase().includes(lowerSearch);
-
-    return nameMatch;
-  });
-
-  const fetchData = () => {
-    // Using axios
-    getTresureSelector("workshop")
-      .then((response) => {
-        setData(response.data.data); // axios puts data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
+  useEffect(() => {
+    const fetchDataAsync = async () => {
+      setLoading(true);
+      try {
+        const response = await getTresureSelector("workshop");
+        setData(response.data.data);
+      } catch (err) {
         addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
+          title: "حدث خطأ",
+          description: `عملية برمجية رقم: ${err.message}`,
           color: "danger",
         });
+        setError(err.message);
+      } finally {
         setLoading(false);
-      });
-  };
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <p>{error}</p>;
-
-  // Fetch data initially
-  useEffect(() => {
-    fetchData();
+      }
+    };
+    fetchDataAsync();
   }, []);
 
   return (
@@ -304,6 +295,7 @@ export function SelectWorkshopTresure() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+      {error && <p className="text-red-500 text-center">{error}</p>}
       <div
         style={{
           display: "flex",
@@ -312,25 +304,35 @@ export function SelectWorkshopTresure() {
           direction: "rtl",
         }}
       >
-        {filteredData.map((data) => (
-          <div
-            key={data.id}
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: "8px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-              padding: "20px",
-              width: "200px",
-              textAlign: "center",
-              fontSize: "18px",
-              color: "#333",
-            }}
-            className="flex flex-col"
-          >
-            <FaMoneyCheckAlt className="m-auto" />
-            {data.name}
-          </div>
-        ))}
+        {loading
+          ? Array.from({ length: 2 }).map((_, idx) => (
+              <SkeletonCard key={idx} />
+            ))
+          : filteredData.map((data) => (
+              <NavLink key={data.id} to={`/tresure/workshop/${data.id}`}>
+                <div
+                  style={{
+                    backgroundColor: "#fff",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                    padding: "20px",
+                    width: "200px",
+                    textAlign: "center",
+                    fontSize: "18px",
+                    color: "#333",
+                  }}
+                  className="flex flex-col"
+                >
+                  <FaMoneyCheckAlt className="m-auto" />
+                  {data.name}
+                </div>
+              </NavLink>
+            ))}
+        {!loading && filteredData.length === 0 && (
+          <p className="text-center text-gray-500 mt-4">
+            لا توجد نتائج مطابقة للبحث.
+          </p>
+        )}
       </div>
     </div>
   );

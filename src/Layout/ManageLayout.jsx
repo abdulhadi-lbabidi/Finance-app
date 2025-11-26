@@ -12,6 +12,7 @@ import {
 import logoNouh from "../assets/images/logo.svg";
 function ManageLayout() {
   const TreasureNav = [
+    { name: "صندوق الشركة", path: "/tresure/office" },
     { name: "صناديق المدراء", path: "/tresure/admin" },
     { name: "صناديق الموظفين", path: "/tresure/employee" },
     { name: "صناديق العملاء", path: "/tresure/customer" },

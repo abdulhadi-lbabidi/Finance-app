@@ -1,0 +1,541 @@
+import {
+  Accordion,
+  AccordionItem,
+  addToast,
+  Autocomplete,
+  AutocompleteItem,
+  Card,
+  CardBody,
+  Tab,
+  Tabs,
+} from "@heroui/react";
+import { useEffect, useState } from "react";
+import OuterTransactionTable from "../../components/Tables/OuterTransactionTable";
+import MoneyTransfareTable from "../../components/Tables/MoneyTransfareTable";
+import InnerTransactionTable from "../../components/Tables/InnerTransactionTable";
+import {
+  getOfficeTresure,
+  getTresureById,
+  getTresureFundById,
+  getTresureFunds,
+} from "../../api";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  AddTresureModal,
+  DeleteTresureModal,
+  UpdateTresureModal,
+} from "../../components/Modals/TresureModals";
+import {
+  AddTresureFundModal,
+  DeleteTresureFundModal,
+  UpdateTresureFundModal,
+} from "../../components/Modals/TresureFundModals";
+
+function OfficeTresure() {
+  const { id } = useParams();
+  const [offices, setOffices] = useState([]);
+  const navigate = useNavigate();
+
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
+  const initialTresure = params.get("selected");
+  const initialFund = params.get("fund");
+  const [selectedTresure, setSelectedTresure] = useState(initialTresure);
+  const [selectedTresureFund, setSelectedTresureFund] = useState(initialFund);
+
+  const [tresure, setTresures] = useState([]); // صناديق
+  const [tresureFunds, setTresureFunds] = useState([]); // ملحقات الصناديق
+  const [totals, setTotals] = useState({}); //totals
+  const [loading, setLoading] = useState(true);
+
+  const [selectedTresureData, setSelectedTresureData] = useState(null);
+  const [selectedTresureFundData, setSelectedTresureFundData] = useState(null);
+
+  const fetchData = () => {
+    getOfficeTresure(id)
+      .then((response) => {
+        setOffices(response.data.office);
+        setTotals(response.data.totals);
+        setTresures(
+          response.data.tresures.map((t) => ({
+            id: t.tresure.id,
+            name: t.tresure.name,
+          }))
+        );
+        if (selectedTresure) {
+          getTresureFunds(selectedTresure).then((res) => {
+            setTresureFunds(res.data.funds);
+          });
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        addToast({
+          title: "حدث خطاً",
+          description: `عملية برمجية رقم : ${err.message}`,
+          color: "danger",
+        });
+        setLoading(false);
+      });
+  };
+
+  // Fetch data initially
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const onSelectionChange = (id) => {
+    if (!id) return;
+    setSelectedTresure(id);
+    setSelectedTresureFund(null); // reset fund
+    updateURL(id, null);
+
+    if (id) {
+      getTresureById(id)
+        .then((response) => {
+          setSelectedTresureData(response.data);
+        })
+        .catch((err) => {
+          addToast({
+            title: "خطأ",
+            description: err.message,
+            color: "danger",
+          });
+        });
+    } else {
+      setSelectedTresureData(null);
+    }
+
+    getTresureFunds(id)
+      .then((response) => {
+        setTresureFunds(response.data.funds); // axios puts data in response.data
+      })
+      .catch((err) => {
+        addToast({
+          title: "حدث خطاً",
+          description: `عملية برمجية رقم : ${err.message}`,
+          color: "danger",
+        });
+        // setLoading(false);
+      });
+  };
+  const fetchSelectedTresure = async () => {
+    if (!selectedTresure) return;
+    const res = await getTresureById(selectedTresure);
+    setSelectedTresureData(res.data);
+  };
+  const fetchSelectedTresureFund = async () => {
+    if (!selectedTresureFund) return;
+    const res = await getTresureFundById(selectedTresureFund);
+    setSelectedTresureFundData(res.data);
+  };
+
+  const onSelectionFundsChange = (id) => {
+    setSelectedTresureFund(id);
+    updateURL(selectedTresure, id);
+    if (id) {
+      getTresureFundById(id)
+        .then((response) => {
+          setSelectedTresureFundData(response.data);
+        })
+        .catch((err) => {
+          addToast({
+            title: "خطأ",
+            description: err.message,
+            color: "danger",
+          });
+        });
+    } else {
+      setSelectedTresureFundData(null);
+    }
+  };
+
+  const updateURL = (tresure, fund) => {
+    const params = new URLSearchParams();
+
+    if (tresure) params.set("selected", tresure);
+    if (fund) params.set("fund", fund);
+
+    navigate(`?${params.toString()}`, { replace: true });
+  };
+
+  useEffect(() => {
+    if (!selectedTresure) {
+      setSelectedTresureData(null);
+      setTresureFunds([]);
+      return;
+    }
+
+    getTresureById(selectedTresure).then((res) => {
+      setSelectedTresureData(res.data);
+    });
+
+    getTresureFunds(selectedTresure).then((res) => {
+      setTresureFunds(res.data.funds);
+    });
+  }, [selectedTresure]);
+
+  useEffect(() => {
+    if (!selectedTresureFund) {
+      setSelectedTresureFundData(null);
+      return;
+    }
+
+    getTresureFundById(selectedTresureFund).then((res) => {
+      setSelectedTresureFundData(res.data);
+    });
+  }, [selectedTresureFund]);
+
+  return (
+    <div>
+      <Card className="">
+        <CardBody>
+          <span className="ml-auto">معلومات</span>
+          <div
+            className="grid grid-cols-3 rtl-grid"
+            style={{ justifyItems: "right" }}
+          >
+            <h1>الاسم: {offices.name}</h1>
+            <h1>عدد الصناديق: {totals.total_tresure_count}</h1>
+            <h1>عدد الملحقات: {totals.total_fund_count}</h1>
+            <h1>تحويلات واردة: ${totals.total_incoming}</h1>
+            <h1>تحويلات صادرة: ${totals.total_outgoing}</h1>
+            <h1>إيرادات: ${totals.total_inners}</h1>
+            <h1>مصاريف: ${totals.total_outers}</h1>
+            <h1>مجموع التحويلات: ${totals.total_transfers_sum}</h1>
+          </div>
+        </CardBody>
+      </Card>
+      <Autocomplete
+        allowsCustomValue={true}
+        className="max-w-xs my-5"
+        defaultItems={tresure}
+        label="اختر الصندوق"
+        variant="bordered"
+        onSelectionChange={onSelectionChange}
+        onClear={() => {
+          setSelectedTresureFund(null);
+          setSelectedTresureFundData(null);
+          setSelectedTresureData(null);
+          updateURL(selectedTresure, null); // تنظيف URL من fund
+        }}
+      >
+        {(item) => (
+          <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+        )}
+      </Autocomplete>
+      {/* Add tresure */}
+      <AddTresureModal
+        onSaveSuccess={fetchData}
+        type={"office"}
+        id={offices.id}
+      />
+
+      {/* Accordion for Treasures */}
+      {selectedTresureData && (
+        <div className="">
+          <Accordion variant="splitted">
+            <AccordionItem
+              key="main"
+              aria-label={`معلومات الصندوق: ${selectedTresureData.tresure.name}`}
+              title={`معلومات الصندوق: ${selectedTresureData.tresure.name}`}
+            >
+              <div className="bg-white rounded p-2">
+                {/* === Row 1 === */}
+                <div className="grid grid-cols-2 gap-4">
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      مجموع الملحقات:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      {selectedTresureData.stats.fund_count}
+                    </span>
+                  </h1>
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      تحويلات واردة:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      $ {selectedTresureData.stats.total_incoming}
+                    </span>
+                  </h1>
+                </div>
+
+                {/* === Row 2 === */}
+                <div className="grid grid-cols-2 gap-4">
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      تحويلات صادرة:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      $ {selectedTresureData.stats.total_outgoing}
+                    </span>
+                  </h1>
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      مجموع التحويلات:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      ${selectedTresureData.stats.total_transfers_sum}
+                    </span>
+                  </h1>
+                </div>
+
+                {/* === Row 3 === */}
+                <div className="grid grid-cols-2 gap-4">
+                  <h1>
+                    <span className="text-gray-900 font-semibold">مصاريف:</span>{" "}
+                    <span className="text-gray-700">
+                      $ {selectedTresureData.stats.total_outers}
+                    </span>
+                  </h1>
+                  <h1>
+                    <span className="text-gray-900 font-semibold">
+                      إيرادات:
+                    </span>{" "}
+                    <span className="text-gray-700">
+                      $ {selectedTresureData.stats.total_inners}
+                    </span>
+                  </h1>
+                </div>
+
+                {/* === Row 4 ===: الحالة */}
+                <div className="grid grid-cols-2 gap-4">
+                  <span>
+                    <span className="text-gray-900 font-semibold">الحالة:</span>{" "}
+                    <span
+                      className={
+                        selectedTresureData.tresure.active
+                          ? "text-green-600 font-medium"
+                          : "text-red-600 font-medium"
+                      }
+                    >
+                      {selectedTresureData.tresure.active
+                        ? "مفعّل"
+                        : "غير مفعّل"}
+                    </span>
+                  </span>
+                </div>
+
+                {/* === Row 5 – Buttons === */}
+                <div className="flex justify-end gap-2">
+                  <UpdateTresureModal
+                    id={selectedTresureData.tresure.id}
+                    tresureable_id={id}
+                    onSaveSuccess={() => {
+                      fetchData();
+                      fetchSelectedTresure();
+                    }}
+                  />
+                  <DeleteTresureModal
+                    id={selectedTresureData.tresure.id}
+                    onSaveSuccess={() => {
+                      setSelectedTresure(null);
+                      setSelectedTresureData(null);
+                      fetchData();
+
+                      navigate("", { replace: true });
+                    }}
+                  />
+                </div>
+              </div>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      )}
+
+      {selectedTresure && (
+        <>
+          <Autocomplete
+            allowsCustomValue={true}
+            className="max-w-xs mx-1 my-5"
+            defaultItems={tresureFunds}
+            label="اختر الملحق"
+            variant="bordered"
+            onSelectionChange={onSelectionFundsChange}
+          >
+            {(item) => (
+              <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+            )}
+          </Autocomplete>
+          {/* // Add tresureFund */}
+          <AddTresureFundModal
+            onSaveSuccess={fetchData}
+            id={selectedTresure}
+            type={"office"}
+            selectedTresureId={id}
+          />
+          {selectedTresureFundData && (
+            <div className="">
+              <Accordion variant="splitted">
+                <AccordionItem
+                  key="fund"
+                  aria-label={`معلومات الملحق: ${selectedTresureFundData.tresureFund.name}`}
+                  title={`معلومات الملحق: ${selectedTresureFundData.tresureFund.name}`}
+                >
+                  <div className="bg-white rounded p-2">
+                    {/* === Row 1 ===: معلومات الملحق الأساسية */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          الاسم:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          {selectedTresureFundData.tresureFund.name}
+                        </span>
+                      </h1>
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          الوصف:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          {selectedTresureFundData.tresureFund.desc}
+                        </span>
+                      </h1>
+                    </div>
+
+                    {/* === Row 2 ===: الصندوق والمبلغ */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          الصندوق:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          {selectedTresureFundData.tresureFund.tresure?.name ??
+                            "—"}
+                        </span>
+                      </h1>
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          المبلغ الموجود:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.tresureFund.amount}
+                        </span>
+                      </h1>
+                    </div>
+
+                    {/* === Row 3 ===: التحويلات */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          التحويلات الواردة:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.stats.total_incoming}
+                        </span>
+                      </h1>
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          التحويلات الصادرة:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.stats.total_outgoing}
+                        </span>
+                      </h1>
+                    </div>
+
+                    {/* === Row 4 ===: مجموع التحويلات + الإيرادات والمصاريف */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          مجموع التحويلات:
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.stats.total_transfers_sum}
+                        </span>
+                      </h1>
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          الإيرادات :
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.stats.total_inners}
+                        </span>
+                      </h1>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4">
+                      <h1>
+                        <span className="text-gray-900 font-semibold">
+                          المصاريف :
+                        </span>{" "}
+                        <span className="text-gray-700">
+                          $ {selectedTresureFundData.stats.total_outers}
+                        </span>
+                      </h1>
+                    </div>
+
+                    {/* === Row 6 – Buttons === */}
+                    <div className="flex justify-end gap-2">
+                      <UpdateTresureFundModal
+                        id={selectedTresureFundData.tresureFund.id}
+                        tresures={tresure}
+                        onSaveSuccess={() => {
+                          fetchData();
+                          fetchSelectedTresureFund();
+                        }}
+                      />
+                      <DeleteTresureFundModal
+                        id={selectedTresureFundData.tresureFund.id}
+                        onSaveSuccess={() => {
+                          fetchData();
+                          fetchSelectedTresure();
+
+                          setSelectedTresureFund(null);
+                          setSelectedTresureFundData(null);
+                          navigate("", { replace: true });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* 3 Tabs money transfare, inner transfare, outer transfare */}
+      {selectedTresureFund && (
+        <div className="flex w-full flex-col mt-6">
+          <Tabs aria-label="Options" fullWidth keepContentMounted>
+            <Tab key="moneytrans" title="تحويل صندوق">
+              <MoneyTransfareTable
+                tresurefundid={selectedTresureFund}
+                onSaveSuccess={() => {
+                  fetchData();
+                  fetchSelectedTresure();
+                  fetchSelectedTresureFund();
+                }}
+              />
+            </Tab>
+
+            <Tab key="innertrans" title="إيرادات">
+              <InnerTransactionTable
+                tresurefundid={selectedTresureFund}
+                onSaveSuccess={() => {
+                  fetchData();
+                  fetchSelectedTresure();
+                  fetchSelectedTresureFund();
+                }}
+              />
+            </Tab>
+            <Tab key="outertrans" title="مصاريف">
+              <OuterTransactionTable
+                tresurefundid={selectedTresureFund}
+                onSaveSuccess={() => {
+                  fetchData();
+                  fetchSelectedTresure();
+                  fetchSelectedTresureFund();
+                }}
+              />
+            </Tab>
+          </Tabs>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default OfficeTresure;

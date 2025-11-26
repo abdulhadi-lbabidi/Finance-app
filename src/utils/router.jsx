@@ -28,6 +28,7 @@ import {
   SelectAdminTresure,
   SelectCustomerTresure,
   SelectEmployeeTresure,
+  SelectOfficeTresure,
   SelectWorkshopTresure,
 } from "../pages/Tresures/Selectors/TresureSelectors";
 import AdminTresure from "../pages/Tresures/AdminTresure";
@@ -44,6 +45,7 @@ import PrintInvoiceItem from "../pages/Invoices/PrintInvoiceItem";
 import EmployeeTresure from "../pages/Tresures/EmployeeTresure";
 import WorkshopTresure from "../pages/Tresures/WorkshopTresure";
 import CustomerTresure from "../pages/Tresures/CustomerTresure";
+import OfficeTresure from "../pages/Tresures/OfficeTresure";
 
 const router = createBrowserRouter(
   [
@@ -215,10 +217,46 @@ const router = createBrowserRouter(
           ],
         },
 
-        // {
-        //   path: "/tresure/customer",
-        //   element: <SelectCustomerTresure />,
-        // },
+        // Office Tresures selectors
+        {
+          path: "tresure/office",
+          children: [
+            { index: true, element: <SelectOfficeTresure /> },
+            {
+              path: ":id",
+              children: [
+                { index: true, element: <OfficeTresure /> },
+                {
+                  path: "print/:type/:transactionId",
+                  element: <PrintInvoiceTransaction />,
+                },
+                {
+                  path: "invoices/:transactionId/:type",
+                  children: [
+                    { index: true, element: <Invoices /> },
+                    {
+                      path: "print",
+                      element: <PrintInvoiceType />,
+                    },
+                  ],
+                },
+                {
+                  path: "invoices/:transactionId/:type/info/:invoiceId",
+                  children: [
+                    { index: true, element: <InvoiceInfo /> },
+                    { path: "print/tech/:techId", element: <PrintTech /> },
+                    { path: "print/logic/:logicId", element: <PrintLogic /> },
+                    {
+                      path: "print/invoice-item/:invoiceItemId",
+                      element: <PrintInvoiceItem />,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+
         // Accounts
         {
           path: "/admin/accounts",

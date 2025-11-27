@@ -27,6 +27,7 @@ import Home from "../pages/Home";
 import {
   SelectAdminTresure,
   SelectCustomerTresure,
+  SelectDepositsTresure,
   SelectEmployeeTresure,
   SelectOfficeTresure,
   SelectWorkshopTresure,
@@ -46,6 +47,7 @@ import EmployeeTresure from "../pages/Tresures/EmployeeTresure";
 import WorkshopTresure from "../pages/Tresures/WorkshopTresure";
 import CustomerTresure from "../pages/Tresures/CustomerTresure";
 import OfficeTresure from "../pages/Tresures/OfficeTresure";
+import DepositTresure from "../pages/Tresures/DepositTresure";
 
 const router = createBrowserRouter(
   [
@@ -226,6 +228,46 @@ const router = createBrowserRouter(
               path: ":id",
               children: [
                 { index: true, element: <OfficeTresure /> },
+                {
+                  path: "print/:type/:transactionId",
+                  element: <PrintInvoiceTransaction />,
+                },
+                {
+                  path: "invoices/:transactionId/:type",
+                  children: [
+                    { index: true, element: <Invoices /> },
+                    {
+                      path: "print",
+                      element: <PrintInvoiceType />,
+                    },
+                  ],
+                },
+                {
+                  path: "invoices/:transactionId/:type/info/:invoiceId",
+                  children: [
+                    { index: true, element: <InvoiceInfo /> },
+                    { path: "print/tech/:techId", element: <PrintTech /> },
+                    { path: "print/logic/:logicId", element: <PrintLogic /> },
+                    {
+                      path: "print/invoice-item/:invoiceItemId",
+                      element: <PrintInvoiceItem />,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+
+        // Deposit Tresures selectors
+        {
+          path: "tresure/deposit",
+          children: [
+            { index: true, element: <SelectDepositsTresure /> },
+            {
+              path: ":id",
+              children: [
+                { index: true, element: <DepositTresure /> },
                 {
                   path: "print/:type/:transactionId",
                   element: <PrintInvoiceTransaction />,

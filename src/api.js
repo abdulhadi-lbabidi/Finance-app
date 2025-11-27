@@ -276,6 +276,7 @@ export const getCustomerTresure = (id) =>
 export const getWorkshopTresure = (id) =>
   api.get(`/data/workshop/tresure/${id}`);
 export const getOfficeTresure = (id) => api.get(`/data/office/tresure/${id}`);
+export const getDepositTresure = (id) => api.get(`/data/deposit/tresure/${id}`);
 export const getTresureFunds = (id) => api.get(`/data/tresurefund/${id}`);
 
 // Invoices

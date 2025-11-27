@@ -45,6 +45,9 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
   const [fromFund, setFromFund] = useState(null);
   const [toFund, setToFund] = useState(null);
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentFundId = urlParams.get("fund");
+
   const [moneyTransfare, setMoneyTransfare] = useState({
     name: "",
     desc: "",
@@ -59,6 +62,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
     employee: "موظف",
     workshop: "صاحب ورشة",
     office: "مكتب",
+    deposit: "أمانات",
   };
 
   //==============================
@@ -259,10 +263,13 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
 
                   {selectedTresure && (
                     <>
-                      <Autocomplete
+                      {/* <Autocomplete
                         label="من الملحق"
                         defaultItems={funds}
-                        onSelectionChange={setFromFund}
+                        selectedKey={
+                          currentFundId ? currentFundId.toString() : null
+                        }
+                        isDisabled={true}
                         className="w-full"
                       >
                         {(item) => (
@@ -270,12 +277,18 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
                             {item.name}
                           </AutocompleteItem>
                         )}
-                      </Autocomplete>
-
+                      </Autocomplete> */}
+                      {/* <div className="p-2 border rounded-md bg-default-100">
+                        {currentFundId
+                          ? `الملحق الحالي (ID: ${currentFundId})`
+                          : "لم يتم تحديد ملحق"}
+                      </div> */}
+                      <p className="text-xs text-foreground-400 mt-5 mr-1">
+                        * يتم استخدام الملحق الحالي من الصفحة
+                      </p>
                       <Autocomplete
                         label="إلى الملحق"
                         defaultItems={funds}
-                        disabledKeys={[fromFund]}
                         onSelectionChange={setToFund}
                         className="w-full"
                       >

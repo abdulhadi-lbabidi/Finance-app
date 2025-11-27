@@ -17,6 +17,7 @@ function ManageLayout() {
     { name: "صناديق الموظفين", path: "/tresure/employee" },
     { name: "صناديق العملاء", path: "/tresure/customer" },
     { name: "صناديق الورشات", path: "/tresure/workshop" },
+    { name: "صناديق الأمانات", path: "/tresure/deposit" },
   ];
   const AccountNav = [
     { name: "حسابات مدراء", path: "/admin/accounts" },

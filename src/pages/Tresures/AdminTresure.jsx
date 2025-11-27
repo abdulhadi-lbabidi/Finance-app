@@ -51,39 +51,72 @@ function AdminTresure() {
   const [selectedTresureData, setSelectedTresureData] = useState(null);
   const [selectedTresureFundData, setSelectedTresureFundData] = useState(null);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await getAdminTresure(id);
-      setAdmins(response.data.admin);
-      setTotals(response.data.totals);
-      setTresures(
-        response.data.tresures.map((t) => ({
-          id: t.tresure.id,
-          name: t.tresure.name,
-        }))
-      );
-      if (selectedTresure) {
-        getTresureFunds(selectedTresure).then((res) => {
-          setTresureFunds(res.data.funds);
+  const fetchData = () => {
+    getAdminTresure(id)
+      .then((response) => {
+        setAdmins(response.data.admin);
+        setTotals(response.data.totals);
+        setTresures(
+          response.data.tresures.map((t) => ({
+            id: t.tresure.id,
+            name: t.tresure.name,
+          }))
+        );
+        if (selectedTresure) {
+          getTresureFunds(selectedTresure).then((res) => {
+            setTresureFunds(res.data.funds);
+          });
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        addToast({
+          title: "حدث خطاً",
+          description: `عملية برمجية رقم : ${err.message}`,
+          color: "danger",
         });
-      }
-
-      setLoading(false);
-    } catch (err) {
-      addToast({
-        title: "حدث خطأ",
-        description: `عملية برمجية رقم : ${err.message}`,
-        color: "danger",
+        setLoading(false);
       });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  };
 
+  // Fetch data initially
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []);
+
+  // const fetchData = useCallback(async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await getAdminTresure(id);
+  //     setAdmins(response.data.admin);
+  //     setTotals(response.data.totals);
+  //     setTresures(
+  //       response.data.tresures.map((t) => ({
+  //         id: t.tresure.id,
+  //         name: t.tresure.name,
+  //       }))
+  //     );
+  //     if (selectedTresure) {
+  //       getTresureFunds(selectedTresure).then((res) => {
+  //         setTresureFunds(res.data.funds);
+  //       });
+  //     }
+
+  //     setLoading(false);
+  //   } catch (err) {
+  //     addToast({
+  //       title: "حدث خطأ",
+  //       description: `عملية برمجية رقم : ${err.message}`,
+  //       color: "danger",
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [fetchData]);
 
   const onSelectionChange = (id) => {
     if (!id) return;

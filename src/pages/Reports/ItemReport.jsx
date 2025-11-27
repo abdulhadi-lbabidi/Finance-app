@@ -4,181 +4,182 @@ import {
   AutocompleteItem,
   Card,
   CardBody,
-  Tab,
-  Tabs,
+  Checkbox,
 } from "@heroui/react";
-import React, { useEffect, useState } from "react";
-import { getWorkshopTresure, getTresureFunds, getWorkshops } from "../../api";
+import { useEffect, useState } from "react";
+import {
+  getTresureByType,
+  getTresureFundsByTresureId,
+  getTresuresByUser,
+  getUsersByType,
+} from "../../api";
 
 function ItemReport() {
-  const [workshops, setWorkshops] = useState([]);
-  const [tresures, setTresures] = useState([]);
-  const [tresureFunds, setTresureFunds] = useState([]);
-  const [selectedWorkshop, setSelectedWorkshop] = useState(null);
-  const [selectedTresure, setSelectedTresure] = useState(null);
-  const [selectedTresureFund, setSelectedTresureFund] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [type, setType] = useState(null);
+  const [types, setTypes] = useState([]);
+  const [loadingTypes, setLoadingTypes] = useState(true);
 
-  const fetchData = () => {
-    // Using axios
-    getWorkshops()
-      .then((response) => {
-        setWorkshops(response.data.workshops); // axios puts data in response.data
-        setLoading(false);
-      })
-      .catch((err) => {
-        addToast({
-          title: "حدث خطاً",
-          description: `عملية برمجية رقم : ${err.message}`,
-          color: "danger",
-        });
-        setLoading(false);
-      });
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const [tresures, setTresures] = useState([]);
+  const [selectedTresure, setSelectedTresure] = useState(null);
+
+  const [funds, setFunds] = useState([]);
+
+  const typeTranslations = {
+    admin: "مدير",
+    customer: "عميل",
+    employee: "موظف",
+    workshop: "صاحب ورشة",
+    office: "مكتب",
+    deposit: "أمانات",
   };
 
-  // Fetch data initially
+  //==============================
+  // LOAD TYPES
+  //==============================
   useEffect(() => {
-    fetchData();
+    getTresureByType()
+      .then((res) => {
+        setTypes(
+          res.data.truserTtype.map((t) => ({
+            key: t,
+            label: typeTranslations[t] || t,
+          }))
+        );
+        setLoadingTypes(false);
+      })
+      .catch(() => setLoadingTypes(false));
   }, []);
 
-  const onSelectionWorkshopChange = (id) => {
-    setSelectedWorkshop(id);
-    if (id === null) {
-    } else {
-      getWorkshopTresure(id)
-        .then((response) => {
-          setTresures(response.data.tresures); // axios puts data in response.data
-          // setLoading(false);
-        })
-        .catch((err) => {
-          addToast({
-            title: "حدث خطاً",
-            description: `عملية برمجية رقم : ${err.message}`,
-            color: "danger",
-          });
-          // setLoading(false);
-        });
-    }
-  };
-  const onSelectionTresureChange = (id) => {
-    setSelectedTresure(id);
-    if (id === null) {
-    } else {
-      getTresureFunds(id)
-        .then((response) => {
-          setTresureFunds(response.data.funds); // axios puts data in response.data
-        })
-        .catch((err) => {
-          addToast({
-            title: "حدث خطاً",
-            description: `عملية برمجية رقم : ${err.message}`,
-            color: "danger",
-          });
-          // setLoading(false);
-        });
-    }
+  //==============================
+  // TYPE CHANGE
+  //==============================
+  const handleTypeChange = (selectedType) => {
+    setType(selectedType);
+    setSelectedUser(null);
+    setSelectedTresure(null);
+    setFunds([]);
+
+    getUsersByType(selectedType)
+      .then((res) => setUsers(res.data.users))
+      .catch((err) =>
+        addToast({ title: "خطأ", description: err.message, color: "danger" })
+      );
   };
 
-  const onSelectionFundsChange = (id) => {
-    setSelectedTresureFund(id);
-    if (id === null) {
-    } else {
-    }
+  //==============================
+  // USER CHANGE
+  //==============================
+  const handleUserChange = (userId) => {
+    setSelectedUser(userId);
+    setSelectedTresure(null);
+    setFunds([]);
+
+    getTresuresByUser(userId, type)
+      .then((res) => setTresures(res.data.tresures))
+      .catch((err) =>
+        addToast({ title: "خطأ", description: err.message, color: "danger" })
+      );
+  };
+
+  //==============================
+  // TRESURE CHANGE
+  //==============================
+  const handleTresureChange = (tresureId) => {
+    setSelectedTresure(tresureId);
+    setFunds([]);
+
+    getTresureFundsByTresureId(tresureId)
+      .then((res) => setFunds(res.data.funds))
+      .catch((err) =>
+        addToast({ title: "خطأ", description: err.message, color: "danger" })
+      );
   };
 
   return (
     <div>
-      <Autocomplete
-        allowsCustomValue={true}
-        className="max-w-xs my-5"
-        defaultItems={workshops}
-        label="اختر الورشة"
-        variant="bordered"
-        // onInputChange={onInputChange}
-        onSelectionChange={onSelectionWorkshopChange}
-      >
-        {(item) => (
-          <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
-        )}
-      </Autocomplete>
-      {selectedWorkshop && (
-        <Autocomplete
-          allowsCustomValue={true}
-          className="max-w-xs my-5"
-          defaultItems={tresures}
-          label="اختر الصندوق"
-          variant="bordered"
-          // onInputChange={onInputChange}
-          onSelectionChange={onSelectionTresureChange}
-        >
-          {(itemd) => (
-            <AutocompleteItem key={itemd.id}>{itemd.name}</AutocompleteItem>
-          )}
-        </Autocomplete>
-      )}
+      <Card className="">
+        <CardBody>
+          <div className="flex justify-between items-center w-full">
+            <span className="text-lg font-bold">تقرير المواد</span>
+          </div>
+        </CardBody>
+      </Card>
 
-      {selectedTresure && (
-        <Autocomplete
-          allowsCustomValue={true}
-          className="max-w-xs my-5"
-          defaultItems={tresureFunds}
-          label="اختر الملحق"
-          variant="bordered"
-          // onInputChange={onInputChange}
-          onSelectionChange={onSelectionFundsChange}
-        >
-          {(item) => (
-            <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
-          )}
-        </Autocomplete>
-      )}
-      <div>
-        <div className="border h-fit p-3">
-          <label htmlFor="date-input">اختر التاريخ:</label>
-          <input
-            id="date-input"
-            type="date"
-            value={inventory.fromdate}
-            onChange={(ev) =>
-              setInventory({
-                ...inventory,
-                fromdate: ev.target.value,
-              })
-            }
-          />
+      {/* نوع الصندوق */}
+      <div className="flex items-center gap-4 mt-4">
+        <div className="w-1/2">
+          <Autocomplete
+            className="max-w-xs"
+            allowsCustomValue={true}
+            label="نوع الصندوق"
+            placeholder={loadingTypes ? "جاري التحميل..." : "اختر النوع"}
+            onSelectionChange={handleTypeChange}
+          >
+            {types.map((t) => (
+              <AutocompleteItem key={t.key} value={t.key}>
+                {t.label}
+              </AutocompleteItem>
+            ))}
+          </Autocomplete>
         </div>
-        <div className="border h-fit p-3">
-          <label htmlFor="date-input">اختر التاريخ:</label>
-          <input
-            id="date-input"
-            type="date"
-            value={inventory.fromdate}
-            onChange={(ev) =>
-              setInventory({
-                ...inventory,
-                fromdate: ev.target.value,
-              })
-            }
-          />
+
+        <div className=" flex justify-end">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <Checkbox size="lg">اختيار جميع الأنواع</Checkbox>
+          </label>
         </div>
       </div>
-      {/* {selectedTresureFund && (
-        <div className="flex w-full flex-col">
-          <Tabs aria-label="Options" fullWidth>
-            <Tab key="moneytrans" title="تحويل صندوق">
-              <MoneyTransfareTable tresurefundid={selectedTresureFund} />
-            </Tab>
 
-            <Tab key="innertrans" title="إيرادات">
-              <InnerTransactionTable tresurefundid={selectedTresureFund} />
-            </Tab>
-            <Tab key="outertrans" title="مصاريف">
-              <OuterTransactionTable tresurefundid={selectedTresureFund} />
-            </Tab>
-          </Tabs>
+      {/* المستخدم */}
+      {type && (
+        <div className="flex items-center gap-4 mt-4">
+          <div className="w-1/2">
+            <Autocomplete
+              className="max-w-xs"
+              label="اختر المستخدم"
+              defaultItems={users}
+              onSelectionChange={handleUserChange}
+            >
+              {(item) => (
+                <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+              )}
+            </Autocomplete>
+          </div>
+
+          <div className=" flex justify-end">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox size="lg">اختيار جميع المستخدمين</Checkbox>
+            </label>
+          </div>
         </div>
-      )} */}
+      )}
+
+      {/* الصندوق */}
+      {selectedUser && (
+        <div className="flex items-center gap-4 mt-4">
+          <div className="w-1/2">
+            <Autocomplete
+              label="اختر الصندوق"
+              className="max-w-xs"
+              defaultItems={tresures}
+              onSelectionChange={handleTresureChange}
+            >
+              {(item) => (
+                <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+              )}
+            </Autocomplete>
+          </div>
+
+          <div className=" flex justify-end">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox size="lg">اختيار جميع الصناديق</Checkbox>
+            </label>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

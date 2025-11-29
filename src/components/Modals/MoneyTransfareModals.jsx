@@ -46,7 +46,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
   const [toFund, setToFund] = useState(null);
 
   const urlParams = new URLSearchParams(window.location.search);
-  const currentFundId = urlParams.get("fund");
+  const currentFundId = Number(urlParams.get("fund"));
 
   const [moneyTransfare, setMoneyTransfare] = useState({
     name: "",
@@ -137,7 +137,7 @@ export function AddMoneyTransfareModal({ onSaveSuccess }) {
     try {
       await addMoneyTransfare({
         ...moneyTransfare,
-        from_tresure_fund_id: fromFund,
+        from_tresure_fund_id: currentFundId,
         to_tresure_fund_id: toFund,
       });
 
@@ -339,10 +339,10 @@ export function UpdateMoneyTransfareModal({ id, onSaveSuccess }) {
     try {
       const response = await getMoneyTransfaredata(id);
       setMoneyTransfare(response.data.moneyTransfer);
-      const tresureId = response.data.moneyTransfer.fromtresurefund.tresure_id;
+      // const tresureId = response.data.moneyTransfer.fromtresurefund.tresure_id;
 
       //get getTresure Funds By TresureId
-      getTresureFundsByTresureId(tresureId)
+      getTresureFundsByTresureId(id)
         .then((response) => {
           setTresureFunds(response.data.funds); // axios get data in response.data
           setLoadingTresureFunds(false);
@@ -456,7 +456,6 @@ export function UpdateMoneyTransfareModal({ id, onSaveSuccess }) {
                     </AutocompleteItem>
                   ))}
                 </Autocomplete>
-
                 <Autocomplete
                   label="إلى الملحق"
                   selectedKey={moneyTransfare.to_tresure_fund_id?.toString()}

@@ -5,6 +5,8 @@ import {
   Card,
   CardBody,
   Checkbox,
+  Tab,
+  Tabs,
 } from "@heroui/react";
 import { useEffect, useState } from "react";
 import {
@@ -13,6 +15,8 @@ import {
   getTresuresByUser,
   getUsersByType,
 } from "../../api";
+import InnerTransactionTableReport from "./InnerTransactionTableReport";
+import OuterTransactionTableReport from "./OuterTransactionTableReport";
 
 function ItemReport() {
   const [type, setType] = useState(null);
@@ -27,6 +31,8 @@ function ItemReport() {
 
   const [funds, setFunds] = useState([]);
 
+  const [selectedTresureFund, setSelectedTresureFund] = useState(null);
+
   const typeTranslations = {
     admin: "مدير",
     customer: "عميل",
@@ -40,6 +46,7 @@ function ItemReport() {
   // LOAD TYPES
   //==============================
   useEffect(() => {
+    setLoadingTypes(true);
     getTresureByType()
       .then((res) => {
         setTypes(
@@ -65,7 +72,11 @@ function ItemReport() {
     getUsersByType(selectedType)
       .then((res) => setUsers(res.data.users))
       .catch((err) =>
-        addToast({ title: "خطأ", description: err.message, color: "danger" })
+        addToast({
+          title: "خطأ",
+          description: "رجاء اختيار نوع الصندوق",
+          color: "danger",
+        })
       );
   };
 
@@ -97,6 +108,9 @@ function ItemReport() {
         addToast({ title: "خطأ", description: err.message, color: "danger" })
       );
   };
+  const handleFundChange = (fundId) => {
+    setSelectedTresureFund(fundId);
+  };
 
   return (
     <div>
@@ -107,10 +121,9 @@ function ItemReport() {
           </div>
         </CardBody>
       </Card>
-
       {/* نوع الصندوق */}
       <div className="flex items-center gap-4 mt-4">
-        <div className="w-1/2">
+        <div className="">
           <Autocomplete
             className="max-w-xs"
             allowsCustomValue={true}
@@ -132,11 +145,10 @@ function ItemReport() {
           </label>
         </div>
       </div>
-
       {/* المستخدم */}
       {type && (
         <div className="flex items-center gap-4 mt-4">
-          <div className="w-1/2">
+          <div className="">
             <Autocomplete
               className="max-w-xs"
               label="اختر المستخدم"
@@ -156,11 +168,10 @@ function ItemReport() {
           </div>
         </div>
       )}
-
       {/* الصندوق */}
       {selectedUser && (
         <div className="flex items-center gap-4 mt-4">
-          <div className="w-1/2">
+          <div className="">
             <Autocomplete
               label="اختر الصندوق"
               className="max-w-xs"
@@ -178,6 +189,42 @@ function ItemReport() {
               <Checkbox size="lg">اختيار جميع الصناديق</Checkbox>
             </label>
           </div>
+        </div>
+      )}
+      {/* الملحق */}
+      {selectedTresure && (
+        <div className="flex items-center gap-4 mt-4">
+          <div className="">
+            <Autocomplete
+              label="اختر الملحق"
+              className="max-w-xs"
+              defaultItems={funds}
+              onSelectionChange={handleFundChange}
+            >
+              {(item) => (
+                <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
+              )}
+            </Autocomplete>
+          </div>
+
+          <div className=" flex justify-end">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox size="lg">اختيار جميع الملحقات</Checkbox>
+            </label>
+          </div>
+        </div>
+      )}
+
+      {selectedTresureFund && (
+        <div className="flex w-full flex-col mt-6">
+          <Tabs aria-label="Options" fullWidth keepContentMounted>
+            <Tab key="innertrans" title="مواد مصروفة">
+              <InnerTransactionTableReport />
+            </Tab>
+            <Tab key="outertrans" title="مواد مرتجعة">
+              <OuterTransactionTableReport />
+            </Tab>
+          </Tabs>
         </div>
       )}
     </div>

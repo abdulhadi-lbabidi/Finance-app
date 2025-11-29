@@ -19,6 +19,7 @@ import {
   deleteMoneyTransfare,
   getMoneyTransfaredata,
   getTresureByType,
+  getTresureFundsByMoneyTransfer,
   getTresureFundsByTresureId,
   getTresuresByUser,
   getUsersByType,
@@ -339,10 +340,9 @@ export function UpdateMoneyTransfareModal({ id, onSaveSuccess }) {
     try {
       const response = await getMoneyTransfaredata(id);
       setMoneyTransfare(response.data.moneyTransfer);
-      // const tresureId = response.data.moneyTransfer.fromtresurefund.tresure_id;
 
       //get getTresure Funds By TresureId
-      getTresureFundsByTresureId(id)
+      getTresureFundsByMoneyTransfer(id)
         .then((response) => {
           setTresureFunds(response.data.funds); // axios get data in response.data
           setLoadingTresureFunds(false);

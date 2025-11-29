@@ -4,9 +4,11 @@ import logoBlack from "../../assets/images/logoblack.png";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getInnerTransactiondata, getOuterTransactiondata } from "../../api";
+import { useNavigate } from "react-router-dom";
 
 function PrintInvoiceTransaction() {
   const contentRef = useRef();
+  const navigate = useNavigate();
   const { type, transactionId } = useParams();
   const [note, setNote] = useState("");
 
@@ -39,7 +41,14 @@ function PrintInvoiceTransaction() {
 
   return (
     <div className="min-h-screen direction-rtl">
-      <div className="text-left">
+      <div className="flex justify-between mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+        >
+          رجوع
+        </button>
+
         <button
           onClick={handlePrint}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"

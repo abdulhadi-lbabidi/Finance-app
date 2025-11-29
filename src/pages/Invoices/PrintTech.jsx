@@ -1,12 +1,13 @@
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import logoBlack from "../../assets/images/logoblack.png";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getTechPaysById } from "../../api";
 
 function PrintTech() {
   const contentRef = useRef();
+  const navigate = useNavigate();
   const { type, techId } = useParams();
 
   const [transaction, setTransaction] = useState(null);
@@ -33,7 +34,14 @@ function PrintTech() {
 
   return (
     <div className="min-h-screen direction-rtl">
-      <div className="text-left">
+      <div className="flex justify-between mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+        >
+          رجوع
+        </button>
+
         <button
           onClick={handlePrint}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"

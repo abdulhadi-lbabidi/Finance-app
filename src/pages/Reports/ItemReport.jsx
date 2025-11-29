@@ -15,8 +15,8 @@ import {
   getTresuresByUser,
   getUsersByType,
 } from "../../api";
-import InnerTransactionTableReport from "./InnerTransactionTableReport";
-import OuterTransactionTableReport from "./OuterTransactionTableReport";
+import InnerTransactionTableReport from "./OuterTransactionTableReport";
+import OuterTransactionTableReport from "./innerTransactionTableReport";
 
 function ItemReport() {
   const [type, setType] = useState(null);
@@ -193,7 +193,7 @@ function ItemReport() {
       )}
       {/* الملحق */}
       {selectedTresure && (
-        <div className="flex items-center gap-4 mt-4">
+        <div className="flex items-center gap-4 mt-10">
           <div className="">
             <Autocomplete
               label="اختر الملحق"
@@ -219,10 +219,10 @@ function ItemReport() {
         <div className="flex w-full flex-col mt-6">
           <Tabs aria-label="Options" fullWidth keepContentMounted>
             <Tab key="innertrans" title="مواد مصروفة">
-              <InnerTransactionTableReport />
+              <InnerTransactionTableReport fundId={selectedTresureFund} />
             </Tab>
             <Tab key="outertrans" title="مواد مرتجعة">
-              <OuterTransactionTableReport />
+              <OuterTransactionTableReport fundId={selectedTresureFund} />
             </Tab>
           </Tabs>
         </div>

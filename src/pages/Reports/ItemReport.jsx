@@ -15,8 +15,8 @@ import {
   getTresuresByUser,
   getUsersByType,
 } from "../../api";
-import { InnerTransactionTableReport } from "./InnerTransactionTableReport";
-import { OuterTransactionTableReport } from "./OuterTransactionTableReport";
+import InnerTransactionTableReport from "./InnerTransactionTableReport";
+import OuterTransactionTableReport from "./OuterTransactionTableReport";
 
 function ItemReport() {
   const [type, setType] = useState(null);
@@ -223,19 +223,19 @@ function ItemReport() {
         </div>
       )}
 
+      {console.log(selectedTresureFund, selectedTresure, allFundsSelected)}
       {(selectedTresureFund || allFundsSelected) && (
         <div className="flex w-full flex-col mt-6">
           <Tabs aria-label="Options" fullWidth keepContentMounted>
             <Tab key="innertrans" title="مواد مصروفة">
-              <InnerTransactionTableReport />
-            </Tab>
-            <Tab key="outertrans" title="مواد مرتجعة">
-              {/* <OuterTransactionTableReport fundId={selectedTresureFund} /> */}
               <OuterTransactionTableReport
                 fundId={selectedTresureFund}
                 tresureId={selectedTresure}
                 allFundsSelected={allFundsSelected}
               />
+            </Tab>
+            <Tab key="outertrans" title="مواد مرتجعة">
+              <InnerTransactionTableReport />
             </Tab>
           </Tabs>
         </div>

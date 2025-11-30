@@ -17,11 +17,12 @@ import {
   DropdownItem,
 } from "@heroui/react";
 import { format } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getTresureFundReport, getTresureFundsReport } from "../../api";
 import PrintIcon from "../../components/SVG/PrintIcon";
 import SearchIcon from "../../components/SVG/SearchIcon";
 import ChevronDownIcon from "../../components/SVG/ChevronDownIcon";
+import { useReactToPrint } from "react-to-print";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -74,19 +75,8 @@ export default function OuterTransactionTableReport({
   const [loading, setLoading] = useState(true);
   const [itemsData, setItemsData] = useState([]);
 
-  // useEffect(() => {
-  //   setLoading(true);
-
-  //   getTresureFundReport(fundId)
-  //     .then((res) => {
-  //       setItemsData(res.data.items);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //       setLoading(false);
-  //     });
-  // }, [fundId]);
+  const fullTableRef = useRef();
+  const selectedTableRef = useRef();
 
   useEffect(() => {
     setLoading(true);
@@ -131,18 +121,14 @@ export default function OuterTransactionTableReport({
   // --------------------
   // PRINT HANDLERS
   // --------------------
+  const handlePrintAll = useReactToPrint({
+    contentRef: fullTableRef,
+  });
 
-  const handlePrintAll = () => {
-    console.log("طباعة كل العناصر:", itemsData);
-    window.print();
-  };
+  const handlePrintSelected = useReactToPrint({
+    contentRef: selectedTableRef,
+  });
 
-  const handlePrintSelected = () => {
-    const selected = itemsData.filter((item) => selectedKeys.has(item.id));
-
-    console.log("طباعة المحدد:", selected);
-    window.print();
-  };
   const sortedItems = useMemo(() => {
     return [...filteredItems].sort((a, b) => {
       let first = a[sortDescriptor.column];
@@ -172,7 +158,7 @@ export default function OuterTransactionTableReport({
   }, [sortedItems, page, rowsPerPage]);
 
   const topContent = (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 no-print">
       <div className="flex justify-between items-center">
         <Input
           isClearable
@@ -197,6 +183,7 @@ export default function OuterTransactionTableReport({
                 الأعمدة
               </Button>
             </DropdownTrigger>
+
             <DropdownMenu
               disallowEmptySelection
               aria-label="Table Columns"
@@ -234,13 +221,14 @@ export default function OuterTransactionTableReport({
       </div>
     </div>
   );
+
   const sortOptions = [
     { key: "name", label: "البند" },
     { key: "amount", label: "الكمية" },
   ];
 
   const bottomContent = (
-    <div className="w-full flex items-center justify-between py-2 px-2">
+    <div className="w-full flex items-center justify-between py-2 px-2 no-print">
       <Select
         size="sm"
         label="ترتيب حسب"
@@ -295,43 +283,85 @@ export default function OuterTransactionTableReport({
     );
 
   return (
-    <Table
-      aria-label="Outer transaction report"
-      selectionMode="multiple"
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-      topContent={topContent}
-      bottomContent={bottomContent}
-      onSortChange={setSortDescriptor}
-      topContentPlacement="outside"
-      bottomContentPlacement="outside"
-      sortDescriptor={sortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn key={column.uid} allowsSorting={column.sortable}>
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
+    <>
+      <div ref={fullTableRef}>
+        <Table
+          aria-label="Outer transaction report"
+          selectionMode="multiple"
+          selectedKeys={selectedKeys}
+          onSelectionChange={setSelectedKeys}
+          topContent={topContent}
+          bottomContent={bottomContent}
+          onSortChange={setSortDescriptor}
+          topContentPlacement="outside"
+          bottomContentPlacement="outside"
+          sortDescriptor={sortDescriptor}
+        >
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn key={column.uid} allowsSorting={column.sortable}>
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
 
-      <TableBody emptyContent="لا توجد مواد مصروفة" items={paginatedItems}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => {
-              if (columnKey === "created_at") {
-                return <TableCell>{formatDate(item.created_at)}</TableCell>;
-              }
+          <TableBody emptyContent="لا توجد مواد مصروفة" items={paginatedItems}>
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => {
+                  if (columnKey === "created_at") {
+                    return <TableCell>{formatDate(item.created_at)}</TableCell>;
+                  }
 
-              if (columnKey === "payed") {
-                return <TableCell>{item.payed ? "✔" : "✘"}</TableCell>;
-              }
+                  if (columnKey === "payed") {
+                    return <TableCell>{item.payed ? "✔" : "✘"}</TableCell>;
+                  }
 
-              return <TableCell>{item[columnKey] ?? "-"}</TableCell>;
-            }}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+                  return <TableCell>{item[columnKey] ?? "-"}</TableCell>;
+                }}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* print if selected */}
+      <div className="print-only" ref={selectedTableRef}>
+        <Table aria-label="Selected items print table">
+          <TableHeader columns={headerColumns}>
+            {(column) => (
+              <TableColumn key={column.uid}>{column.name}</TableColumn>
+            )}
+          </TableHeader>
+
+          {console.log("selectedKeys type:", typeof selectedKeys, selectedKeys)}
+          <TableBody
+            items={
+              selectedKeys === "all"
+                ? itemsData
+                : itemsData.filter((item) =>
+                    selectedKeys.has(item.id.toString())
+                  )
+            }
+          >
+            {(item) => (
+              <TableRow key={item.id}>
+                {(columnKey) => {
+                  if (columnKey === "created_at") {
+                    return <TableCell>{formatDate(item.created_at)}</TableCell>;
+                  }
+
+                  if (columnKey === "payed") {
+                    return <TableCell>{item.payed ? "✔" : "✘"}</TableCell>;
+                  }
+
+                  return <TableCell>{item[columnKey] ?? "-"}</TableCell>;
+                }}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 }

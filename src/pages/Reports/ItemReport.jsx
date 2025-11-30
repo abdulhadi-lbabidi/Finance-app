@@ -15,8 +15,8 @@ import {
   getTresuresByUser,
   getUsersByType,
 } from "../../api";
-import InnerTransactionTableReport from "./OuterTransactionTableReport";
-import OuterTransactionTableReport from "./innerTransactionTableReport";
+import { InnerTransactionTableReport } from "./InnerTransactionTableReport";
+import { OuterTransactionTableReport } from "./OuterTransactionTableReport";
 
 function ItemReport() {
   const [type, setType] = useState(null);
@@ -32,6 +32,8 @@ function ItemReport() {
   const [funds, setFunds] = useState([]);
 
   const [selectedTresureFund, setSelectedTresureFund] = useState(null);
+
+  const [allFundsSelected, setAllFundsSelected] = useState(false);
 
   const typeTranslations = {
     admin: "مدير",
@@ -209,20 +211,31 @@ function ItemReport() {
 
           <div className=" flex justify-end">
             <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox size="lg">اختيار جميع الملحقات</Checkbox>
+              <Checkbox
+                size="lg"
+                isSelected={allFundsSelected}
+                onValueChange={setAllFundsSelected}
+              >
+                اختيار جميع الملحقات
+              </Checkbox>
             </label>
           </div>
         </div>
       )}
 
-      {selectedTresureFund && (
+      {(selectedTresureFund || allFundsSelected) && (
         <div className="flex w-full flex-col mt-6">
           <Tabs aria-label="Options" fullWidth keepContentMounted>
             <Tab key="innertrans" title="مواد مصروفة">
-              <InnerTransactionTableReport fundId={selectedTresureFund} />
+              <InnerTransactionTableReport />
             </Tab>
             <Tab key="outertrans" title="مواد مرتجعة">
-              <OuterTransactionTableReport fundId={selectedTresureFund} />
+              {/* <OuterTransactionTableReport fundId={selectedTresureFund} /> */}
+              <OuterTransactionTableReport
+                fundId={selectedTresureFund}
+                tresureId={selectedTresure}
+                allFundsSelected={allFundsSelected}
+              />
             </Tab>
           </Tabs>
         </div>

@@ -16,6 +16,12 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@heroui/react";
+import { format } from "date-fns";
+import { useEffect, useMemo, useState } from "react";
+import { getTresureFundReport, getTresureFundsReport } from "../../api";
+import PrintIcon from "../../components/SVG/PrintIcon";
+import SearchIcon from "../../components/SVG/SearchIcon";
+import ChevronDownIcon from "../../components/SVG/ChevronDownIcon";
 
 const columns = [
   { name: "ID", uid: "id", sortable: true },
@@ -49,13 +55,11 @@ function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
-import { format } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
-import { getTresureFundReport } from "../../api";
-import PrintIcon from "../../components/SVG/PrintIcon";
-import SearchIcon from "../../components/SVG/SearchIcon";
-import ChevronDownIcon from "../../components/SVG/ChevronDownIcon";
-export default function OuterTransactionTableReport({ fundId }) {
+export default function OuterTransactionTableReport({
+  fundId,
+  tresureId,
+  allFundsSelected,
+}) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
   const [rowsPerPage, setRowsPerPage] = useState(15);
@@ -70,19 +74,35 @@ export default function OuterTransactionTableReport({ fundId }) {
   const [loading, setLoading] = useState(true);
   const [itemsData, setItemsData] = useState([]);
 
+  // useEffect(() => {
+  //   setLoading(true);
+
+  //   getTresureFundReport(fundId)
+  //     .then((res) => {
+  //       setItemsData(res.data.items);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //       setLoading(false);
+  //     });
+  // }, [fundId]);
+
   useEffect(() => {
     setLoading(true);
 
-    getTresureFundReport(fundId)
-      .then((res) => {
+    if (allFundsSelected) {
+      getTresureFundsReport(tresureId).then((res) => {
         setItemsData(res.data.items);
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
+      });
+    } else {
+      getTresureFundReport(fundId).then((res) => {
+        setItemsData(res.data.items);
         setLoading(false);
       });
-  }, [fundId]);
+    }
+  }, [fundId, tresureId, allFundsSelected]);
 
   const [page, setPage] = useState(1);
 

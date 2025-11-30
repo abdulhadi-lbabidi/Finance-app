@@ -1,7 +1,5 @@
-import React from "react";
-
-function innerTransactionTableReport() {
-  return <div>OuterTransactionTableReport</div>;
+function InnerTransactionTableReport() {
+  return <div>innerTransactionTableReport</div>;
 }
 
-export default innerTransactionTableReport;
+export default InnerTransactionTableReport;

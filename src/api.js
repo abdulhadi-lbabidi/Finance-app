@@ -428,3 +428,6 @@ export const deleteTresureFund = (id) => {
 export const getTresureFundReport = (id) => {
   return api.get(`/data/tresure-fund/${id}/report`);
 };
+export const getTresureFundsReport = (id) => {
+  return api.get(`/data/tresure-funds/${id}/report`);
+};

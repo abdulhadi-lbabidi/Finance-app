@@ -193,7 +193,7 @@ function ItemReport() {
       )}
       {/* الملحق */}
       {selectedTresure && (
-        <div className="flex items-center gap-4 mt-10">
+        <div className="flex items-center gap-4 mt-4">
           <div className="">
             <Autocomplete
               label="اختر الملحق"

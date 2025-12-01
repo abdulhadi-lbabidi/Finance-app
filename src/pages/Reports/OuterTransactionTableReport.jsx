@@ -18,7 +18,11 @@ import {
 } from "@heroui/react";
 import { format } from "date-fns";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getTresureFundReport, getTresureFundsReport } from "../../api";
+import {
+  getTresureFundReport,
+  getTresureFundsReport,
+  getTresuresReport,
+} from "../../api";
 import PrintIcon from "../../components/SVG/PrintIcon";
 import SearchIcon from "../../components/SVG/SearchIcon";
 import ChevronDownIcon from "../../components/SVG/ChevronDownIcon";
@@ -60,6 +64,9 @@ export default function OuterTransactionTableReport({
   fundId,
   tresureId,
   allFundsSelected,
+  allTresuresSelected,
+  userType,
+  userId,
 }) {
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
@@ -86,8 +93,13 @@ export default function OuterTransactionTableReport({
         setItemsData(res.data.items);
         setLoading(false);
       });
-    } else {
+    } else if (fundId) {
       getTresureFundReport(fundId).then((res) => {
+        setItemsData(res.data.items);
+        setLoading(false);
+      });
+    } else {
+      getTresuresReport(userType, userId).then((res) => {
         setItemsData(res.data.items);
         setLoading(false);
       });

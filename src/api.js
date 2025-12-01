@@ -431,3 +431,6 @@ export const getTresureFundReport = (id) => {
 export const getTresureFundsReport = (id) => {
   return api.get(`/data/tresure-funds/${id}/report`);
 };
+export const getTresuresReport = (user_type, user_id) => {
+  return api.get(`/data/tresure-funds/${user_type}/${user_id}/report`);
+};

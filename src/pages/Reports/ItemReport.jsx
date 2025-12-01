@@ -34,6 +34,7 @@ function ItemReport() {
   const [selectedTresureFund, setSelectedTresureFund] = useState(null);
 
   const [allFundsSelected, setAllFundsSelected] = useState(false);
+  const [allTresuresSelected, setAllTresuresSelected] = useState(false);
 
   const typeTranslations = {
     admin: "مدير",
@@ -140,12 +141,6 @@ function ItemReport() {
             ))}
           </Autocomplete>
         </div>
-
-        <div className=" flex justify-end">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <Checkbox size="lg">اختيار جميع الأنواع</Checkbox>
-          </label>
-        </div>
       </div>
       {/* المستخدم */}
       {type && (
@@ -188,7 +183,13 @@ function ItemReport() {
 
           <div className=" flex justify-end">
             <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox size="lg">اختيار جميع الصناديق</Checkbox>
+              <Checkbox
+                size="lg"
+                isSelected={allTresuresSelected}
+                onValueChange={setAllTresuresSelected}
+              >
+                اختيار جميع الصناديق
+              </Checkbox>
             </label>
           </div>
         </div>
@@ -223,8 +224,7 @@ function ItemReport() {
         </div>
       )}
 
-      {console.log(selectedTresureFund, selectedTresure, allFundsSelected)}
-      {(selectedTresureFund || allFundsSelected) && (
+      {(selectedTresureFund || allFundsSelected || allTresuresSelected) && (
         <div className="flex w-full flex-col mt-6">
           <Tabs aria-label="Options" fullWidth keepContentMounted>
             <Tab key="innertrans" title="مواد مصروفة">
@@ -232,6 +232,9 @@ function ItemReport() {
                 fundId={selectedTresureFund}
                 tresureId={selectedTresure}
                 allFundsSelected={allFundsSelected}
+                allTresuresSelected={allTresuresSelected}
+                userType={type}
+                userId={selectedUser}
               />
             </Tab>
             <Tab key="outertrans" title="مواد مرتجعة">

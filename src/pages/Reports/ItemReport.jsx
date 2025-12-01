@@ -35,6 +35,8 @@ function ItemReport() {
 
   const [allFundsSelected, setAllFundsSelected] = useState(false);
   const [allTresuresSelected, setAllTresuresSelected] = useState(false);
+  const [allTresuresUsersSelected, setAllTresuresUsersSelected] =
+    useState(false);
 
   const typeTranslations = {
     admin: "مدير",
@@ -160,7 +162,18 @@ function ItemReport() {
 
           <div className=" flex justify-end">
             <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox size="lg">اختيار جميع المستخدمين</Checkbox>
+              <Checkbox
+                size="lg"
+                isSelected={allTresuresUsersSelected}
+                onValueChange={(val) => {
+                  setAllTresuresUsersSelected(val);
+                  setSelectedUser(null);
+                  setSelectedTresure(null);
+                  setSelectedTresureFund(null);
+                }}
+              >
+                اختيار جميع المستخدمين
+              </Checkbox>
             </label>
           </div>
         </div>
@@ -224,7 +237,10 @@ function ItemReport() {
         </div>
       )}
 
-      {(selectedTresureFund || allFundsSelected || allTresuresSelected) && (
+      {(selectedTresureFund ||
+        allFundsSelected ||
+        allTresuresSelected ||
+        allTresuresUsersSelected) && (
         <div className="flex w-full flex-col mt-6">
           <Tabs aria-label="Options" fullWidth keepContentMounted>
             <Tab key="innertrans" title="مواد مصروفة">
@@ -233,6 +249,7 @@ function ItemReport() {
                 tresureId={selectedTresure}
                 allFundsSelected={allFundsSelected}
                 allTresuresSelected={allTresuresSelected}
+                allTresuresUsersSelected={allTresuresUsersSelected}
                 userType={type}
                 userId={selectedUser}
               />

@@ -21,6 +21,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   getTresureFundReport,
   getTresureFundsReport,
+  getTresuresforAllusersReport,
   getTresuresReport,
 } from "../../api";
 import PrintIcon from "../../components/SVG/PrintIcon";
@@ -65,6 +66,7 @@ export default function OuterTransactionTableReport({
   tresureId,
   allFundsSelected,
   allTresuresSelected,
+  allTresuresUsersSelected,
   userType,
   userId,
 }) {
@@ -88,23 +90,48 @@ export default function OuterTransactionTableReport({
   useEffect(() => {
     setLoading(true);
 
+    if (allTresuresUsersSelected) {
+      getTresuresforAllusersReport(userType).then((res) => {
+        setItemsData(res.data.items);
+        setLoading(false);
+      });
+      return;
+    }
+
+    if (allTresuresSelected) {
+      getTresuresReport(userType, userId).then((res) => {
+        setItemsData(res.data.items);
+        setLoading(false);
+      });
+      return;
+    }
+
     if (allFundsSelected) {
       getTresureFundsReport(tresureId).then((res) => {
         setItemsData(res.data.items);
         setLoading(false);
       });
-    } else if (fundId) {
+      return;
+    }
+
+    if (fundId) {
       getTresureFundReport(fundId).then((res) => {
         setItemsData(res.data.items);
         setLoading(false);
       });
-    } else {
-      getTresuresReport(userType, userId).then((res) => {
-        setItemsData(res.data.items);
-        setLoading(false);
-      });
+      return;
     }
-  }, [fundId, tresureId, allFundsSelected]);
+
+    setLoading(false);
+  }, [
+    fundId,
+    tresureId,
+    allFundsSelected,
+    allTresuresSelected,
+    allTresuresUsersSelected,
+    userType,
+    userId,
+  ]);
 
   const [page, setPage] = useState(1);
 

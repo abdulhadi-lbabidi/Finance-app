@@ -67,7 +67,7 @@ export function capitalize(s) {
 }
 
 function OuterTransactionTable({ tresurefundid, onSaveSuccess }) {
-  const { id } = useParams();
+  const { id, role } = useParams();
   const navigate = useNavigate();
   const [outerTransactions, setOuterTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -194,7 +194,7 @@ function OuterTransactionTable({ tresurefundid, onSaveSuccess }) {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/print/outerTransaction/${outerTransaction.id}`
+                  `/tresure/${role}/${id}/print/outerTransaction/${outerTransaction.id}`
                 )
               }
             >
@@ -208,7 +208,7 @@ function OuterTransactionTable({ tresurefundid, onSaveSuccess }) {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/invoices/${outerTransaction.id}/outerTransaction`
+                  `/tresure/${role}/${id}/invoices/${outerTransaction.id}/outerTransaction`
                 )
               }
             >

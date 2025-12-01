@@ -71,7 +71,7 @@ function InnerTransactionTable({ tresurefundid, onSaveSuccess }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { id } = useParams();
+  const { id, role } = useParams();
 
   const fetchData = async () => {
     setLoading(true);
@@ -193,7 +193,7 @@ function InnerTransactionTable({ tresurefundid, onSaveSuccess }) {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/print/innerTransaction/${innerTransaction.id}`
+                  `/tresure/${role}/${id}/print/innerTransaction/${innerTransaction.id}`
                 )
               }
             >
@@ -206,7 +206,7 @@ function InnerTransactionTable({ tresurefundid, onSaveSuccess }) {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/invoices/${innerTransaction.id}/innerTransaction`
+                  `/tresure/${role}/${id}/invoices/${innerTransaction.id}/innerTransaction`
                 )
               }
             >

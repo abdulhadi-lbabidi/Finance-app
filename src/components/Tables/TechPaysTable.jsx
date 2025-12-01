@@ -68,7 +68,7 @@ function capitalize(s) {
 }
 
 function TechPaysTable() {
-  const { id, invoiceId, transactionId, type } = useParams();
+  const { id, invoiceId, transactionId, type, role } = useParams();
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
@@ -289,7 +289,7 @@ function TechPaysTable() {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoiceId}/print/tech/${techPays.id}`
+                  `/tresure/${role}/${id}/invoices/${transactionId}/${type}/info/${invoiceId}/print/tech/${techPays.id}`
                 )
               }
             >

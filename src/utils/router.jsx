@@ -24,15 +24,8 @@ import LogisticContacts from "../pages/Contacts/LogisticContacts";
 import TechnicalsContacts from "../pages/Contacts/TechnicalsContacts";
 import ShowWorkshops from "../pages/Workshop/ShowWorkshops";
 import Home from "../pages/Home";
-import {
-  SelectAdminTresure,
-  SelectCustomerTresure,
-  SelectDepositsTresure,
-  SelectEmployeeTresure,
-  SelectOfficeTresure,
-  SelectWorkshopTresure,
-} from "../pages/Tresures/Selectors/TresureSelectors";
-import AdminTresure from "../pages/Tresures/AdminTresure";
+import DynamicSelectTresure from "../helpers/DynamicSelectTresure";
+import DynamicTresurePage from "../helpers/DynamicTresurePage";
 import EmployeeForWorkshop from "../pages/Workshop/EmployeeForWorkshop";
 import LogisticForWorkshop from "../pages/Workshop/LogisticForWorkshop";
 import ItemReport from "../pages/Reports/ItemReport";
@@ -43,11 +36,6 @@ import PrintInvoiceType from "../pages/Invoices/PrintInvoiceType";
 import PrintTech from "../pages/Invoices/PrintTech";
 import PrintLogic from "../pages/Invoices/PrintLogic";
 import PrintInvoiceItem from "../pages/Invoices/PrintInvoiceItem";
-import EmployeeTresure from "../pages/Tresures/EmployeeTresure";
-import WorkshopTresure from "../pages/Tresures/WorkshopTresure";
-import CustomerTresure from "../pages/Tresures/CustomerTresure";
-import OfficeTresure from "../pages/Tresures/OfficeTresure";
-import DepositTresure from "../pages/Tresures/DepositTresure";
 
 const router = createBrowserRouter(
   [
@@ -59,95 +47,22 @@ const router = createBrowserRouter(
           path: "home",
           element: <Home />,
         },
-        // Admin Tresures selectors
-        {
-          path: "tresure/admin",
-          children: [
-            { index: true, element: <SelectAdminTresure /> },
-            {
-              path: ":id",
-              children: [
-                { index: true, element: <AdminTresure /> },
-                {
-                  path: "print/:type/:transactionId",
-                  element: <PrintInvoiceTransaction />,
-                },
-                {
-                  path: "invoices/:transactionId/:type",
-                  children: [
-                    { index: true, element: <Invoices /> },
-                    {
-                      path: "print",
-                      element: <PrintInvoiceType />,
-                    },
-                  ],
-                },
-                {
-                  path: "invoices/:transactionId/:type/info/:invoiceId",
-                  children: [
-                    { index: true, element: <InvoiceInfo /> },
-                    { path: "print/tech/:techId", element: <PrintTech /> },
-                    { path: "print/logic/:logicId", element: <PrintLogic /> },
-                    {
-                      path: "print/invoice-item/:invoiceItemId",
-                      element: <PrintInvoiceItem />,
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
+        // All Tresures
 
-        // Employee Tresures selectors
         {
-          path: "tresure/employee",
+          path: "tresure/:role",
           children: [
-            { index: true, element: <SelectEmployeeTresure /> },
             {
-              path: ":id",
-              children: [
-                { index: true, element: <EmployeeTresure /> },
-                {
-                  path: "print/:type/:transactionId",
-                  element: <PrintInvoiceTransaction />,
-                },
-                {
-                  path: "invoices/:transactionId/:type",
-                  children: [
-                    { index: true, element: <Invoices /> },
-                    {
-                      path: "print",
-                      element: <PrintInvoiceType />,
-                    },
-                  ],
-                },
-                {
-                  path: "invoices/:transactionId/:type/info/:invoiceId",
-                  children: [
-                    { index: true, element: <InvoiceInfo /> },
-                    { path: "print/tech/:techId", element: <PrintTech /> },
-                    { path: "print/logic/:logicId", element: <PrintLogic /> },
-                    {
-                      path: "print/invoice-item/:invoiceItemId",
-                      element: <PrintInvoiceItem />,
-                    },
-                  ],
-                },
-              ],
+              index: true,
+              element: <DynamicSelectTresure />,
             },
-          ],
-        },
-
-        // Workshop Tresures selectors
-        {
-          path: "tresure/workshop",
-          children: [
-            { index: true, element: <SelectWorkshopTresure /> },
             {
               path: ":id",
               children: [
-                { index: true, element: <WorkshopTresure /> },
+                {
+                  index: true,
+                  element: <DynamicTresurePage />,
+                },
                 {
                   path: "print/:type/:transactionId",
                   element: <PrintInvoiceTransaction />,
@@ -156,130 +71,7 @@ const router = createBrowserRouter(
                   path: "invoices/:transactionId/:type",
                   children: [
                     { index: true, element: <Invoices /> },
-                    {
-                      path: "print",
-                      element: <PrintInvoiceType />,
-                    },
-                  ],
-                },
-                {
-                  path: "invoices/:transactionId/:type/info/:invoiceId",
-                  children: [
-                    { index: true, element: <InvoiceInfo /> },
-                    { path: "print/tech/:techId", element: <PrintTech /> },
-                    { path: "print/logic/:logicId", element: <PrintLogic /> },
-                    {
-                      path: "print/invoice-item/:invoiceItemId",
-                      element: <PrintInvoiceItem />,
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-
-        // Customer Tresures selectors
-        {
-          path: "tresure/customer",
-          children: [
-            { index: true, element: <SelectCustomerTresure /> },
-            {
-              path: ":id",
-              children: [
-                { index: true, element: <CustomerTresure /> },
-                {
-                  path: "print/:type/:transactionId",
-                  element: <PrintInvoiceTransaction />,
-                },
-                {
-                  path: "invoices/:transactionId/:type",
-                  children: [
-                    { index: true, element: <Invoices /> },
-                    {
-                      path: "print",
-                      element: <PrintInvoiceType />,
-                    },
-                  ],
-                },
-                {
-                  path: "invoices/:transactionId/:type/info/:invoiceId",
-                  children: [
-                    { index: true, element: <InvoiceInfo /> },
-                    { path: "print/tech/:techId", element: <PrintTech /> },
-                    { path: "print/logic/:logicId", element: <PrintLogic /> },
-                    {
-                      path: "print/invoice-item/:invoiceItemId",
-                      element: <PrintInvoiceItem />,
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-
-        // Office Tresures selectors
-        {
-          path: "tresure/office",
-          children: [
-            { index: true, element: <SelectOfficeTresure /> },
-            {
-              path: ":id",
-              children: [
-                { index: true, element: <OfficeTresure /> },
-                {
-                  path: "print/:type/:transactionId",
-                  element: <PrintInvoiceTransaction />,
-                },
-                {
-                  path: "invoices/:transactionId/:type",
-                  children: [
-                    { index: true, element: <Invoices /> },
-                    {
-                      path: "print",
-                      element: <PrintInvoiceType />,
-                    },
-                  ],
-                },
-                {
-                  path: "invoices/:transactionId/:type/info/:invoiceId",
-                  children: [
-                    { index: true, element: <InvoiceInfo /> },
-                    { path: "print/tech/:techId", element: <PrintTech /> },
-                    { path: "print/logic/:logicId", element: <PrintLogic /> },
-                    {
-                      path: "print/invoice-item/:invoiceItemId",
-                      element: <PrintInvoiceItem />,
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-
-        // Deposit Tresures selectors
-        {
-          path: "tresure/deposit",
-          children: [
-            { index: true, element: <SelectDepositsTresure /> },
-            {
-              path: ":id",
-              children: [
-                { index: true, element: <DepositTresure /> },
-                {
-                  path: "print/:type/:transactionId",
-                  element: <PrintInvoiceTransaction />,
-                },
-                {
-                  path: "invoices/:transactionId/:type",
-                  children: [
-                    { index: true, element: <Invoices /> },
-                    {
-                      path: "print",
-                      element: <PrintInvoiceType />,
-                    },
+                    { path: "print", element: <PrintInvoiceType /> },
                   ],
                 },
                 {

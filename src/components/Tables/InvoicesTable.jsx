@@ -63,7 +63,7 @@ function capitalize(s) {
 }
 
 const InvoicesTable = () => {
-  const { id, transactionId } = useParams();
+  const { id, transactionId, role } = useParams();
   const navigate = useNavigate();
   const [filterValue, setFilterValue] = useState("");
   const [selectedKeys, setSelectedKeys] = useState(new Set([]));
@@ -170,7 +170,7 @@ const InvoicesTable = () => {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/invoices/${invoices.id}/${type}/print`
+                  `/tresure/${role}/${id}/invoices/${invoices.id}/${type}/print`
                 )
               }
             >
@@ -184,7 +184,7 @@ const InvoicesTable = () => {
               variant="faded"
               onPress={() =>
                 navigate(
-                  `/tresure/admin/${id}/invoices/${transactionId}/${type}/info/${invoices.id}`
+                  `/tresure/${role}/${id}/invoices/${transactionId}/${type}/info/${invoices.id}`
                 )
               }
             >

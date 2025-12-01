@@ -28,7 +28,7 @@ import {
   UpdateEmployeeModal,
 } from "../Modals/EmployeeModals";
 
-export const columns = [
+const columns = [
   { name: "ID", uid: "id", sortable: true },
   { name: "الاسم", uid: "name", sortable: true },
   { name: "رقم الهاتف", uid: "phone", sortable: true },
@@ -37,7 +37,7 @@ export const columns = [
 ];
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "phone", "desc", "actions"];
-export const statusOptions = [
+const statusOptions = [
   { name: "Active", uid: "active" },
   { name: "Paused", uid: "paused" },
   { name: "Vacation", uid: "vacation" },
@@ -48,7 +48,7 @@ const statusColorMap = {
   vacation: "warning",
 };
 
-export function capitalize(s) {
+function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : "";
 }
 
